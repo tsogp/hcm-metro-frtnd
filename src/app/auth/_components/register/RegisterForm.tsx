@@ -16,6 +16,7 @@ import { RegisterFormData } from "./types";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Form } from "@/components/ui/form";
 
 export function RegisterForm({
   className,
@@ -92,7 +93,7 @@ export function RegisterForm({
 
   const handleStep3Submit = (data: Step3Values) => {
     const finalData = { ...formData, ...data };
-    console.log("Final form data:", finalData);
+    console.log(finalData);
   };
 
   const handleBack = () => {
@@ -112,66 +113,69 @@ export function RegisterForm({
 
       <div className="grid gap-5">
         {currentStep === 1 && (
-          <form onSubmit={step1Form.handleSubmit(handleStep1Submit)}>
-            <Step1
-              formData={formData}
-              register={step1Form.register}
-              errors={step1Form.formState.errors}
-              handleInputChange={handleInputChange}
-            />
-            <Button type="submit" className="mt-6 w-full">
-              Next
-            </Button>
-          </form>
+          <Form {...step1Form}>
+            <form onSubmit={step1Form.handleSubmit(handleStep1Submit)}>
+              <Step1
+                formData={formData}
+                handleInputChange={handleInputChange}
+                step1Form={step1Form}
+              />
+              <Button type="submit" className="mt-6 w-full">
+                Next
+              </Button>
+            </form>
+          </Form>
         )}
 
         {currentStep === 2 && (
-          <form onSubmit={step2Form.handleSubmit(handleStep2Submit)}>
-            <Step2
-              formData={formData}
-              register={step2Form.register}
-              errors={step2Form.formState.errors}
-              handleInputChange={handleInputChange}
-            />
-            <div className="flex gap-2 mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleBack}
-                className="flex-1"
-              >
-                Back
-              </Button>
-              <Button type="submit" className="flex-1">
-                Next
-              </Button>
-            </div>
-          </form>
+          <Form {...step2Form}>
+            <form onSubmit={step2Form.handleSubmit(handleStep2Submit)}>
+              <Step2
+                formData={formData}
+                handleInputChange={handleInputChange}
+                step2Form={step2Form}
+              />
+              <div className="flex gap-2 mt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleBack}
+                  className="flex-1"
+                >
+                  Back
+                </Button>
+                <Button type="submit" className="flex-1">
+                  Next
+                </Button>
+              </div>
+            </form>
+          </Form>
         )}
 
         {currentStep === 3 && (
-          <form onSubmit={step3Form.handleSubmit(handleStep3Submit)}>
-            <Step3
-              formData={formData}
-              register={step3Form.register}
-              errors={step3Form.formState.errors}
-              handleInputChange={handleInputChange}
-              handleSelectChange={handleSelectChange}
-            />
-            <div className="flex gap-2 mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleBack}
-                className="flex-1"
-              >
-                Back
-              </Button>
-              <Button type="submit" className="flex-1">
-                Register
-              </Button>
-            </div>
-          </form>
+          <Form {...step3Form}>
+            <form onSubmit={step3Form.handleSubmit(handleStep3Submit)}>
+              <Step3
+                formData={formData}
+                handleInputChange={handleInputChange}
+                handleSelectChange={handleSelectChange}
+                step3Form={step3Form}
+              />
+              <div className="flex gap-2 mt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleBack}
+                  className="flex-1"
+                >
+                  Back
+                </Button>
+                <Button type="submit" className="flex-1">
+                  Register
+                </Button>
+              </div>
+            </form>
+          </Form>
         )}
 
         {/* Progress Indicator */}
@@ -189,7 +193,7 @@ export function RegisterForm({
         <div className="text-center text-sm">
           Already have an account?{" "}
           <Link href="/auth/login" className="underline underline-offset-4">
-            Sign in
+            Log in
           </Link>
         </div>
       </div>

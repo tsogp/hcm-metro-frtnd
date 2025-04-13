@@ -2,12 +2,9 @@ import { z } from "zod";
 
 export const loginFormSchema = z.object({
   email: z
-    .string({
-      required_error: "Email is required",
-    })
-    .email({
-      message: "Invalid email format",
-    })
+    .string()
+    .min(1, { message: "Email is required" })
+    .email({ message: "Invalid email format" })
     .refine(
       (email) => {
         const domain = email.split(".").pop()?.toLowerCase();
