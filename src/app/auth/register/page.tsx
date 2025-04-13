@@ -6,7 +6,7 @@ import { RegisterForm } from "../_components/register/RegisterForm";
 
 export default function RegisterPage() {
   return (
-    <div className="grid min-h-svh lg:grid-cols-[1.5fr_1fr]">
+    <div className="grid min-h-svh lg:grid-cols-[4fr_3fr]">
       <div className="relative hidden bg-muted lg:block">
         <Image
           sizes="(min-width: 1024px) 66vw, 0vw"
