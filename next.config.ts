@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: true,
+  // Use the built-in CSS handling in Next.js
+  experimental: {
+    optimizeCss: true,
+  },
 };
 
 export default nextConfig;
