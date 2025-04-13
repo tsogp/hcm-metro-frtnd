@@ -1,97 +1,136 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { RegisterFormData } from "./types";
-import { UseFormRegister, FieldErrors } from "react-hook-form";
 import { Step3Values } from "./schema";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { UseFormReturn } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Step3Props {
   formData: RegisterFormData;
-  errors: FieldErrors<Step3Values>;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSelectChange: (name: string, value: string) => void;
-  register: UseFormRegister<Step3Values>;
+  step3Form: UseFormReturn<Step3Values>;
 }
 
 export function Step3({
   formData,
-  errors,
   handleInputChange,
   handleSelectChange,
-  register,
+  step3Form,
 }: Step3Props) {
   return (
     <div className="grid gap-5">
-      <div className="grid gap-2">
-        <Label htmlFor="studentId">Student ID (Optional)</Label>
-        <Input
-          id="studentId"
-          {...register("studentId")}
-          value={formData.studentId || ""}
-          onChange={handleInputChange}
-        />
-        {errors.studentId && (
-          <p className="text-sm text-red-500">{errors.studentId.message}</p>
+      <FormField
+        control={step3Form.control}
+        name="studentId"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Student ID (Optional)</FormLabel>
+            <FormControl>
+              <Input
+                {...field}
+                value={formData.studentId || ""}
+                onChange={(e) => {
+                  field.onChange(e);
+                  handleInputChange(e);
+                }}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
         )}
-      </div>
+      />
 
-      <div className="grid gap-2">
-        <Label htmlFor="nationalId">National ID</Label>
-        <Input
-          id="nationalId"
-          {...register("nationalId")}
-          value={formData.nationalId || ""}
-          onChange={handleInputChange}
-        />
-        {errors.nationalId && (
-          <p className="text-sm text-red-500">{errors.nationalId.message}</p>
+      <FormField
+        control={step3Form.control}
+        name="nationalId"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>National ID</FormLabel>
+            <FormControl>
+              <Input
+                {...field}
+                value={formData.nationalId || ""}
+                onChange={(e) => {
+                  field.onChange(e);
+                  handleInputChange(e);
+                }}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
         )}
-      </div>
+      />
 
-      <div className="grid gap-2">
-        <Label htmlFor="disabilityStatus">Do you have any disabilities?</Label>
-        <select
-          id="disabilityStatus"
-          {...register("disabilityStatus")}
-          value={formData.disabilityStatus}
-          onChange={(e) =>
-            handleSelectChange("disabilityStatus", e.target.value)
-          }
-          className="w-full p-2 border rounded"
-        >
-          <option value="no">No</option>
-          <option value="yes">Yes</option>
-        </select>
-        {errors.disabilityStatus && (
-          <p className="text-sm text-red-500">
-            {errors.disabilityStatus.message}
-          </p>
+      <FormField
+        control={step3Form.control}
+        name="disabilityStatus"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Do you have any disabilities?</FormLabel>
+            <Select
+              onValueChange={(value) => {
+                field.onChange(value);
+                handleSelectChange("disabilityStatus", value);
+              }}
+              defaultValue={field.value}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select an option" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="no">No</SelectItem>
+                <SelectItem value="yes">Yes</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
         )}
-      </div>
+      />
 
-      <div className="grid gap-2">
-        <Label htmlFor="revolutionaryContribution">
-          Do you have any revolutionary contributions?
-        </Label>
-        <select
-          id="revolutionaryContribution"
-          {...register("revolutionaryContribution")}
-          value={formData.revolutionaryContribution}
-          onChange={(e) =>
-            handleSelectChange("revolutionaryContribution", e.target.value)
-          }
-          className="w-full p-2 border rounded"
-        >
-          <option value="no">No</option>
-          <option value="yes">Yes</option>
-        </select>
-        {errors.revolutionaryContribution && (
-          <p className="text-sm text-red-500">
-            {errors.revolutionaryContribution.message}
-          </p>
+      <FormField
+        control={step3Form.control}
+        name="revolutionaryContribution"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Do you have any revolutionary contributions?</FormLabel>
+            <Select
+              onValueChange={(value) => {
+                field.onChange(value);
+                handleSelectChange("revolutionaryContribution", value);
+              }}
+              defaultValue={field.value}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select an option" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="no">No</SelectItem>
+                <SelectItem value="yes">Yes</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
         )}
-      </div>
+      />
     </div>
   );
 }

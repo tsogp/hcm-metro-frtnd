@@ -6,15 +6,35 @@ export const step1Schema = z
       .string()
       .min(1, { message: "Email is required" })
       .email({ message: "Invalid email format" })
+      .refine(
+        (email) => {
+          const domain = email.split(".").pop()?.toLowerCase();
+          return domain === "com" || domain === "vn";
+        },
+        {
+          message: "Email must end with .com or .vn",
+        }
+      )
+      .refine((email) => !/[\s<>()[\]\\,;:{}|^~`]/.test(email), {
+        message: "Email cannot contain spaces or special characters",
+      })
       .transform((val) => val.toLowerCase()),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
-      // .regex(
-      //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-      //   "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character"
-      // ),
-      ,
+      .regex(/[A-Z]/, {
+        message: "Password must contain at least one uppercase letter",
+      })
+      .regex(/[a-z]/, {
+        message: "Password must contain at least one lowercase letter",
+      })
+      .regex(/\d/, {
+        message: "Password must contain at least one digit",
+      })
+      .regex(/[@#$%]/, {
+        message:
+          "Password must contain at least one special character (@, #, $, %)",
+      }),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -37,11 +57,9 @@ export const step2Schema = z.object({
     .max(50, "Max 50 characters"),
   phoneNumber: z
     .string()
-    .min(1, "Phone number is required"),
-  address: z
-    .string()
-    .min(1, "Address is required")
-    ,
+    .min(1, "Phone number is required")
+    .regex(/^0\d{9}$/, "Phone number must start with 0 and be 10 digits"),
+  address: z.string().min(1, "Address is required"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
 });
 
@@ -49,7 +67,7 @@ export const step3Schema = z.object({
   nationalId: z
     .string()
     .min(1, "National ID is required")
-    .length(12, "ID must be 12 digits"),
+    .regex(/\d{12}$/, "National ID must be 12 digits"),
   studentId: z.string().optional(),
   disabilityStatus: z.enum(["yes", "no"]),
   revolutionaryContribution: z.enum(["yes", "no"]),
