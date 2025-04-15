@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
+import { PasswordVisibility } from "@/components/input/PasswordVisibility";
 
 interface Step1Props {
   formData: RegisterFormData;
@@ -51,9 +52,8 @@ export function Step1({ formData, handleInputChange, step1Form }: Step1Props) {
           <FormItem>
             <FormLabel>Password</FormLabel>
             <FormControl>
-              <Input
+              <PasswordVisibility
                 {...field}
-                type="password"
                 value={formData.password}
                 onChange={(e) => {
                   field.onChange(e);
@@ -74,9 +74,8 @@ export function Step1({ formData, handleInputChange, step1Form }: Step1Props) {
           <FormItem>
             <FormLabel>Confirm Password</FormLabel>
             <FormControl>
-              <Input
+              <PasswordVisibility
                 {...field}
-                type="password"
                 value={formData.confirmPassword}
                 onChange={(e) => {
                   field.onChange(e);
