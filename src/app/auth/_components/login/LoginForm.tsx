@@ -18,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { PasswordVisibility } from "@/components/input/PasswordVisibility";
 
 export function LoginForm({
   className,
@@ -83,9 +84,8 @@ export function LoginForm({
                   </a>
                 </div>
                 <FormControl>
-                  <Input
+                  <PasswordVisibility
                     {...field}
-                    type="password"
                     placeholder="Enter your password"
                   />
                 </FormControl>
