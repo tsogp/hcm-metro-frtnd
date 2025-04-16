@@ -32,7 +32,11 @@ const PasswordVisibility = React.forwardRef<
         type="button"
         onClick={() => toggleButton()}
       >
-        {isView ? <EyeOffIcon /> : <EyeIcon />}
+        {isView ? (
+          <EyeOffIcon className="h-5 w-5" />
+        ) : (
+          <EyeIcon className="h-5 w-5" />
+        )}
       </button>
     </div>
   );
