@@ -2,7 +2,7 @@
 
 import { TrainFront } from "lucide-react";
 import Image from "next/image";
-import { RegisterForm } from "../_components/register/RegisterForm";
+import { RegisterForm } from "../_component/register/RegisterForm";
 
 export default function RegisterPage() {
   return (
