@@ -1,5 +1,5 @@
 import { TrainFront } from "lucide-react";
-import { LoginForm } from "../_components/login/LoginForm";
+import { LoginForm } from "../_component/login/LoginForm";
 import Image from "next/image";
 
 export default function LoginPage() {
@@ -33,4 +33,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

@@ -12,7 +12,7 @@ import { Step1 } from "./RegisterStep1";
 import { Step2 } from "./RegisterStep2";
 import { Step3 } from "./RegisterStep3";
 import React, { useState } from "react";
-import { RegisterFormData } from "./types";
+import { RegisterFormData } from "./type";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
