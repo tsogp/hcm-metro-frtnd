@@ -1,26 +1,3 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Train,
-  CreditCard,
-  Smartphone,
-  MapPin,
-  Calendar,
-  Phone,
-  Mail,
-  Ticket,
-  Wallet,
-  Timer,
-  Globe,
-  Shield,
-  BadgeCheck,
-  Menu,
-  X,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-
 import HeroSection from "./_components/hero";
 import StatSection from "./_components/stats";
 import FeatureSection from "./_components/features";
@@ -34,7 +11,7 @@ export default function LandingPage() {
     <div className="min-h-screen overflow-y-auto">
       <Navbar />
 
-      <main className="pt-16">
+      <main className="pt-20 md:pt-16">
         <HeroSection />
         <StatSection />
         <FeatureSection />
