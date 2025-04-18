@@ -1,5 +1,5 @@
 import { TrainFront } from "lucide-react";
-import { LoginForm } from "../_component/login/LoginForm";
+import { LoginForm } from "../_components/login/LoginForm";
 import Image from "next/image";
 
 export default function LoginPage() {
@@ -9,7 +9,7 @@ export default function LoginPage() {
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <TrainFront className="size-4" />
+              <TrainFront className="w-4 h-4 text-blue-600" />
             </div>
             HCMC Metro Line - PAWA
           </a>
