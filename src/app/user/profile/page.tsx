@@ -4,9 +4,9 @@ import type React from "react";
 
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProfilePreviewTab from "./_component/profile-preview-tab";
-import EditProfileTab from "./_component/edit-profile-tab";
-import { ProfileFormType, UserProfileType } from "./_component/type";
+import ProfilePreviewTab from "./_components/profile-preview-tab";
+import EditProfileTab from "./_components/edit-profile-tab";
+import { ProfileFormType, UserProfileType } from "./_components/type";
 
 export default function ProfilePage() {
   // Mock user data - in a real app, this would come from your database

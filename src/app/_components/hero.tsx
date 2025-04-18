@@ -1,0 +1,53 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import React from "react";
+
+function HeroSection() {
+  return (
+    <section className="w-full min-h-[95vh] flex items-center overflow-hidden pb-8">
+      <div className="container mx-auto px-4">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
+          <div className="space-y-6">
+            <Badge className="rounded-full bg-blue-100 px-4 py-1.5 text-sm text-blue-700">
+              Welcome to HCMC Metro
+            </Badge>
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
+              Modern Transit for Modern City
+            </h1>
+            <p className="text-sm text-gray-600 md:text-lg max-w-[600px]">
+              Experience the future of urban transportation with our metro
+              booking system. Fast, reliable, and eco-friendly.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 text-lg px-4"
+              >
+                Start Your Journey
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 text-lg px-4"
+              >
+                Learn More
+              </Button>
+            </div>
+          </div>
+          <div className="relative h-[400px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300">
+            <Image
+              src="/images/login-hero.png"
+              alt="Ho Chi Minh City Metro Train"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default HeroSection;
