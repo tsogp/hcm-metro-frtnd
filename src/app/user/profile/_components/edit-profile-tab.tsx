@@ -6,10 +6,10 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import React, { RefObject, useRef } from "react";
+import React, { useRef } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { PasswordVisibility } from "@/components/input/PasswordVisibility";
+import { PasswordVisibility } from "@/components/custom/PasswordVisibility";
 import { Input } from "@/components/ui/input";
 import { Camera, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";

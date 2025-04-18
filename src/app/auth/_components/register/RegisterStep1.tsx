@@ -1,8 +1,8 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { RegisterFormData } from "./type";
-import { Step1Values } from "./schema";
+import { RegisterFormData } from "@/types";
+import { Step1Values } from "@/schema";
 import {
   FormControl,
   FormField,
@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import { PasswordVisibility } from "@/components/input/PasswordVisibility";
+import { PasswordVisibility } from "@/components/custom/PasswordVisibility";
 
 interface Step1Props {
   formData: RegisterFormData;

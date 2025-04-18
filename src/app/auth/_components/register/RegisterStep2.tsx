@@ -1,8 +1,8 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { RegisterFormData } from "./type";
-import { Step2Values } from "./schema";
+import { RegisterFormData } from "@/types";
+import { Step2Values } from "@/schema";
 import {
   FormControl,
   FormField,

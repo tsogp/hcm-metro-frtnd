@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,16 +9,16 @@ import {
   step1Schema,
   step2Schema,
   step3Schema,
-} from "./schema";
+} from "@/schema";
 import { Step1 } from "./RegisterStep1";
 import { Step2 } from "./RegisterStep2";
 import { Step3 } from "./RegisterStep3";
 import React, { useState } from "react";
-import { RegisterFormData } from "./type";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Form } from "@/components/ui/form";
+import { RegisterFormData } from "@/types";
 
 export function RegisterForm({
   className,
