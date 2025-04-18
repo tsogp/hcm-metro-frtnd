@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 function HeroSection() {
@@ -23,8 +24,9 @@ function HeroSection() {
               <Button
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-800 text-base font-bold p-4"
+                asChild
               >
-                Start Your Journey
+                <Link href="/auth/login">Start Your Journey</Link>
               </Button>
               <Button
                 size="lg"
