@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Train, Menu, TrainFront } from "lucide-react";
+import { Menu, TrainFront } from "lucide-react";
 import { scrollToElement } from "@/lib/utils";
 
 export const navItems = [
@@ -25,14 +25,17 @@ export function Navbar() {
               <Link
                 key={item.href}
                 href={`#${item.href}`}
-                onClick={(e) => scrollToElement(item.href)}
+                onClick={() => scrollToElement(item.href)}
                 className="text-gray-600 hover:text-blue-600 transition-colors"
               >
                 {item.label}
               </Link>
             ))}
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-              Book Now
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              asChild
+            >
+              <Link href="/auth/login">Book Now</Link>
             </Button>
           </div>
           <button className="md:hidden">
