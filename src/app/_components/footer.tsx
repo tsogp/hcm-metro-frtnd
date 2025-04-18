@@ -1,6 +1,6 @@
 "use client";
 
-import { Train, TrainFront } from "lucide-react";
+import { TrainFront } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { scrollToElement } from "@/lib/utils";
@@ -22,7 +22,7 @@ function Footer() {
               <TrainFront className="h-8 w-8 text-white" />
               <span className="font-bold text-xl">HCMC Metro</span>
             </div>
-            <p className="text-blue-100">
+            <p className="text-white">
               Modern transit for a modern city. Experience the future of urban
               transportation.
             </p>
@@ -34,8 +34,8 @@ function Footer() {
                 <li key={index}>
                   <Link
                     href={`#${item.href}`}
-                    onClick={(e) => scrollToElement(item.href)}
-                    className="text-blue-100 hover:text-white transition-colors"
+                    onClick={() => scrollToElement(item.href)}
+                    className="text-white hover:text-white transition-colors"
                   >
                     {item.label}
                   </Link>
@@ -49,7 +49,7 @@ function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-blue-100 hover:text-white transition-colors"
+                  className="text-white hover:text-white transition-colors"
                 >
                   Privacy Policy
                 </Link>
@@ -57,7 +57,7 @@ function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-blue-100 hover:text-white transition-colors"
+                  className="text-white hover:text-white transition-colors"
                 >
                   Terms of Service
                 </Link>
@@ -65,7 +65,7 @@ function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-blue-100 hover:text-white transition-colors"
+                  className="text-white hover:text-white transition-colors"
                 >
                   Cookie Policy
                 </Link>
@@ -77,7 +77,7 @@ function Footer() {
             <div className="flex space-x-4">
               <Link
                 href="#"
-                className="text-blue-100 hover:text-white transition-colors"
+                className="text-white hover:text-white transition-colors"
               >
                 <svg
                   className="h-6 w-6"
@@ -90,7 +90,7 @@ function Footer() {
               </Link>
               <Link
                 href="#"
-                className="text-blue-100 hover:text-white transition-colors"
+                className="text-white hover:text-white transition-colors"
               >
                 <svg
                   className="h-6 w-6"
@@ -107,7 +107,7 @@ function Footer() {
               </Link>
               <Link
                 href="#"
-                className="text-blue-100 hover:text-white transition-colors"
+                className="text-white hover:text-white transition-colors"
               >
                 <svg
                   className="h-6 w-6"
@@ -125,7 +125,7 @@ function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-blue-500 text-center text-blue-100">
+        <div className="mt-12 pt-8 border-t border-blue-500 text-center text-white">
           <p>
             &copy; {new Date().getFullYear()} HCMC Metro. All rights reserved.
           </p>
