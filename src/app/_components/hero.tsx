@@ -22,14 +22,14 @@ function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-lg px-4"
+                className="bg-blue-600 hover:bg-blue-800 text-base font-bold p-4"
               >
                 Start Your Journey
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 text-lg px-4"
+                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-base font-bold p-4"
               >
                 Learn More
               </Button>
