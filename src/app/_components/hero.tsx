@@ -14,7 +14,7 @@ function HeroSection() {
               Welcome to HCMC Metro
             </Badge>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-              Modern Transit for Modern City
+              A Modern Transit for a Modern City
             </h1>
             <p className="text-sm text-gray-600 md:text-lg max-w-[600px]">
               Experience the future of urban transportation with our metro
@@ -23,7 +23,8 @@ function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
-                className="bg-blue-600 hover:bg-blue-800 text-base font-bold p-4"
+                variant="outline"
+                className="border-2 border-blue-600 bg-blue-600 hover:bg-white text-base text-white hover:text-blue-600 font-bold p-4"
                 asChild
               >
                 <Link href="/auth/login">Start Your Journey</Link>

@@ -8,7 +8,7 @@ import React from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginFormSchema, LoginFormValues } from "./schema";
+
 import { User } from "lucide-react";
 import {
   Form,
@@ -18,7 +18,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { PasswordVisibility } from "@/components/input/PasswordVisibility";
+import { PasswordVisibility } from "@/components/custom/PasswordVisibility";
+import { loginFormSchema, LoginFormValues } from "@/schema";
 
 export function LoginForm({
   className,
@@ -35,6 +36,8 @@ export function LoginForm({
 
   const onSubmit = (data: LoginFormValues) => {
     console.log(data);
+
+    // const userLogin =
   };
 
   return (
