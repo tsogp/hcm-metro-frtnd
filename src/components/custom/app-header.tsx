@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Search, ShoppingCart } from "lucide-react";
-import Metro from "@/assets/HCMC_Metro_logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserNav } from "@/components/custom/user-nav";
@@ -24,7 +23,7 @@ export function AppHeader({ onCartClick }: AppHeaderProps) {
         <AppSidebar />
         <div className="flex items-center gap-2 mr-4">
           <div className="py-1 px-3 rounded-full bg-white">
-            <Image src={Metro} alt="Metro Logo" className="h-6 w-auto" />
+            <Image src="/images/HCMC_Metro_logo.png" alt="Metro Logo" fill className="h-6 w-6" />
           </div>
           <Link href="/" className="font-bold text-xl">
             Ho Chi Minh Metro
