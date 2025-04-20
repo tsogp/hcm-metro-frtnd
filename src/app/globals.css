@@ -71,6 +71,7 @@
     from {
       height: 0;
     }
+
     to {
       height: var(--radix-accordion-content-height);
     }
@@ -80,6 +81,7 @@
     from {
       height: var(--radix-accordion-content-height);
     }
+
     to {
       height: 0;
     }
@@ -97,8 +99,8 @@
   --popover: #ffffff;
   --popover-foreground: #222222;
 
-  --primary: #ffffff;
-  --primary-foreground: #00599d;
+  --primary: #00599d;
+  --primary-foreground: #ffffff;
 
   --secondary: #00599d;
   --secondary-foreground: #ffffff;
@@ -106,7 +108,7 @@
   --tertiary: #86c5e8;
   --tertiary-foreground: #222222;
 
-  --accent: #e83a26;
+  --accent: #00599d;
   --accent-foreground: #ffffff;
 
   --muted: #f1f5f9;
@@ -136,7 +138,7 @@
   --secondary: #00599d;
   --secondary-foreground: #ffffff;
 
-  --accent: #e83a26;
+  --accent: #00599d;
   --accent-foreground: #ffffff;
 
   --muted: #003366;
@@ -155,9 +157,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     scroll-behavior: smooth;
   }
