@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { RegisterFormData } from "@/types";
+import { RegisterData } from "@/types/register";
 import { Step1Values } from "@/schema";
 import {
   FormControl,
@@ -11,10 +11,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import { PasswordVisibility } from "@/components/custom/PasswordVisibility";
+import { PasswordInput } from "@/components/input/password-input";
 
 interface Step1Props {
-  formData: RegisterFormData;
+  formData: RegisterData;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   step1Form: UseFormReturn<Step1Values>;
 }
@@ -52,7 +52,7 @@ export function Step1({ formData, handleInputChange, step1Form }: Step1Props) {
           <FormItem>
             <FormLabel>Password</FormLabel>
             <FormControl>
-              <PasswordVisibility
+              <PasswordInput
                 {...field}
                 value={formData.password}
                 onChange={(e) => {
@@ -74,7 +74,7 @@ export function Step1({ formData, handleInputChange, step1Form }: Step1Props) {
           <FormItem>
             <FormLabel>Confirm Password</FormLabel>
             <FormControl>
-              <PasswordVisibility
+              <PasswordInput
                 {...field}
                 value={formData.confirmPassword}
                 onChange={(e) => {

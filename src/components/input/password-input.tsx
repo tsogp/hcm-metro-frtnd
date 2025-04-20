@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 export interface PasswordVisibilityProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-const PasswordVisibility = React.forwardRef<
+const PasswordInput = React.forwardRef<
   HTMLInputElement,
   PasswordVisibilityProps
 >(({ className, ...props }, ref) => {
@@ -42,6 +42,6 @@ const PasswordVisibility = React.forwardRef<
   );
 });
 
-PasswordVisibility.displayName = "PasswordInput";
+PasswordInput.displayName = "PasswordInput";
 
-export { PasswordVisibility };
+export { PasswordInput };

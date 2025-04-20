@@ -1,4 +1,4 @@
-export type RegisterFormData = {
+export type User = {
   email: string;
   password: string;
   confirmPassword: string;
@@ -9,7 +9,12 @@ export type RegisterFormData = {
   dateOfBirth: string;
   address: string;
   phoneNumber: string;
-  studentId: string;
+  studentId: string | null;
   disabilityStatus: string;
   revolutionaryContribution: string;
+  googleId: string | null;
 };
+
+// export type JWTPayload = {
+//
+// }
