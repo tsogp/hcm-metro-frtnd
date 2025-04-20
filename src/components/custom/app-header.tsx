@@ -22,12 +22,12 @@ export function AppHeader({ onCartClick }: AppHeaderProps) {
       <div className="flex h-16 items-center px-4 sm:px-6 lg:px-8 max-w-full mx-auto">
         <AppSidebar />
         <div className="flex items-center gap-2 mr-4">
-          <div className="relative h-10 w-10 rounded-full bg-white px-5 py-1.5">
+          <div className="relative h-10 w-10 rounded-full bg-white px-4 py-0.5">
             <Image
               src="/images/HCMC_Metro_logo.png"
               alt="Metro Logo"
               fill
-              className="object-contain scale-75"
+              className="object-contain scale-85"
             />
           </div>
           <Link href="/" className="font-bold text-xl">
