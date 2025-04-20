@@ -9,12 +9,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import React, { useRef } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { PasswordVisibility } from "@/components/custom/PasswordVisibility";
+import { PasswordInput } from "@/components/input/password-input";
 import { Input } from "@/components/ui/input";
 import { Camera, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserProfileType } from "./type";
+import { UserProfileType } from "../../../types/profile";
 import {
   Form,
   FormControl,
@@ -23,7 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { profileFormSchema, ProfileFormValues } from "./schema";
+import { profileFormSchema, ProfileFormValues } from "../../../schema/profile";
 
 interface EditProfileTabProps {
   user: UserProfileType;
@@ -264,7 +264,7 @@ function EditProfileTab({
                         New Password (leave blank to keep current)
                       </FormLabel>
                       <FormControl>
-                        <PasswordVisibility
+                        <PasswordInput
                           {...field}
                           placeholder="Enter new password"
                           onChange={(e) => {
@@ -285,7 +285,7 @@ function EditProfileTab({
                     <FormItem>
                       <FormLabel>Confirm New Password</FormLabel>
                       <FormControl>
-                        <PasswordVisibility
+                        <PasswordInput
                           {...field}
                           placeholder="Confirm new password"
                           onChange={(e) => {

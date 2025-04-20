@@ -10,22 +10,26 @@ import {
   step2Schema,
   step3Schema,
 } from "@/schema";
-import { Step1 } from "./RegisterStep1";
-import { Step2 } from "./RegisterStep2";
-import { Step3 } from "./RegisterStep3";
+import { Step1 } from "./register-step-1";
+import { Step2 } from "./register-step-2";
+import { Step3 } from "./register-step-3";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Form } from "@/components/ui/form";
-import { RegisterFormData } from "@/types";
+import { RegisterData } from "@/types/register";
+import { toast } from "sonner";
+import { register } from "@/action/register";
+import { useRouter } from "next/navigation";
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<RegisterFormData>({
+  const [formData, setFormData] = useState<RegisterData>({
     email: "",
     password: "",
     confirmPassword: "",
@@ -85,6 +89,10 @@ export function RegisterForm({
 
   const handleStep1Submit = (data: Step1Values) => {
     setFormData((prev) => ({ ...prev, ...data }));
+
+    // Check for unique email...
+
+    // If email is unique in the backend
     setCurrentStep(2);
   };
 
@@ -93,9 +101,42 @@ export function RegisterForm({
     setCurrentStep(3);
   };
 
-  const handleStep3Submit = (data: Step3Values) => {
-    const finalData = { ...formData, ...data };
-    console.log(finalData);
+  const handleStep3Submit = async (data: Step3Values) => {
+    const userData = {
+      ...formData,
+      ...data,
+      studentId: formData.studentId === undefined ? null : formData.studentId,
+      googleId: null,
+    };
+
+    // const onRegisterAction = register(userData);
+    const onRegisterAction = new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(userData);
+        resolve(true);
+      }, 3000);
+    });
+
+    toast.promise(onRegisterAction, {
+      loading: "We're getting things ready for you...",
+      // Setting things here, re-routing, returning the necessary DTO for UI
+      success: () => {
+        router.push("/dashboard");
+        return "You're all set.";
+      },
+      error: (e) => {
+        switch (e.response.status) {
+          case 401:
+            return e.response.data.message as string;
+          case 404:
+            return e.response.data.message as string;
+          case 409:
+            return e.response.data.message as string;
+          default:
+            return "Internal Server Error";
+        }
+      },
+    });
   };
 
   const handleBack = () => {

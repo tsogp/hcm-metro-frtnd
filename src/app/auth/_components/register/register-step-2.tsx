@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { RegisterFormData } from "@/types";
+import { RegisterData } from "@/types/register";
 import { Step2Values } from "@/schema";
 import {
   FormControl,
@@ -13,7 +13,7 @@ import {
 import { UseFormReturn } from "react-hook-form";
 
 interface Step2Props {
-  formData: RegisterFormData;
+  formData: RegisterData;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   step2Form: UseFormReturn<Step2Values>;
 }

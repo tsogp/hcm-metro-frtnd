@@ -18,7 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { PasswordVisibility } from "@/components/custom/PasswordVisibility";
+import { PasswordInput } from "@/components/input/password-input";
 import { loginFormSchema, LoginFormValues } from "@/schema";
 
 export function LoginForm({
@@ -29,7 +29,7 @@ export function LoginForm({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
-      password: "",
+      password: "", 
       remember: false,
     },
   });
@@ -37,7 +37,7 @@ export function LoginForm({
   const onSubmit = (data: LoginFormValues) => {
     console.log(data);
 
-    // const userLogin =
+    
   };
 
   return (
@@ -87,7 +87,7 @@ export function LoginForm({
                   </a>
                 </div>
                 <FormControl>
-                  <PasswordVisibility
+                  <PasswordInput
                     {...field}
                     placeholder="Enter your password"
                   />

@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { RegisterFormData } from "@/types";
+import { RegisterData } from "@/types/register";
 import { Step3Values } from "@/schema";
 import {
   FormControl,
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 
 interface Step3Props {
-  formData: RegisterFormData;
+  formData: RegisterData;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSelectChange: (name: string, value: string) => void;
   step3Form: UseFormReturn<Step3Values>;

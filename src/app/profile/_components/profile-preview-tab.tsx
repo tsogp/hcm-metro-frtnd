@@ -9,7 +9,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { UserProfileType } from "./type";
+import { UserProfileType } from "../../../types/profile";
 import { Pen, Wallet } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
