@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { RegisterData } from "@/types/register";
-import { Step3Values } from "@/schema";
+import { Step3Values } from "@/schema/register";
 import {
   FormControl,
   FormField,
