@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { PasswordInput } from "@/components/input/password-input";
-import { loginFormSchema, LoginFormValues } from "@/schema";
+import { loginFormSchema, LoginFormValues } from "@/schema/login";
 
 export function LoginForm({
   className,
@@ -29,7 +29,7 @@ export function LoginForm({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
-      password: "", 
+      password: "",
       remember: false,
     },
   });
@@ -37,7 +37,7 @@ export function LoginForm({
   const onSubmit = (data: LoginFormValues) => {
     console.log(data);
 
-    
+
   };
 
   return (
