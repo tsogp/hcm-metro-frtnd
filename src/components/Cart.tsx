@@ -30,7 +30,7 @@ export function Cart({ open, onOpenChange }: CartProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="flex flex-col border-l-secondary">
-        <SheetHeader className="px-1">
+        <SheetHeader className="px-4">
           <SheetTitle className="flex items-center gap-2 text-secondary">
             <ShoppingCart className="h-5 w-5" />
             Your Cart
@@ -100,24 +100,24 @@ export function Cart({ open, onOpenChange }: CartProps) {
             </ul>
           )}
         </div>
-        <SheetFooter className="flex-col gap-2 sm:flex-col sm:gap-2">
+        <SheetFooter className="flex-col gap-4 px-4 mt-auto">
           <div className="flex items-center justify-between border-t pt-4">
             <span className="font-medium">Total</span>
             <span className="font-bold text-secondary">
               {formatCurrency(totalPrice)}
             </span>
           </div>
-          <div className="flex w-full gap-2">
+          <div className="grid grid-cols-2 gap-4">
             <SheetClose asChild>
               <Button
                 variant="outline"
-                className="w-full border-secondary text-secondary hover:bg-secondary/10"
+                className="border-secondary text-secondary hover:bg-secondary/10"
               >
                 Continue Shopping
               </Button>
             </SheetClose>
             <Button
-              className="w-full bg-accent hover:bg-accent/90 text-white"
+              className="bg-accent hover:bg-accent/90 text-white"
               disabled={items.length === 0}
             >
               Checkout
