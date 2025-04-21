@@ -10,13 +10,13 @@ function HeroSection() {
       <div className="container mx-auto px-4">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           <div className="space-y-6">
-            <Badge className="rounded-full bg-blue-100 px-4 py-1.5 text-sm text-blue-700">
+            <Badge className="rounded-full bg-primary/10 px-4 py-1.5 text-sm text-primary">
               Welcome to HCMC Metro
             </Badge>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
               A Modern Transit for a Modern City
             </h1>
-            <p className="text-sm text-gray-600 md:text-lg max-w-[600px]">
+            <p className="text-sm text-muted-foreground md:text-lg max-w-[600px]">
               Experience the future of urban transportation with our metro
               booking system. Fast, reliable, and eco-friendly.
             </p>
@@ -24,7 +24,7 @@ function HeroSection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-2 border-blue-600 bg-blue-600 hover:bg-white text-base text-white hover:text-blue-600 font-bold p-4"
+                className="border-2 border-primary bg-primary hover:bg-background text-base text-primary-foreground hover:text-primary font-bold p-4"
                 asChild
               >
                 <Link href="/auth/login">Start Your Journey</Link>
@@ -32,7 +32,7 @@ function HeroSection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-base font-bold p-4"
+                className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground text-base font-bold p-4"
               >
                 Learn More
               </Button>

@@ -14,15 +14,15 @@ const navItems = [
 
 function Footer() {
   return (
-    <footer className="w-full py-12 bg-blue-600 text-white">
+    <footer className="w-full py-12 bg-primary text-primary-foreground">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <TrainFront className="h-8 w-8 text-white" />
+              <TrainFront className="h-8 w-8 text-primary-foreground" />
               <span className="font-bold text-xl">HCMC Metro</span>
             </div>
-            <p className="text-white">
+            <p className="text-primary-foreground">
               Modern transit for a modern city. Experience the future of urban
               transportation.
             </p>
@@ -35,7 +35,7 @@ function Footer() {
                   <Link
                     href={`#${item.href}`}
                     onClick={() => scrollToElement(item.href)}
-                    className="text-white hover:text-white transition-colors"
+                    className="text-primary-foreground hover:text-primary-foreground/80 transition-colors"
                   >
                     {item.label}
                   </Link>
@@ -49,7 +49,7 @@ function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-white hover:text-white transition-colors"
+                  className="text-primary-foreground hover:text-primary-foreground/80 transition-colors"
                 >
                   Privacy Policy
                 </Link>
@@ -57,7 +57,7 @@ function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-white hover:text-white transition-colors"
+                  className="text-primary-foreground hover:text-primary-foreground/80 transition-colors"
                 >
                   Terms of Service
                 </Link>
@@ -65,7 +65,7 @@ function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-white hover:text-white transition-colors"
+                  className="text-primary-foreground hover:text-primary-foreground/80 transition-colors"
                 >
                   Cookie Policy
                 </Link>
@@ -77,7 +77,7 @@ function Footer() {
             <div className="flex space-x-4">
               <Link
                 href="#"
-                className="text-white hover:text-white transition-colors"
+                className="text-primary-foreground hover:text-primary-foreground/80 transition-colors"
               >
                 <svg
                   className="h-6 w-6"
@@ -90,7 +90,7 @@ function Footer() {
               </Link>
               <Link
                 href="#"
-                className="text-white hover:text-white transition-colors"
+                className="text-primary-foreground hover:text-primary-foreground/80 transition-colors"
               >
                 <svg
                   className="h-6 w-6"
@@ -107,7 +107,7 @@ function Footer() {
               </Link>
               <Link
                 href="#"
-                className="text-white hover:text-white transition-colors"
+                className="text-primary-foreground hover:text-primary-foreground/80 transition-colors"
               >
                 <svg
                   className="h-6 w-6"
@@ -125,7 +125,7 @@ function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-blue-500 text-center text-white">
+        <div className="mt-12 pt-8 border-t border-primary-foreground/20 text-center text-primary-foreground">
           <p>
             &copy; {new Date().getFullYear()} HCMC Metro. All rights reserved.
           </p>

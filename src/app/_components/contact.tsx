@@ -24,17 +24,17 @@ const contactOptions = [
 
 function ContactSection() {
   return (
-    <section id="contact" className="w-full py-24 bg-white">
+    <section id="contact" className="w-full py-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
           <div className="space-y-2">
-            <Badge className="rounded-full bg-blue-100 px-4 py-1.5 text-sm text-blue-700">
+            <Badge className="rounded-full bg-primary/10 px-4 py-1.5 text-sm text-primary">
               Contact Us
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
               Get in Touch
             </h2>
-            <p className="max-w-[700px] text-gray-600 text-lg">
+            <p className="max-w-[700px] text-muted-foreground text-lg">
               Have questions or need assistance? Our customer service team is
               here to help.
             </p>
@@ -48,14 +48,14 @@ function ContactSection() {
               className="text-center group hover:shadow-lg transition-shadow duration-300"
             >
               <CardHeader>
-                <div className="mx-auto rounded-full bg-blue-100 p-3 w-12 h-12 flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
+                <div className="mx-auto rounded-full bg-primary/10 p-3 w-12 h-12 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
                   {contact.icon}
                 </div>
                 <CardTitle className="mt-4">{contact.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 {contact.details.map((detail, i) => (
-                  <p key={i} className="text-gray-600">
+                  <p key={i} className="text-muted-foreground">
                     {detail}
                   </p>
                 ))}

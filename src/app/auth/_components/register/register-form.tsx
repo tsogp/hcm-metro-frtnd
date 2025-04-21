@@ -9,7 +9,7 @@ import {
   step1Schema,
   step2Schema,
   step3Schema,
-} from "@/schema";
+} from "@/schema/register";
 import { Step1 } from "./register-step-1";
 import { Step2 } from "./register-step-2";
 import { Step3 } from "./register-step-3";
@@ -20,7 +20,6 @@ import { cn } from "@/lib/utils";
 import { Form } from "@/components/ui/form";
 import { RegisterData } from "@/types/register";
 import { toast } from "sonner";
-import { register } from "@/action/register";
 import { useRouter } from "next/navigation";
 
 export function RegisterForm({
@@ -235,7 +234,10 @@ export function RegisterForm({
 
         <div className="text-center text-sm">
           Already have an account?{" "}
-          <Link href="/auth/login" className="underline underline-offset-4">
+          <Link
+            href="/auth/login"
+            className="text-primary underline underline-offset-4 font-bold"
+          >
             Log in
           </Link>
         </div>

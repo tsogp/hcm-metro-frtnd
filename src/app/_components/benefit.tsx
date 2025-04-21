@@ -31,7 +31,7 @@ const benefitList = [
 
 function BenefitSection() {
   return (
-    <section id="benefits" className="w-full py-24 bg-gray-50">
+    <section id="benefits" className="w-full py-24 bg-muted">
       <div className="container mx-auto px-4">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           <div className="relative h-[400px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
@@ -44,7 +44,7 @@ function BenefitSection() {
           </div>
           <div className="space-y-8">
             <div className="space-y-2">
-              <Badge className="rounded-full bg-blue-100 px-4 py-1.5 text-sm text-blue-700">
+              <Badge className="rounded-full bg-primary/10 px-4 py-1.5 text-sm text-primary">
                 Benefits
               </Badge>
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
@@ -54,12 +54,14 @@ function BenefitSection() {
             <div className="space-y-6">
               {benefitList.map((benefit, index) => (
                 <div key={index} className="flex items-start gap-4 group">
-                  <div className="rounded-full bg-blue-600 p-2 text-white group-hover:bg-blue-700 transition-colors duration-300">
+                  <div className="rounded-full bg-primary p-2 text-primary-foreground group-hover:bg-primary/90 transition-colors duration-300">
                     {benefit.icon}
                   </div>
                   <div>
                     <h3 className="font-bold text-lg mb-1">{benefit.title}</h3>
-                    <p className="text-gray-600">{benefit.description}</p>
+                    <p className="text-muted-foreground">
+                      {benefit.description}
+                    </p>
                   </div>
                 </div>
               ))}

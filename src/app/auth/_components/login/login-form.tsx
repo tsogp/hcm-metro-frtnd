@@ -36,8 +36,6 @@ export function LoginForm({
 
   const onSubmit = (data: LoginFormValues) => {
     console.log(data);
-
-
   };
 
   return (
@@ -81,16 +79,13 @@ export function LoginForm({
                   <FormLabel>Password</FormLabel>
                   <a
                     href="#"
-                    className="ml-auto text-xs underline-offset-4 hover:underline"
+                    className="ml-auto text-xs text-primary underline-offset-4 hover:underline"
                   >
                     Forgot your password?
                   </a>
                 </div>
                 <FormControl>
-                  <PasswordInput
-                    {...field}
-                    placeholder="Enter your password"
-                  />
+                  <PasswordInput {...field} placeholder="Enter your password" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -128,7 +123,7 @@ export function LoginForm({
           <div className="flex w-full justify-between gap-4">
             <Button variant="outline" className="flex-1" asChild>
               <Link href="/auth/guest">
-                <User />
+                <User className="mr-2 h-4 w-4" />
                 Login as Guest
               </Link>
             </Button>
@@ -140,6 +135,7 @@ export function LoginForm({
                   xmlns="http://www.w3.org/2000/svg"
                   preserveAspectRatio="xMidYMid"
                   fill="#000000"
+                  className="mr-2 h-4 w-4"
                 >
                   <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                   <g
@@ -175,7 +171,7 @@ export function LoginForm({
             Don&apos;t have an account?{" "}
             <Link
               href="/auth/register"
-              className="underline underline-offset-4"
+              className="text-primary underline underline-offset-4 font-bold"
             >
               Sign up
             </Link>

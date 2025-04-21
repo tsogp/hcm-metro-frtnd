@@ -9,7 +9,7 @@ export default function LoginPage() {
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
             <div className="flex h-6 w-6 items-center justify-center rounded-md text-primary-foreground">
-              <TrainFront className="w-8 h-8 text-blue-600" />
+              <TrainFront className="w-8 h-8 text-primary" />
             </div>
             HCMC Metro Line - PAWA
           </a>

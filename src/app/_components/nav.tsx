@@ -25,11 +25,11 @@ export function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-black">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
-            <TrainFront className="h-8 w-8 text-blue-600" />
+            <TrainFront className="h-8 w-8 text-primary" />
             <span className="font-bold text-xl">HCMC Metro</span>
           </div>
           <div className="hidden md:flex items-center space-x-8">
@@ -38,20 +38,20 @@ export function Navbar() {
                 key={item.href}
                 href={`#${item.href}`}
                 onClick={() => scrollToElement(item.href)}
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-muted-foreground hover:text-primary transition-colors"
               >
                 {item.label}
               </Link>
             ))}
             <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
               asChild
             >
               <Link href="/auth/login">Book Now</Link>
             </Button>
           </div>
           <button
-            className="md:hidden text-gray-600 hover:text-blue-600 transition-colors"
+            className="md:hidden text-muted-foreground hover:text-primary transition-colors"
             onClick={toggleMenu}
             aria-label="Toggle menu"
           >
@@ -64,20 +64,20 @@ export function Navbar() {
         </div>
 
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
+          <div className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={`#${item.href}`}
                   onClick={() => handleNavClick(item.href)}
-                  className="text-gray-600 hover:text-blue-600 transition-colors px-2 py-1"
+                  className="text-muted-foreground hover:text-primary transition-colors px-2 py-1"
                 >
                   {item.label}
                 </Link>
               ))}
               <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground w-full"
                 asChild
               >
                 <Link href="/auth/login">Book Now</Link>

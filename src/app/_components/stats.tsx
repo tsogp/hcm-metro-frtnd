@@ -2,7 +2,7 @@ import React from "react";
 
 function StatSection() {
   return (
-    <section className="w-full py-16 bg-blue-600 text-white overflow-hidden">
+    <section className="w-full py-16 bg-primary text-primary-foreground overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div className="space-y-2 transform hover:scale-105 transition-transform duration-300">
