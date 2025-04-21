@@ -11,6 +11,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
+import { DatePicker } from "@/components/custom/date-picker-input";
+import { getYear } from "date-fns";
 
 interface Step2Props {
   formData: RegisterData;
@@ -143,14 +145,21 @@ export function Step2({ formData, handleInputChange, step2Form }: Step2Props) {
           <FormItem>
             <FormLabel>Date of Birth</FormLabel>
             <FormControl>
-              <Input
-                {...field}
-                type="date"
-                value={formData.dateOfBirth}
-                onChange={(e) => {
-                  field.onChange(e);
-                  handleInputChange(e);
+              <DatePicker
+                date={field.value ? new Date(field.value) : undefined}
+                setDate={(date) => {
+                  // Format the date as YYYY-MM-DD for the form
+                  const formattedDate = date.toLocaleDateString("en-GB");
+                  field.onChange(formattedDate);
+                  // Also update the formData
+                  handleInputChange({
+                    target: {
+                      name: "dateOfBirth",
+                      value: formattedDate,
+                    },
+                  } as React.ChangeEvent<HTMLInputElement>);
                 }}
+                endYear={getYear(new Date())}
               />
             </FormControl>
             <FormMessage />
