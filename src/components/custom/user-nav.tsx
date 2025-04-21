@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Pen, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -37,6 +37,25 @@ export function UserNav() {
             </p>
           </div>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => {
+            window.location.href = "/profile";
+          }}
+        >
+          <Pen className="mr-2 h-4 w-4" />
+          <span>Edit Profile</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => {
+            window.location.href = "/wallet";
+          }}
+        >
+          <Wallet className="mr-2 h-4 w-4" />
+          <span>Wallet</span>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"

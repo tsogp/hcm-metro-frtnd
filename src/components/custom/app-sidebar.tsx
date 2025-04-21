@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CreditCard, Home, Map, PanelLeft, Ticket, X } from "lucide-react";
+import { CreditCard, Home, Map, Menu, Ticket, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -58,7 +58,7 @@ export function AppSidebar() {
         onClick={() => setOpen(true)}
         aria-label="Open sidebar"
       >
-        <PanelLeft className="h-5 w-5" />
+        <Menu className="h-5 w-5" />
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
@@ -81,11 +81,10 @@ export function AppSidebar() {
                       <Button
                         key={item.href}
                         variant={isActive ? "secondary" : "ghost"}
-                        className={`w-full justify-start ${
-                          isActive
+                        className={`w-full justify-start ${isActive
                             ? "bg-secondary text-white"
                             : "text-secondary hover:bg-secondary/10"
-                        }`}
+                          }`}
                         asChild
                         onClick={() => setOpen(false)}
                       >

@@ -17,7 +17,9 @@ export default function AuthenticatedLayout({
     <CartProvider>
       <div className="min-h-screen flex flex-col">
         <AppHeader onCartClick={() => setCartOpen(true)} />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 flex flex-col">
+          {children}
+        </main>
         <Footer />
         <Cart open={cartOpen} onOpenChange={setCartOpen} />
       </div>
