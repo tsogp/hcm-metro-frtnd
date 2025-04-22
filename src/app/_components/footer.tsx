@@ -2,7 +2,7 @@
 
 import { TrainFront } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { scrollToElement } from "@/lib/utils";
 
 // Define navItems directly in the footer component
@@ -13,8 +13,39 @@ const navItems = [
 ];
 
 function Footer() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+
+      // Show footer when:
+      // 1. User has scrolled down (scrollPosition > 0)
+      // 2. OR when content is shorter than viewport (documentHeight <= windowHeight)
+      setIsVisible(scrollPosition > 0 || documentHeight <= windowHeight);
+    };
+
+    // Initial check
+    handleScroll();
+
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, []);
+
   return (
-    <footer className="w-full py-12 bg-primary text-primary-foreground">
+    <footer
+      className={`w-full py-12 bg-primary text-primary-foreground transition-all duration-300 mt-16 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'
+        }`}
+    >
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">

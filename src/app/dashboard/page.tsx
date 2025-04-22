@@ -9,6 +9,7 @@ import {
 import { ArrowRight, Clock, MapPin, Ticket } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import METRO_MAP from "@/assets/METRO_MAP.png";
 
 export default function Dashboard() {
   const tickets = [
@@ -45,13 +46,13 @@ export default function Dashboard() {
     <div className="w-full max-w-7xl mx-auto space-y-8 p-4">
       {/* Hero Section */}
       <section className="relative rounded-xl overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-secondary/90 to-secondary/60 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-secondary/70 to-secondary/50 z-10" />
         <Image
-          src="/placeholder.svg?height=400&width=1200"
-          alt="Metro system"
+          src={METRO_MAP}
+          alt="Ho Chi Minh City Metro Map"
           width={1200}
           height={400}
-          className="w-full h-[300px] md:h-[400px] object-cover"
+          className="w-full h-[250px] md:h-[350px] object-contain"
         />
         <div className="absolute inset-0 z-20 flex flex-col justify-center p-4 md:p-8">
           <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-4">
@@ -101,11 +102,10 @@ export default function Dashboard() {
                     {ticket.title}
                   </CardTitle>
                   <div
-                    className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      ticket.status === "Active"
+                    className={`px-2 py-1 text-xs font-medium rounded-full ${ticket.status === "Active"
                         ? "bg-secondary/10 text-secondary"
                         : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400"
-                    }`}
+                      }`}
                   >
                     {ticket.status}
                   </div>
