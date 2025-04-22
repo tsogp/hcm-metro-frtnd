@@ -1,6 +1,5 @@
 "use client";
 
-import { useCart } from "@/components/cart-provider";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -12,7 +11,8 @@ import {
 } from "@/components/ui/sheet";
 import { formatCurrency } from "@/lib/utils";
 import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
-import type { CartItem } from "@/components/cart-provider";
+import { useCartStore } from "@/store/cart-store";
+import type { CartItem } from "@/store/cart-store";
 
 interface CartProps {
   open: boolean;
@@ -20,7 +20,7 @@ interface CartProps {
 }
 
 export function Cart({ open, onOpenChange }: CartProps) {
-  const { items, addItem, removeItem } = useCart();
+  const { items, addItem, removeItem } = useCartStore();
 
   const totalPrice = items.reduce(
     (total: number, item: CartItem) => total + item.price * item.quantity,

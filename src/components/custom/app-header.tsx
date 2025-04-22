@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserNav } from "@/components/custom/user-nav";
 import { AppSidebar } from "@/components/custom/app-sidebar";
-import { useCart } from "@/components/cart-provider";
+import { useCartStore } from "@/store/cart-store";
 
 interface AppHeaderProps {
   onCartClick: () => void;
 }
 
 export function AppHeader({ onCartClick }: AppHeaderProps) {
-  const { items } = useCart();
+  const { items } = useCartStore();
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
