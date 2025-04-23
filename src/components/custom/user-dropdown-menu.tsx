@@ -39,7 +39,7 @@ export function UserDropdownMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="cursor-pointer"
+          className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
           onClick={() => {
             window.location.href = "/profile";
           }}
@@ -48,7 +48,7 @@ export function UserDropdownMenu() {
           <span>Edit Profile</span>
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="cursor-pointer"
+          className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
           onClick={() => {
             window.location.href = "/wallet";
           }}
@@ -58,7 +58,7 @@ export function UserDropdownMenu() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="cursor-pointer"
+          className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
           onClick={() => {
             // Handle sign out
             setOpen(false);

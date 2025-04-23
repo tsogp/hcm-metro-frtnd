@@ -30,7 +30,7 @@ export function AppHeader({ onCartClick }: AppHeaderProps) {
           <Search className="absolute left-2.5 h-4 w-4 text-secondary" />
           <Input
             type="search"
-            placeholder="Search routes, stations..."
+            placeholder="Search stations..."
             className="pl-8 w-full bg-white text-secondary placeholder:text-secondary/60"
           />
         </div>
