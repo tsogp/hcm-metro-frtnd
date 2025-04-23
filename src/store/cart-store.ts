@@ -16,6 +16,7 @@ interface CartStore {
     updateQuantity: (id: string, quantity: number) => void
     clearCart: () => void
     toggleCart: () => void
+    addSampleTicket: () => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -49,6 +50,14 @@ export const useCartStore = create<CartStore>()(
                 })),
             clearCart: () => set({ items: [] }),
             toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
+            addSampleTicket: () => set((state) => ({
+                items: [...state.items, {
+                    id: "sample-ticket-1",
+                    name: "Single Journey Ticket",
+                    price: 10.00,
+                    quantity: 1
+                }]
+            })),
         }),
         {
             name: 'cart-storage',
