@@ -6,17 +6,17 @@ import React from "react";
 
 const contactOptions = [
   {
-    icon: <Phone className="h-6 w-6" />,
+    icon: <Phone className="h-6 w-6 text-primary" />,
     title: "Phone",
     details: ["+84 28 1234 5678", "Mon-Fri: 8AM-8PM"],
   },
   {
-    icon: <Mail className="h-6 w-6" />,
+    icon: <Mail className="h-6 w-6 text-primary" />,
     title: "Email",
     details: ["info@hcmcmetro.vn", "support@hcmcmetro.vn"],
   },
   {
-    icon: <MapPin className="h-6 w-6" />,
+    icon: <MapPin className="h-6 w-6 text-primary" />,
     title: "Address",
     details: ["702 Nguyễn Văn Linh, Tân Hưng, District 7, Ho Chi Minh"],
   },

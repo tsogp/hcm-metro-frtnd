@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export function UserNav() {
+export function UserDropdownMenu() {
   const [open, setOpen] = useState(false);
 
   return (
@@ -21,7 +21,7 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/placeholder.svg" alt="User" />
+            <AvatarImage src="/images/default-avatar.jpg" alt="User" />
             <AvatarFallback>
               <User className="h-4 w-4" />
             </AvatarFallback>

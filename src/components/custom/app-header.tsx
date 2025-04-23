@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Search, ShoppingCart, TrainFront } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { UserNav } from "@/components/custom/user-nav";
+import { UserDropdownMenu } from "@/components/custom/user-dropdown-menu";
 import { AppSidebar } from "@/components/custom/app-sidebar";
 import { useCartStore } from "@/store/cart-store";
 
@@ -50,7 +49,7 @@ export function AppHeader({ onCartClick }: AppHeaderProps) {
               </span>
             )}
           </Button>
-          <UserNav />
+          <UserDropdownMenu />
         </div>
       </div>
     </header>

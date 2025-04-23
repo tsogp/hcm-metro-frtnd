@@ -79,7 +79,7 @@ export function LoginForm({
                   <FormLabel>Password</FormLabel>
                   <a
                     href="#"
-                    className="ml-auto text-xs text-primary underline-offset-4 hover:underline"
+                    className="ml-auto text-xs underline-offset-4 hover:underline"
                   >
                     Forgot your password?
                   </a>
@@ -92,7 +92,7 @@ export function LoginForm({
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={loginForm.control}
             name="remember"
             render={({ field }) => (
@@ -108,7 +108,7 @@ export function LoginForm({
                 </FormLabel>
               </FormItem>
             )}
-          />
+          /> */}
 
           <Button type="submit" className="w-full">
             Login

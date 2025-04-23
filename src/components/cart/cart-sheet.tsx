@@ -19,7 +19,7 @@ interface CartProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function Cart({ open, onOpenChange }: CartProps) {
+export function CartSheet({ open, onOpenChange }: CartProps) {
   const { items, addItem, removeItem } = useCartStore();
 
   const totalPrice = items.reduce(

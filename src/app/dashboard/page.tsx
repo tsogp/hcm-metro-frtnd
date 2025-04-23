@@ -9,7 +9,6 @@ import {
 import { ArrowRight, Clock, MapPin, Ticket } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import METRO_MAP from "@/assets/METRO_MAP.png";
 
 export default function Dashboard() {
   const tickets = [
@@ -48,10 +47,11 @@ export default function Dashboard() {
       <section className="relative rounded-xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-secondary/70 to-secondary/50 z-10" />
         <Image
-          src={METRO_MAP}
+          src="/images/METRO_MAP.png"
           alt="Ho Chi Minh City Metro Map"
           width={1200}
           height={400}
+          priority
           className="w-full h-[250px] md:h-[350px] object-contain"
         />
         <div className="absolute inset-0 z-20 flex flex-col justify-center p-4 md:p-8">

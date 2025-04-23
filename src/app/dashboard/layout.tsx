@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AppHeader } from "@/components/custom/app-header";
 import Footer from "@/app/_components/footer";
-import { Cart } from "@/components/Cart";
+import { CartSheet } from "@/components/cart/cart-sheet";
 
 export default function AuthenticatedLayout({
   children,
@@ -15,11 +15,9 @@ export default function AuthenticatedLayout({
   return (
     <div className="min-h-screen flex flex-col">
       <AppHeader onCartClick={() => setCartOpen(true)} />
-      <main className="flex-1 flex flex-col">
-        {children}
-      </main>
+      <main className="flex-1 flex flex-col">{children}</main>
       <Footer />
-      <Cart open={cartOpen} onOpenChange={setCartOpen} />
+      <CartSheet open={cartOpen} onOpenChange={setCartOpen} />
     </div>
   );
 }
