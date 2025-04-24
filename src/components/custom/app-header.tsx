@@ -14,7 +14,7 @@ interface AppHeaderProps {
 
 export function AppHeader({ onCartClick }: AppHeaderProps) {
   const { items } = useCartStore();
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalTickets = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-secondary text-white">
@@ -42,12 +42,10 @@ export function AppHeader({ onCartClick }: AppHeaderProps) {
             onClick={onCartClick}
             aria-label="Open cart"
           >
-            <ShoppingCart className="h-5 w-5" />
-            {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs text-white">
-                {totalItems}
-              </span>
-            )}
+            <ShoppingCart className="size-6" />
+            <span className="absolute -top-0.5 -right-0.5 flex size-5 font-medium items-center justify-center rounded-full bg-accent text-xs text-white border-1">
+              {items.length}
+            </span>
           </Button>
           <UserDropdownMenu />
         </div>
