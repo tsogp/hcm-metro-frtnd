@@ -14,7 +14,6 @@ interface AppHeaderProps {
 
 export function AppHeader({ onCartClick }: AppHeaderProps) {
   const { items } = useCartStore();
-  const totalTickets = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-secondary text-white">
