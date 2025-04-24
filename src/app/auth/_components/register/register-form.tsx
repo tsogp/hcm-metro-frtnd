@@ -21,6 +21,7 @@ import { Form } from "@/components/ui/form";
 import { RegisterData } from "@/types/register";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { register } from "@/action/register";
 
 export function RegisterForm({
   className,
@@ -88,10 +89,6 @@ export function RegisterForm({
 
   const handleStep1Submit = (data: Step1Values) => {
     setFormData((prev) => ({ ...prev, ...data }));
-
-    // Check for unique email...
-
-    // If email is unique in the backend
     setCurrentStep(2);
   };
 
@@ -102,30 +99,41 @@ export function RegisterForm({
 
   const handleStep3Submit = async (data: Step3Values) => {
     const userData = {
-      ...formData,
-      ...data,
-      studentId: formData.studentId === undefined ? null : formData.studentId,
-      googleId: null,
+      email: formData.email,
+      password: formData.password,
+      role: "PASSENGER" as const,
+      passengerData: {
+        passengerFirstName: formData.firstName,
+        passengerMiddleName: formData.middleName,
+        passengerLastName: formData.lastName,
+        passengerPhone: formData.phoneNumber,
+        passengerAddress: formData.address,
+        passengerDateOfBirth: formData.dateOfBirth,
+        nationalID: data.nationalId,
+        studentID: formData.studentId || null,
+        hasDisability: data.disabilityStatus === "yes",
+        isRevolutionary: data.revolutionaryContribution === "yes",
+      },
     };
 
-    // const onRegisterAction = register(userData);
-    const onRegisterAction = new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(userData);
-        resolve(true);
-      }, 3000);
-    });
+    const onRegisterAction = register(userData);
+    // const onRegisterAction = new Promise((resolve) => {
+    //   setTimeout(() => {
+    //     console.log(userData);
+    //     resolve(true);
+    //   }, 3000);
+    // });
 
     toast.promise(onRegisterAction, {
       loading: "We're getting things ready for you...",
-      // Setting things here, re-routing, returning the necessary DTO for UI
+
       success: () => {
         router.push("/dashboard");
         return "You're all set.";
       },
       error: (e) => {
         switch (e.response.status) {
-          case 401:
+          case 400:
             return e.response.data.message as string;
           case 404:
             return e.response.data.message as string;
