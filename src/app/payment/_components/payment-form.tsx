@@ -58,7 +58,11 @@ export function PaymentForm() {
 
             // Show success state
             setIsSuccess(true);
-            toast.success("Payment successful!");
+            toast.success("Payment Successfully", {
+                position: "top-center",
+                duration: 2000,
+                className: "text-center",
+            });
 
             // Wait for animation
             await new Promise(resolve => setTimeout(resolve, 1000));

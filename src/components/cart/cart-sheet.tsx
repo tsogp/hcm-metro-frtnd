@@ -23,7 +23,7 @@ interface CartProps {
 
 export function CartSheet({ open, onOpenChange, isStatic = false }: CartProps) {
   const router = useRouter();
-  const { items, addItem, removeItem } = useCartStore();
+  const { items, addItem, removeItem, addSampleTicket } = useCartStore();
 
   const totalPrice = items.reduce(
     (total: number, item: CartItem) => total + item.price * item.quantity,
@@ -55,6 +55,13 @@ export function CartSheet({ open, onOpenChange, isStatic = false }: CartProps) {
             <p className="text-sm text-muted-foreground">
               Add tickets to your cart to proceed with checkout
             </p>
+            <Button
+              variant="outline"
+              className="border-secondary text-secondary hover:bg-secondary/10"
+              onClick={addSampleTicket}
+            >
+              Add Sample Ticket
+            </Button>
           </div>
         ) : (
           <ul className="space-y-0">
