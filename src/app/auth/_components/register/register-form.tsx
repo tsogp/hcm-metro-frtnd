@@ -9,7 +9,7 @@ import {
   step1Schema,
   step2Schema,
   step3Schema,
-} from "@/schema/register";
+} from "@/schemas/register";
 import { Step1 } from "./register-step-1";
 import { Step2 } from "./register-step-2";
 import { Step3 } from "./register-step-3";
