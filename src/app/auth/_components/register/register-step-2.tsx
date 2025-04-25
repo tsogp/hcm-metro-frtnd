@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { RegisterData } from "@/types/register";
-import { Step2Values } from "@/schema/register";
+import { Step2Values } from "@/schemas/register";
 import {
   FormControl,
   FormField,
@@ -159,6 +159,7 @@ export function Step2({ formData, handleInputChange, step2Form }: Step2Props) {
                   } as React.ChangeEvent<HTMLInputElement>);
                 }}
                 endYear={getYear(new Date())}
+                dateRestriction="future"
               />
             </FormControl>
             <FormMessage />

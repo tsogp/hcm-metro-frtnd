@@ -23,7 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { profileFormSchema, ProfileFormValues } from "../../../schema/profile";
+import { profileFormSchema, ProfileFormValues } from "../../../schemas/profile";
 
 interface EditProfileTabProps {
   user: UserProfileType;

@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { PasswordInput } from "@/components/input/password-input";
-import { loginFormSchema, LoginFormValues } from "@/schema/login";
+import { loginFormSchema, LoginFormValues } from "@/schemas/login";
 
 export function LoginForm({
   className,
