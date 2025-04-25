@@ -3,10 +3,11 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { TicketList } from "@/components/ticket/ticket-list";
+import SearchForm from "@/app/dashboard/components/search-ticket-form";
 
 export default function Dashboard() {
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 p-4">
+    <div className="w-full max-w-7xl mx-auto space-y-8 p-4 mb-20">
       {/* Hero Section */}
       <section className="relative rounded-xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-secondary/70 to-secondary/50 z-10" />
@@ -37,19 +38,16 @@ export default function Dashboard() {
         </div>
       </section>
 
+      {/* Search Section */}
+      <section>
+        <SearchForm />
+      </section>
+
       {/* Tickets Section */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl md:text-2xl font-bold text-secondary">
-            Your Tickets
-          </h2>
-          <Button
-            variant="outline"
-            className="border-secondary text-secondary hover:bg-secondary/10"
-          >
-            <Link href="/tickets/history">View All</Link>
-          </Button>
-        </div>
+        <h2 className="text-xl md:text-2xl font-bold text-secondary mb-4">
+          Your Tickets
+        </h2>
         <TicketList />
       </section>
     </div>
