@@ -24,9 +24,10 @@ interface CartProps {
   onOpenChange: (open: boolean) => void;
   isStatic?: boolean;
   staticPanel?: boolean;
+  hideActions?: boolean;
 }
 
-export function CartSheet({ open, onOpenChange, isStatic = false, staticPanel = false }: CartProps) {
+export function CartSheet({ open, onOpenChange, isStatic = false, staticPanel = false, hideActions = false }: CartProps) {
   const router = useRouter();
   const {
     items,
@@ -185,39 +186,41 @@ export function CartSheet({ open, onOpenChange, isStatic = false, staticPanel = 
       </div>
       {staticPanel ? (
         <div className="p-4 border-t mt-auto">
-          <div className="flex items-center justify-between border-b pb-4 mb-4">
+          <div className="flex items-center justify-between pb-4 mb-4">
             <span className="text-lg font-bold">Total</span>
             <span className="text-2xl font-bold text-secondary">
               {formatCurrency(getTotalPrice())}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 gap-2">
-            <ConfirmDialog
-              open={showClearDialog}
-              onOpenChange={setShowClearDialog}
-              title="Clear Confirmation"
-              description="Are you sure you want to clear your cart? This action cannot be undone."
-              confirmText="Clear"
-              onConfirm={handleClearCart}
-            />
-            <Button
-              className="text-base min-h-10 font-bold bg-accent hover:bg-accent/80 text-white"
-              disabled={items.length === 0}
-              onClick={handleCheckout}
-            >
-              Checkout
-            </Button>
+          {!hideActions && (
+            <div className="grid grid-cols-1 gap-2">
+              <ConfirmDialog
+                open={showClearDialog}
+                onOpenChange={setShowClearDialog}
+                title="Clear Confirmation"
+                description="Are you sure you want to clear your cart? This action cannot be undone."
+                confirmText="Clear"
+                onConfirm={handleClearCart}
+              />
+              <Button
+                className="text-base min-h-10 font-bold bg-accent hover:bg-accent/80 text-white"
+                disabled={items.length === 0}
+                onClick={handleCheckout}
+              >
+                Checkout
+              </Button>
 
-            <Button
-              variant="outline"
-              className="text-base min-h-10 font-bold border-secondary text-secondary hover:bg-secondary/10 hover:text-secondary"
-              disabled={items.length === 0}
-              onClick={() => setShowClearDialog(true)}
-            >
-              Clear
-            </Button>
-          </div>
+              <Button
+                variant="outline"
+                className="text-base min-h-10 font-bold border-secondary text-secondary hover:bg-secondary/10 hover:text-secondary"
+                disabled={items.length === 0}
+                onClick={() => setShowClearDialog(true)}
+              >
+                Clear
+              </Button>
+            </div>
+          )}
         </div>
       ) : (
         <SheetFooter className="flex-col gap-4 mt-auto">
@@ -228,32 +231,34 @@ export function CartSheet({ open, onOpenChange, isStatic = false, staticPanel = 
             </span>
           </div>
 
-          <div className="grid grid-cols-1 gap-2">
-            <ConfirmDialog
-              open={showClearDialog}
-              onOpenChange={setShowClearDialog}
-              title="Clear Confirmation"
-              description="Are you sure you want to clear your cart? This action cannot be undone."
-              confirmText="Clear"
-              onConfirm={handleClearCart}
-            />
-            <Button
-              className="text-base min-h-10 font-bold bg-accent hover:bg-accent/80 text-white"
-              disabled={items.length === 0}
-              onClick={handleCheckout}
-            >
-              Checkout
-            </Button>
+          {!hideActions && (
+            <div className="grid grid-cols-1 gap-2">
+              <ConfirmDialog
+                open={showClearDialog}
+                onOpenChange={setShowClearDialog}
+                title="Clear Confirmation"
+                description="Are you sure you want to clear your cart? This action cannot be undone."
+                confirmText="Clear"
+                onConfirm={handleClearCart}
+              />
+              <Button
+                className="text-base min-h-10 font-bold bg-accent hover:bg-accent/80 text-white"
+                disabled={items.length === 0}
+                onClick={handleCheckout}
+              >
+                Checkout
+              </Button>
 
-            <Button
-              variant="outline"
-              className="text-base min-h-10 font-bold border-secondary text-secondary hover:bg-secondary/10 hover:text-secondary"
-              disabled={items.length === 0}
-              onClick={() => setShowClearDialog(true)}
-            >
-              Clear
-            </Button>
-          </div>
+              <Button
+                variant="outline"
+                className="text-base min-h-10 font-bold border-secondary text-secondary hover:bg-secondary/10 hover:text-secondary"
+                disabled={items.length === 0}
+                onClick={() => setShowClearDialog(true)}
+              >
+                Clear
+              </Button>
+            </div>
+          )}
         </SheetFooter>
       )}
     </>
