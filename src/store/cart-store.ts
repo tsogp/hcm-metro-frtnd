@@ -23,7 +23,8 @@ interface CartStore {
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
-
+  openCart: () => void;
+  closeCart: () => void;
   getTotalPrice: () => number;
 }
 
@@ -42,9 +43,13 @@ export const useCartStore = create<CartStore>()(
                   ? { ...i, quantity: i.quantity + item.quantity }
                   : i
               ),
+              isOpen: true,
             };
           }
-          return { items: [...state.items, item] };
+          return { 
+            items: [...state.items, item],
+            isOpen: true,
+          };
         }),
       removeItem: (id) =>
         set((state) => ({
@@ -57,6 +62,8 @@ export const useCartStore = create<CartStore>()(
           ),
         })),
       clearCart: () => set({ items: [] }),
+      openCart: () => set({ isOpen: true }),
+      closeCart: () => set({ isOpen: false }),
       getTotalPrice: () => {
         const state = get();
         return state.items.reduce(
