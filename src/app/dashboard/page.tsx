@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { TicketList } from "@/components/ticket/ticket-list";
-import SearchForm from "@/app/dashboard/components/search-ticket-form";
+import SearchForm from "@/app/dashboard/_components/search-ticket-form";
 
 export default function Dashboard() {
   return (

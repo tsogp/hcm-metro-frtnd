@@ -27,8 +27,8 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { DatePicker } from "../../../components/input/date-picker-input";
-import { TimePicker } from "../../../components/input/timer-picker.input";
+import { DatePicker } from "@/components/input/date-picker-input";
+import { TimePicker } from "@/components/input/timer-picker-input";
 import {
   RecentSearch,
   SearchTicketFormValues,
@@ -67,10 +67,12 @@ export default function SearchForm() {
     defaultValues: {
       departure: "",
       destination: "",
-      departureDate: new Date(),
+      departureDate: format(new Date(), "yyyy-MM-dd"),
       departureTime: format(new Date(), "HH:mm"),
     },
   });
+
+  const departureDate = form.watch("departureDate");
 
   // Fetch locations from server (simulated)
   useEffect(() => {
@@ -138,7 +140,7 @@ export default function SearchForm() {
     // Parse the date
     const [day, month, year] = search.departureDate.split("/").map(Number);
     const date = new Date(year, month - 1, day);
-    form.setValue("departureDate", date);
+    form.setValue("departureDate", format(date, "yyyy-MM-dd"));
 
     // Set the time
     form.setValue("departureTime", search.departureTime);
@@ -197,7 +199,7 @@ export default function SearchForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-6 w-full flex-1 relative">
+              <div className="flex items-center gap-4 md:gap-6 w-full flex-1 relative">
                 {/* Departure Location */}
                 <FormField
                   control={form.control}
@@ -273,7 +275,7 @@ export default function SearchForm() {
                 />
               </div>
 
-              <div className="flex items-center gap-2 w-full flex-1">
+              <div className="flex items-center gap-4 md:gap-6 w-full flex-1">
                 {/* Departure Date */}
                 <FormField
                   control={form.control}
@@ -287,7 +289,7 @@ export default function SearchForm() {
                           date={field.value ? new Date(field.value) : undefined}
                           setDate={(date) => {
                             const isoDate = format(date, "yyyy-MM-dd");
-                            form.setValue("departureDate", new Date(isoDate));
+                            form.setValue("departureDate", isoDate);
                             field.onChange(isoDate);
                           }}
                           startYear={getYear(new Date())}
@@ -311,9 +313,7 @@ export default function SearchForm() {
                           time={field.value}
                           setTime={(time) => field.onChange(time)}
                           date={
-                            form.getValues("departureDate")
-                              ? new Date(form.getValues("departureDate"))
-                              : undefined
+                            departureDate ? new Date(departureDate) : undefined
                           }
                         />
                       </FormControl>

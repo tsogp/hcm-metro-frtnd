@@ -2,7 +2,7 @@
 
 import { Clock } from "lucide-react";
 import { format } from "date-fns";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -49,15 +49,23 @@ export function TimePicker({
   // Parse the current time
   const [selectedHour, selectedMinute] = time.split(":").map(String);
 
-  const isTimeDisabled = (hour: string, minute: string) => {
-    if (!date) return false;
+  const isTimeDisabled = useCallback(
+    (hour: string, minute: string) => {
+      if (!date) return false;
 
-    const currentDate = new Date();
-    const selectedDate = new Date(date);
-    selectedDate.setHours(parseInt(hour), parseInt(minute), 0, 0);
+      const currentDate = new Date();
+      const selectedDate = new Date(date);
+      selectedDate.setHours(parseInt(hour), parseInt(minute), 0, 0);
 
-    return selectedDate < currentDate;
-  };
+      return selectedDate < currentDate;
+    },
+    [date] // Depend on date prop
+  );
+
+  // Force component to re-render when date changes
+  useEffect(() => {
+    // Just a dependency trigger to re-render
+  }, [date]);
 
   return (
     <Popover>

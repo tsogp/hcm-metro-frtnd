@@ -94,7 +94,7 @@ export function TicketList() {
   const [quantities, setQuantities] = useState<Record<number, number>>(
     tickets.reduce((acc, ticket) => ({ ...acc, [ticket.id]: 0 }), {})
   );
-  const { addItem, openCart } = useCartStore();
+  const addItem = useCartStore((state) => state.addItem);
 
   const handleIncrement = (id: number) => {
     setQuantities((prev) => ({ ...prev, [id]: prev[id] + 1 }));

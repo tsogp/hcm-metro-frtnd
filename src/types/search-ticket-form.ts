@@ -1,9 +1,7 @@
-export type SearchTicketFormValues = {
-  departure: string;
-  destination: string;
-  departureDate: Date;
-  departureTime: string;
-};
+import { searchFormSchema } from "@/schemas/search-ticket-form";
+import { z } from "zod";
+
+export type SearchTicketFormValues = z.infer<typeof searchFormSchema>;
 
 export type RecentSearch = {
   id: string;
