@@ -2,7 +2,7 @@
 
 import { PaymentFormValues } from "@/types/payment";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, CreditCard, Calendar, User, Lock, Shield, ChevronDown, Eye } from "lucide-react";
+import { Check, CreditCard, Calendar, User, Lock, Shield, ChevronDown, Eye, Info, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -16,66 +16,52 @@ export function PaymentStep2({ formData }: PaymentStep2Props) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="grid gap-4">
-            <Collapsible
-                open={isOpen}
-                onOpenChange={setIsOpen}
-                className="space-y-2"
-            >
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Check className="h-5 w-5 text-primary" />
-                        <h2 className="text-lg font-semibold">Review Payment</h2>
+        <div className="space-y-2 md:space-y-3">
+            <div className="p-2 md:p-3 border rounded-md bg-muted/30">
+                <h3 className="text-xs md:text-sm font-medium mb-1.5 md:mb-2">Review Payment Details</h3>
+                <div className="space-y-1.5 md:space-y-2">
+                    <div className="flex justify-between">
+                        <span className="text-xs md:text-sm text-muted-foreground">Name on Card</span>
+                        <span className="text-xs md:text-sm font-medium">{formData.name}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <CollapsibleTrigger asChild>
-                            <div className="flex items-center gap-2 cursor-pointer group">
-                                <span className={cn(
-                                    "text-sm text-muted-foreground transition-colors",
-                                    "group-hover:text-primary"
-                                )}>
-                                    {isOpen ? "Click to hide details" : "Click to view details"}
-                                </span>
-                                <div className="flex items-center">
-                                    <Eye className="h-4 w-4 text-muted-foreground" />
-                                    <ChevronDown className={cn(
-                                        "h-4 w-4 transition-transform duration-200",
-                                        isOpen ? "rotate-180" : ""
-                                    )} />
-                                </div>
-                            </div>
-                        </CollapsibleTrigger>
+                    <div className="flex justify-between">
+                        <span className="text-xs md:text-sm text-muted-foreground">Card Number</span>
+                        <span className="text-xs md:text-sm font-medium">•••• •••• •••• {formData.cardNumber.slice(-4)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="text-xs md:text-sm text-muted-foreground">Expiry Date</span>
+                        <span className="text-xs md:text-sm font-medium">{formData.expiryDate}</span>
                     </div>
                 </div>
-                <CollapsibleContent className="space-y-2">
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-primary/10 p-1.5 rounded-full">
-                                <User className="h-3.5 w-3.5 text-primary" />
-                            </div>
-                            <span className="text-muted-foreground text-sm">Name on Card</span>
+            </div>
+
+            <Collapsible className="space-y-1.5 md:space-y-2">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-xs md:text-sm font-medium">Additional Information</h3>
+                    <CollapsibleTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-6 md:h-7 px-1 md:px-1.5">
+                            <ChevronDown className="h-3 w-3 md:h-4 md:w-4" />
+                        </Button>
+                    </CollapsibleTrigger>
+                </div>
+                <CollapsibleContent className="space-y-1.5 md:space-y-2">
+                    <div className="p-2 md:p-3 border rounded-md bg-muted/30">
+                        <div className="flex items-center gap-1.5 mb-1 md:mb-1.5">
+                            <Info className="h-3 w-3 md:h-4 md:w-4 text-primary" />
+                            <span className="text-xs md:text-sm font-medium">Payment Processing</span>
                         </div>
-                        <span className="font-medium">{formData.name}</span>
+                        <p className="text-xs md:text-sm text-muted-foreground">
+                            Your payment will be processed securely. You will receive a confirmation email once the transaction is complete.
+                        </p>
                     </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-primary/10 p-1.5 rounded-full">
-                                <CreditCard className="h-3.5 w-3.5 text-primary" />
-                            </div>
-                            <span className="text-muted-foreground text-sm">Card Number</span>
+                    <div className="p-2 md:p-3 border rounded-md bg-muted/30">
+                        <div className="flex items-center gap-1.5 mb-1 md:mb-1.5">
+                            <Receipt className="h-3 w-3 md:h-4 md:w-4 text-primary" />
+                            <span className="text-xs md:text-sm font-medium">Receipt</span>
                         </div>
-                        <span className="font-medium">
-                            **** **** **** {formData.cardNumber.slice(-4)}
-                        </span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-primary/10 p-1.5 rounded-full">
-                                <Calendar className="h-3.5 w-3.5 text-primary" />
-                            </div>
-                            <span className="text-muted-foreground text-sm">Expiry Date</span>
-                        </div>
-                        <span className="font-medium">{formData.expiryDate}</span>
+                        <p className="text-xs md:text-sm text-muted-foreground">
+                            A receipt will be sent to your email address. You can also download it from your account dashboard.
+                        </p>
                     </div>
                 </CollapsibleContent>
             </Collapsible>

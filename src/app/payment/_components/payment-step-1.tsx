@@ -13,6 +13,7 @@ import { UseFormReturn } from "react-hook-form";
 import { CreditCard, Calendar, User, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { Label } from "@/components/ui/label";
 
 interface PaymentStep1Props {
     formData: PaymentFormValues;
@@ -26,143 +27,83 @@ export function PaymentStep1({
     paymentForm,
 }: PaymentStep1Props) {
     return (
-        <div className="grid gap-5">
-            <FormField
-                control={paymentForm.control}
-                name="name"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className="text-sm font-medium">Name on Card</FormLabel>
-                        <FormControl>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <User className="h-4 w-4 text-muted-foreground" />
-                                </div>
-                                <Input
-                                    {...field}
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={(e) => {
-                                        field.onChange(e);
-                                        handleInputChange(e);
-                                    }}
-                                    placeholder="Enter name on card"
-                                    className="pl-10 transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                                />
-                            </div>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-
-            <FormField
-                control={paymentForm.control}
-                name="cardNumber"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className="text-sm font-medium">Card Number</FormLabel>
-                        <FormControl>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <CreditCard className="h-4 w-4 text-muted-foreground" />
-                                </div>
-                                <Input
-                                    {...field}
-                                    type="text"
-                                    value={formData.cardNumber}
-                                    onChange={(e) => {
-                                        field.onChange(e);
-                                        handleInputChange(e);
-                                    }}
-                                    placeholder="1234 5678 9012 3456"
-                                    maxLength={19}
-                                    className="pl-10 pr-24 transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                                />
-                                <div className="absolute inset-y-0 right-0 flex items-center pr-3 gap-2">
-                                    <div className="relative h-5 w-10">
-                                        <Image 
-                                            src="/images/visa.png" 
-                                            alt="Visa" 
-                                            fill
-                                            className="object-contain"
-                                        />
-                                    </div>
-                                    <div className="relative h-5 w-10">
-                                        <Image 
-                                            src="/images/mastercard.png" 
-                                            alt="Mastercard" 
-                                            fill
-                                            className="object-contain"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-                <FormField
-                    control={paymentForm.control}
-                    name="expiryDate"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-sm font-medium">Expiry Date</FormLabel>
-                            <FormControl>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                                    </div>
-                                    <Input
-                                        {...field}
-                                        type="text"
-                                        value={formData.expiryDate}
-                                        onChange={(e) => {
-                                            field.onChange(e);
-                                            handleInputChange(e);
-                                        }}
-                                        placeholder="MM/YY"
-                                        className="pl-10 transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                                    />
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
+        <div className="space-y-2 md:space-y-3">
+            <div className="grid grid-cols-1 gap-2 md:gap-3">
+                <div className="space-y-1.5">
+                    <Label htmlFor="name" className="text-[10px] md:text-xs lg:text-sm">Name on Card</Label>
+                    <Input
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        placeholder="John Doe"
+                        className="h-7 md:h-8 lg:h-9 text-[10px] md:text-xs lg:text-sm"
+                    />
+                    {paymentForm.formState.errors.name && (
+                        <p className="text-[8px] md:text-[10px] lg:text-xs text-red-500">{paymentForm.formState.errors.name.message}</p>
                     )}
-                />
+                </div>
 
-                <FormField
-                    control={paymentForm.control}
-                    name="cvv"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-sm font-medium">CVV</FormLabel>
-                            <FormControl>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <Lock className="h-4 w-4 text-muted-foreground" />
-                                    </div>
-                                    <Input
-                                        {...field}
-                                        type="password"
-                                        value={formData.cvv}
-                                        onChange={(e) => {
-                                            field.onChange(e);
-                                            handleInputChange(e);
-                                        }}
-                                        placeholder="123"
-                                        maxLength={3}
-                                        className="pl-10 transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                                    />
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
+                <div className="space-y-1.5">
+                    <Label htmlFor="cardNumber" className="text-[10px] md:text-xs lg:text-sm">Card Number</Label>
+                    <div className="relative">
+                        <Input
+                            id="cardNumber"
+                            name="cardNumber"
+                            value={formData.cardNumber}
+                            onChange={handleInputChange}
+                            placeholder="1234 5678 9012 3456"
+                            className="h-7 md:h-8 lg:h-9 pr-8 md:pr-10 text-[10px] md:text-xs lg:text-sm"
+                            maxLength={19}
+                        />
+                        <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2">
+                            <CreditCard className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-muted-foreground" />
+                        </div>
+                    </div>
+                    {paymentForm.formState.errors.cardNumber && (
+                        <p className="text-[8px] md:text-[10px] lg:text-xs text-red-500">{paymentForm.formState.errors.cardNumber.message}</p>
                     )}
-                />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 md:gap-3">
+                    <div className="space-y-1.5">
+                        <Label htmlFor="expiryDate" className="text-[10px] md:text-xs lg:text-sm">Expiry Date</Label>
+                        <Input
+                            id="expiryDate"
+                            name="expiryDate"
+                            value={formData.expiryDate}
+                            onChange={handleInputChange}
+                            placeholder="MM/YY"
+                            className="h-7 md:h-8 lg:h-9 text-[10px] md:text-xs lg:text-sm"
+                            maxLength={5}
+                        />
+                        {paymentForm.formState.errors.expiryDate && (
+                            <p className="text-[8px] md:text-[10px] lg:text-xs text-red-500">{paymentForm.formState.errors.expiryDate.message}</p>
+                        )}
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label htmlFor="cvv" className="text-[10px] md:text-xs lg:text-sm">CVV</Label>
+                        <div className="relative">
+                            <Input
+                                id="cvv"
+                                name="cvv"
+                                type="password"
+                                value={formData.cvv}
+                                onChange={handleInputChange}
+                                placeholder="***"
+                                className="h-7 md:h-8 lg:h-9 pr-8 md:pr-10 text-[10px] md:text-xs lg:text-sm"
+                                maxLength={3}
+                            />
+                            <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2">
+                                <Lock className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-muted-foreground" />
+                            </div>
+                        </div>
+                        {paymentForm.formState.errors.cvv && (
+                            <p className="text-[8px] md:text-[10px] lg:text-xs text-red-500">{paymentForm.formState.errors.cvv.message}</p>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
