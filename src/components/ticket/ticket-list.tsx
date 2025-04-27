@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { TicketItem } from "./ticket-display-item";
+import { TicketItemDisplay } from "./ticket-item-display";
 import { useCartStore } from "@/store/cart-store";
 
 // Define ticket types and their properties
 export const TICKET_TYPES = {
   ONE_WAY: {
     name: "One Way",
-    expiryInterval: "24h after purchase",
+    expiryInterval: "24h after purchased",
   },
   DAILY: {
     name: "Daily",
@@ -128,7 +128,7 @@ export function TicketList() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {tickets.map((ticket, index) => (
-        <TicketItem
+        <TicketItemDisplay
           key={ticket.id}
           ticket={ticket}
           quantity={quantities[ticket.id]}

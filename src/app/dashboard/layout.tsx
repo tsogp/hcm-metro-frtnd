@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/custom/app-header";
 import Footer from "@/app/_components/footer";
 import { CartSheet } from "@/components/cart/cart-sheet";
 
-export default function AuthenticatedLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;

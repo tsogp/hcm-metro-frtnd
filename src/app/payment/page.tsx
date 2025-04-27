@@ -1,33 +1,54 @@
 "use client";
 
-import { TrainFront } from "lucide-react";
-import { PaymentForm } from "./_components/payment-form";
-import { CartSheet } from "@/components/cart/cart-sheet";
 import { useState } from "react";
 
-export default function PaymentPage() {
-    const [cartOpen, setCartOpen] = useState(false);
+import PassengerInfoForm from "@/app/payment/_components/passenger-info-form";
+import CartTab from "@/app/payment/_components/cart-tab";
+import PaymentTab from "./_components/payment-tab";
 
-    return (
-        <div className="grid min-h-svh lg:grid-cols-[4fr_3fr]">
-            <div className="relative hidden lg:block">
-                <CartSheet open={true} onOpenChange={setCartOpen} isStatic={true} />
-            </div>
-            <div className="flex flex-col gap-4 p-6 md:p-10">
-                <div className="flex justify-center gap-2 md:justify-start">
-                    <a href="#" className="flex items-center gap-2 font-medium">
-                        <div className="flex h-6 w-6 items-center justify-center rounded-md text-primary-foreground">
-                            <TrainFront className="w-8 h-8 text-primary" />
-                        </div>
-                        HCMC Metro Line - PAWA
-                    </a>
-                </div>
-                <div className="flex flex-1 items-center justify-center">
-                    <div className="w-full max-w-sm">
-                        <PaymentForm />
-                    </div>
-                </div>
-            </div>
+const passengerData = {
+  firstName: "Nguyen",
+  middleName: "Son",
+  lastName: "Tung",
+  phone: "0123 456 789",
+  email: "tungnguyen@gmail.com",
+};
+
+export default function PaymentPage() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [email, setEmail] = useState(passengerData.email);
+  const [acceptedPolicies, setAcceptedPolicies] = useState(false);
+
+  const handleProceedToPayment = () => {
+    if (acceptedPolicies) {
+      setCurrentStep(2);
+    }
+  };
+
+  const handleBackToInfo = () => {
+    setCurrentStep(1);
+  };
+
+  return (
+    <div className="container mx-auto py-8">
+      <div className="flex flex-col lg:flex-row gap-8 h-auto">
+        <div className="w-full lg:w-1/3">
+          <CartTab />
         </div>
-    );
-} 
+
+        {/* Right side - Payment Steps */}
+        <div className="w-full lg:w-2/3">
+          <PaymentTab
+            currentStep={currentStep}
+            passengerData={passengerData}
+            email={email}
+            setEmail={setEmail}
+            acceptedPolicies={acceptedPolicies}
+            setAcceptedPolicies={setAcceptedPolicies}
+            handleProceedToPayment={handleProceedToPayment}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
