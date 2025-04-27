@@ -15,7 +15,7 @@ import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { TicketCartItem, useCartStore } from "@/store/cart-store";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ConfirmDialog } from "../custom/confirm-dialog";
 import { useRouter } from "next/navigation";
 
@@ -39,6 +39,10 @@ export function CartSheet({ open, onOpenChange, isStatic = false, staticPanel = 
   } = useCartStore();
 
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  if (!mounted) return null;
 
   const handleDecrease = (item: TicketCartItem) => {
     if (item.quantity > 1) {

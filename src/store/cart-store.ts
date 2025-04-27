@@ -43,12 +43,10 @@ export const useCartStore = create<CartStore>()(
                   ? { ...i, quantity: i.quantity + item.quantity }
                   : i
               ),
-              isOpen: true,
             };
           }
           return { 
             items: [...state.items, item],
-            isOpen: true,
           };
         }),
       removeItem: (id) =>

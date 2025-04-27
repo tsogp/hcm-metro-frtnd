@@ -53,6 +53,9 @@ type PaymentFormValues = z.infer<typeof paymentSchema>;
 export function PaymentForm() {
     const router = useRouter();
     const { items, getTotalPrice } = useCartStore();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+    if (!mounted) return null;
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);

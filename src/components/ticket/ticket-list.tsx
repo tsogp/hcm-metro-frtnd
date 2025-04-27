@@ -121,7 +121,6 @@ export function TicketList() {
           type: ticket.type,
           suspended: ticket.suspended,
         });
-        openCart();
       }
     }
   };

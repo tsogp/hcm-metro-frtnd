@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { UserDropdownMenu } from "@/components/custom/user-dropdown-menu";
 import { AppSidebar } from "@/components/custom/app-sidebar";
 import { useCartStore } from "@/store/cart-store";
+import { useState, useEffect } from "react";
 
 interface AppHeaderProps {
   onCartClick: () => void;
@@ -14,6 +15,8 @@ interface AppHeaderProps {
 
 export function AppHeader({ onCartClick }: AppHeaderProps) {
   const { items } = useCartStore();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-secondary text-white">
@@ -36,7 +39,7 @@ export function AppHeader({ onCartClick }: AppHeaderProps) {
           >
             <ShoppingCart className="size-6" />
             <span className="absolute -top-0.5 -right-0.5 flex size-5 font-medium items-center justify-center rounded-full bg-accent text-xs text-white border-1">
-              {items.length}
+              {mounted ? items.length : null}
             </span>
           </Button>
           <UserDropdownMenu />
