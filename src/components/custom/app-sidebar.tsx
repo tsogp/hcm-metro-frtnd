@@ -27,7 +27,7 @@ export function AppSidebar() {
         },
         {
           title: "Metro Explorer",
-          href: "/metro-explorer",
+          href: "/explorer",
           icon: Map,
         },
       ],
