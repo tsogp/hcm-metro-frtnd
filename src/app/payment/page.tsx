@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 
-import PassengerInfoForm from "@/app/payment/_components/passenger-info-form";
-import CartTab from "@/app/payment/_components/cart-tab";
-import PaymentTab from "./_components/payment-tab";
+import CartTab from "@/app/payment/_components/tab/cart-tab";
+import PaymentTab from "@/app/payment/_components/tab/payment-tab";
 
 const passengerData = {
   firstName: "Nguyen",
@@ -32,6 +31,7 @@ export default function PaymentPage() {
   return (
     <div className="container mx-auto py-8">
       <div className="flex flex-col lg:flex-row gap-8 h-auto">
+        {/* Left side - Cart Tab */}
         <div className="w-full lg:w-1/3">
           <CartTab />
         </div>
@@ -46,6 +46,7 @@ export default function PaymentPage() {
             acceptedPolicies={acceptedPolicies}
             setAcceptedPolicies={setAcceptedPolicies}
             handleProceedToPayment={handleProceedToPayment}
+            handleBackToInfo={handleBackToInfo}
           />
         </div>
       </div>

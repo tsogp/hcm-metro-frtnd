@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Info, User } from "lucide-react";
 
 interface PassengerInfoFormProps {
   passengerData: {
@@ -18,7 +19,7 @@ interface PassengerInfoFormProps {
   setEmail: (email: string) => void;
   acceptedPolicies: boolean;
   setAcceptedPolicies: (accepted: boolean) => void;
-  onProceed: () => void;
+  handleProceedToPayment: () => void;
 }
 export default function PassengerInfoForm({
   passengerData,
@@ -26,14 +27,17 @@ export default function PassengerInfoForm({
   setEmail,
   acceptedPolicies,
   setAcceptedPolicies,
-  onProceed,
+  handleProceedToPayment,
 }: PassengerInfoFormProps) {
   const fullName = `${passengerData.firstName} ${passengerData.middleName} ${passengerData.lastName}`;
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Passenger Information</h2>
+        <div className="text-2xl font-bold flex items-center gap-2">
+          <User className="size-7" />
+          <h2>Passenger Information</h2>
+        </div>
         <p className="text-muted-foreground text-sm">
           Please verify your information and provide an email for your invoice.
         </p>
@@ -92,20 +96,20 @@ export default function PassengerInfoForm({
         </div>
       </div>
 
-      <div className="flex items-center w-full mt-6 gap-2">
+      <div className="flex md:flex-row flex-col-reverse items-center w-full mt-6 gap-2">
         <Button
           variant="outline"
-          className="flex-1 hover:text-foreground hover:bg-secondary/10"
+          className="w-full md:flex-1 hover:text-foreground hover:bg-secondary/10"
           asChild
         >
-          <Link href="/dashboard">Cancel</Link>
+          <Link href="/dashboard">Return to Dashboard</Link>
         </Button>
         <Button
-          className="flex-1"
-          onClick={onProceed}
+          className="w-full md:flex-1"
+          onClick={handleProceedToPayment}
           disabled={!acceptedPolicies || !email}
         >
-          Continue to Payment
+          Proceed to Payment
         </Button>
       </div>
     </div>

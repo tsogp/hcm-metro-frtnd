@@ -1,5 +1,4 @@
 import TicketCartItemDisplay from "@/components/cart/ticket-cart-display";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,15 +6,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { formatCurrency } from "@/lib/utils";
+import { ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
-import { ArrowLeft, ShoppingCart } from "lucide-react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { formatCurrency } from "@/lib/utils";
 
 export default function CartTab() {
   const { items, getTotalPrice } = useCartStore();
-  const tax = getTotalPrice() * 0.08;
+  const [mounted, setMounted] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [tax, setTax] = useState(0);
+
+  useEffect(() => {
+    setMounted(true);
+    setTotalPrice(getTotalPrice());
+    setTax(getTotalPrice() * 0.08);
+  }, [getTotalPrice]);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Card>
@@ -42,7 +52,7 @@ export default function CartTab() {
           <div className="flex justify-between items-center pb-2">
             <div className="text-gray-700 font-bold text-xl">Subtotal</div>
             <div className="text-2xl font-medium">
-              {formatCurrency(getTotalPrice())}
+              {formatCurrency(totalPrice)}
             </div>
           </div>
           <div className="flex justify-between items-center py-2 text-gray-600 font-medium">
@@ -51,8 +61,8 @@ export default function CartTab() {
           </div>
           <div className="flex justify-between items-center py-3 mt-2 border-t-2 border-dashed">
             <div className="text-2xl font-bold">Total</div>
-            <div className="text-3xl font-bold text-blue-600">
-              {formatCurrency(getTotalPrice() + tax)}
+            <div className="text-3xl font-bold">
+              {formatCurrency(totalPrice + tax)}
             </div>
           </div>
         </div>
