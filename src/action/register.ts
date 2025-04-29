@@ -22,7 +22,24 @@ export const register = async (data: RegisterRequest) => {
   try {
     const response = await API.post("/auth/register", data);
     console.log(response);
-    
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const validateRegister = async (validateData: {
+  email: string;
+  password: string;
+}) => {
+  try {
+    const response = await API.get("/auth/validate-login-data", {
+      params: {
+        email: validateData.email,
+      }
+    });
+
     return response;
   } catch (error) {
     throw error;

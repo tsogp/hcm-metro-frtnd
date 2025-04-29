@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/form";
 import { PasswordInput } from "@/components/input/password-input";
 import { loginFormSchema, LoginFormValues } from "@/schemas/login";
+import { signIn } from "@/action/auth";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
@@ -35,7 +37,22 @@ export function LoginForm({
   });
 
   const onSubmit = (data: LoginFormValues) => {
+    // const onLoginAction = signIn({
+    //   email: data.email,
+    //   password: data.password,
+    // });
+
+    // toast.promise(onLoginAction, {
+    //   loading: "Authenticating user...",
+    //   success: async (data) => {
+        
+
+    //     return "User authenticated successfully";
+    //   },
+    //   error: "Invalid email or password",
+    // });
     console.log(data);
+    
   };
 
   return (

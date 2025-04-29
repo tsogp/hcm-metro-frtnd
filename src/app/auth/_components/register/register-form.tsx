@@ -21,12 +21,16 @@ import { Form } from "@/components/ui/form";
 import { RegisterData } from "@/types/register";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { register } from "@/action/register";
+import { register, validateRegister } from "@/action/register";
+import { format, parseISO } from "date-fns";
+import { auth } from "@/action/auth";
+import { useUserStore } from "@/store/user-store";
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const { login } = useUserStore();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<RegisterData>({
@@ -88,8 +92,34 @@ export function RegisterForm({
   };
 
   const handleStep1Submit = (data: Step1Values) => {
-    setFormData((prev) => ({ ...prev, ...data }));
-    setCurrentStep(2);
+    const validateData = {
+      email: data.email,
+      password: data.password,
+    };
+
+    const onValidateAction = validateRegister(validateData);
+
+    toast.promise(onValidateAction, {
+      loading: "Validating your email...",
+
+      success: () => {
+        setFormData((prev) => ({ ...prev, ...data }));
+        setCurrentStep(2);
+        return "Valid email address";
+      },
+      error: (e) => {
+        switch (e.response.status) {
+          case 400:
+            return e.response.data.message as string;
+          case 409:
+            return e.response.data.message as string;
+          case 500:
+            return e.response.data.message as string;
+          default:
+            return "Internal Server Error";
+        }
+      },
+    });
   };
 
   const handleStep2Submit = (data: Step2Values) => {
@@ -98,6 +128,8 @@ export function RegisterForm({
   };
 
   const handleStep3Submit = async (data: Step3Values) => {
+    setFormData((prev) => ({ ...prev, ...data }));
+
     const userData = {
       email: formData.email,
       password: formData.password,
@@ -108,7 +140,7 @@ export function RegisterForm({
         passengerLastName: formData.lastName,
         passengerPhone: formData.phoneNumber,
         passengerAddress: formData.address,
-        passengerDateOfBirth: formData.dateOfBirth,
+        passengerDateOfBirth: format(formData.dateOfBirth, "dd/MM/yyyy"),
         nationalID: data.nationalId,
         studentID: formData.studentId || null,
         hasDisability: data.disabilityStatus === "yes",
@@ -117,17 +149,33 @@ export function RegisterForm({
     };
 
     const onRegisterAction = register(userData);
-    // const onRegisterAction = new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     console.log(userData);
-    //     resolve(true);
-    //   }, 3000);
-    // });
-
     toast.promise(onRegisterAction, {
       loading: "We're getting things ready for you...",
 
-      success: () => {
+      success: async (res) => {
+        await auth({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        const currentUser = {
+          email: userData.email,
+          password: userData.password,
+          confirmPassword: userData.password,
+          firstName: userData.passengerData.passengerFirstName,
+          middleName: userData.passengerData.passengerMiddleName,
+          lastName: userData.passengerData.passengerLastName,
+          nationalId: userData.passengerData.nationalID,
+          dateOfBirth: userData.passengerData.passengerDateOfBirth,
+          address: userData.passengerData.passengerAddress,
+          phoneNumber: userData.passengerData.passengerPhone,
+          studentId: userData.passengerData.studentID,
+          disabilityStatus: userData.passengerData.hasDisability ? "yes" : "no",
+          revolutionaryContribution: userData.passengerData.isRevolutionary ? "yes" : "no",
+          googleId: null,
+        }
+
+        login(currentUser);
         router.push("/dashboard");
         return "You're all set.";
       },
