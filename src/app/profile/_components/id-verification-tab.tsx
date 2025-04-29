@@ -18,11 +18,10 @@ import {
   Info,
   Upload,
   ShieldCheck,
-  Clock,
   ShieldAlert,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import type { UserProfileType } from "../../../types/profile";
+import type { UserProfileType } from "@/types/profile";
 import { Badge } from "@/components/ui/badge";
 
 type IdVerificationTabProps = {

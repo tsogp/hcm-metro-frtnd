@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfilePreviewTab from "./_components/profile-preview-tab";
 import EditProfileTab from "./_components/edit-profile-tab";
 import IdVerificationTab from "./_components/id-verification-tab";
-import type { ProfileFormType, UserProfileType } from "../../types/profile";
+import type { ProfileFormType, UserProfileType } from "@/types/profile";
 
 export default function ProfilePage() {
   // Mock user data - in a real app, this would come from your database

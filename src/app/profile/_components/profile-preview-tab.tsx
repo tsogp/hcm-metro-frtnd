@@ -10,13 +10,11 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import type { UserProfileType } from "../../../types/profile";
+import type { UserProfileType } from "@/types/profile";
 import {
   Pen,
   Wallet,
   ShieldCheck,
-  Clock,
-  ShieldAlert,
   FileText,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

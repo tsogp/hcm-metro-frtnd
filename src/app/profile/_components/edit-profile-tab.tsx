@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Camera, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { UserProfileType } from "../../../types/profile";
+import type { UserProfileType } from "@/types/profile";
 import {
   Form,
   FormControl,
@@ -29,7 +29,7 @@ import {
 import {
   profileFormSchema,
   type ProfileFormValues,
-} from "../../../schemas/profile";
+} from "@/schemas/profile";
 
 interface EditProfileTabProps {
   user: UserProfileType;
@@ -57,7 +57,6 @@ function EditProfileTab({
   setFormData,
   setSelectedImage,
   setPreviewUrl,
-  setActiveTab,
   isSubmitting,
 }: EditProfileTabProps) {
   const fullName = `${user.firstName} ${
@@ -86,7 +85,7 @@ function EditProfileTab({
       ...data,
     });
 
-    // Call the original submit handler
+    // Call the original submitting handler
     const event = { preventDefault: () => {} } as React.FormEvent;
     onSubmitForm(event);
   };
