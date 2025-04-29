@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardHeader,
@@ -6,11 +8,17 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import React from "react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { UserProfileType } from "../../../types/profile";
-import { Pen, Wallet } from "lucide-react";
+import type { UserProfileType } from "../../../types/profile";
+import {
+  Pen,
+  Wallet,
+  ShieldCheck,
+  Clock,
+  ShieldAlert,
+  FileText,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 type ProfilePreviewTabProps = {
@@ -28,11 +36,41 @@ function ProfilePreviewTab({
     user.middleName ? user.middleName + " " : ""
   }${user.lastName}`;
 
+  // Helper function to get verification status badge
+  const getVerificationStatusBadge = (
+    status: "pending" | "verified" | "rejected" | null
+  ) => {
+    if (!status) return null;
+
+    switch (status) {
+      case "verified":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1"
+          >
+            <ShieldCheck className="h-3 w-3" />
+            Verified
+          </Badge>
+        );
+      default:
+        return null;
+    }
+  };
+
+  // Check if any ID verification has been submitted
+  const hasNationalIdVerification =
+    user.idVerification?.national.front && user.idVerification?.national.back;
+  const hasStudentIdVerification =
+    user.idVerification?.student.front && user.idVerification?.student.back;
+  const hasAnyVerification =
+    hasNationalIdVerification || hasStudentIdVerification;
+
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="mb-1">Profile Information</CardTitle>
+          <CardTitle className="mb-1">Profile Preview</CardTitle>
           <CardDescription>Your current profile details</CardDescription>
         </div>
         <Button
@@ -40,31 +78,42 @@ function ProfilePreviewTab({
           onClick={() => setActiveTab("edit")}
           className="flex items-center"
         >
-          <Pen className="w-4 h-4" />
-          Edit Profile
+          <Pen className="w-4 h-4 mr-2" />
+          Edit
         </Button>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-center text-center mb-6">
           <Avatar className="h-24 w-24 mb-4">
             {user.profilePicture && (
-              <AvatarImage src={user.profilePicture} alt={fullName} />
+              <AvatarImage
+                src={user.profilePicture || "/placeholder.svg"}
+                alt={fullName}
+              />
             )}
             <AvatarFallback className="text-lg">{getInitials()}</AvatarFallback>
           </Avatar>
           <h2 className="text-2xl font-bold">{fullName}</h2>
           <p className="text-muted-foreground">{user.email}</p>
 
-          <div className="mt-4 flex items-center">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <Badge
               variant="outline"
               className="px-3 py-1 bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 rounded-lg"
             >
               <Wallet className="h-4 w-4" />
-              <span className="font-semibold">
-                ${user.balance.toFixed(2)}
-              </span>
+              <span className="font-semibold">${user.balance.toFixed(2)}</span>
             </Badge>
+
+            {/* Show verification status badges if available */}
+            {hasNationalIdVerification &&
+              getVerificationStatusBadge(
+                user.idVerification?.national.status || null
+              )}
+            {hasStudentIdVerification &&
+              getVerificationStatusBadge(
+                user.idVerification?.student.status || null
+              )}
           </div>
         </div>
 
@@ -113,13 +162,25 @@ function ProfilePreviewTab({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">National ID</p>
-                <p className="font-medium">{user.nationalId}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium">{user.nationalId}</p>
+                  {hasNationalIdVerification &&
+                    getVerificationStatusBadge(
+                      user.idVerification?.national.status || null
+                    )}
+                </div>
               </div>
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Student ID</p>
-                <p className="font-medium">
-                  {user.studentId || "Not provided"}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium">
+                    {user.studentId || "Not provided"}
+                  </p>
+                  {hasStudentIdVerification &&
+                    getVerificationStatusBadge(
+                      user.idVerification?.student.status || null
+                    )}
+                </div>
               </div>
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">
@@ -139,6 +200,100 @@ function ProfilePreviewTab({
               </div>
             </div>
           </div>
+
+          {/* ID Verification Section */}
+          {hasAnyVerification && (
+            <>
+              <Separator className="my-4" />
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-lg">ID Verification</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActiveTab("verification")}
+                    className="text-sm"
+                  >
+                    View Details
+                  </Button>
+                </div>
+
+                {/* Show thumbnails of uploaded IDs */}
+                <div className="grid grid-cols-2 gap-2">
+                  {hasNationalIdVerification && (
+                    <>
+                      <div className="border rounded p-1">
+                        <p className="text-xs text-muted-foreground mb-1">
+                          National ID (Front)
+                        </p>
+                        <img
+                          src={user.idVerification?.national.front || ""}
+                          alt="National ID Front"
+                          className="w-full h-auto object-cover rounded"
+                          style={{ maxHeight: "80px" }}
+                        />
+                      </div>
+                      <div className="border rounded p-1">
+                        <p className="text-xs text-muted-foreground mb-1">
+                          National ID (Back)
+                        </p>
+                        <img
+                          src={user.idVerification?.national.back || ""}
+                          alt="National ID Back"
+                          className="w-full h-auto object-cover rounded"
+                          style={{ maxHeight: "80px" }}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {hasStudentIdVerification && (
+                    <>
+                      <div className="border rounded p-1">
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Student ID (Front)
+                        </p>
+                        <img
+                          src={user.idVerification?.student.front || ""}
+                          alt="Student ID Front"
+                          className="w-full h-auto object-cover rounded"
+                          style={{ maxHeight: "80px" }}
+                        />
+                      </div>
+                      <div className="border rounded p-1">
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Student ID (Back)
+                        </p>
+                        <img
+                          src={user.idVerification?.student.back || ""}
+                          alt="Student ID Back"
+                          className="w-full h-auto object-cover rounded"
+                          style={{ maxHeight: "80px" }}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ID Verification CTA if no verification */}
+          {!hasAnyVerification && (
+            <>
+              <Separator className="my-4" />
+              <div className="bg-gray-50 rounded-lg p-4 text-center">
+                <FileText className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                <h3 className="font-medium mb-1">ID Verification Required</h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Please upload images of your ID card to verify your identity
+                </p>
+                <Button onClick={() => setActiveTab("verification")} size="sm">
+                  Verify Now
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </CardContent>
     </Card>

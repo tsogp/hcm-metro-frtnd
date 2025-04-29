@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardHeader,
@@ -6,7 +8,8 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import React, { useRef } from "react";
+import type React from "react";
+import { useRef } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/input/password-input";
@@ -14,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Camera, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserProfileType } from "../../../types/profile";
+import type { UserProfileType } from "../../../types/profile";
 import {
   Form,
   FormControl,
@@ -23,7 +26,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { profileFormSchema, ProfileFormValues } from "../../../schemas/profile";
+import {
+  profileFormSchema,
+  type ProfileFormValues,
+} from "../../../schemas/profile";
 
 interface EditProfileTabProps {
   user: UserProfileType;
@@ -114,8 +120,6 @@ function EditProfileTab({
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-
-    setActiveTab("preview");
   };
 
   const handleUploadClick = () => {
@@ -174,9 +178,15 @@ function EditProfileTab({
                 <div className="relative">
                   <Avatar className="h-32 w-32">
                     {previewUrl ? (
-                      <AvatarImage src={previewUrl} alt="Profile preview" />
+                      <AvatarImage
+                        src={previewUrl || "/placeholder.svg"}
+                        alt="Profile preview"
+                      />
                     ) : user.profilePicture ? (
-                      <AvatarImage src={user.profilePicture} alt={fullName} />
+                      <AvatarImage
+                        src={user.profilePicture || "/placeholder.svg"}
+                        alt={fullName}
+                      />
                     ) : (
                       <AvatarImage
                         src="/placeholder.svg?height=128&width=128"

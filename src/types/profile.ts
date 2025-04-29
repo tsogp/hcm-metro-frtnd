@@ -12,6 +12,18 @@ export type UserProfileType = {
   revolutionaryContribution: boolean;
   balance: number;
   profilePicture: string | null;
+  idVerification?: {
+    national: {
+      front: string | null;
+      back: string | null;
+      status: "pending" | "verified" | "rejected" | null;
+    };
+    student: {
+      front: string | null;
+      back: string | null;
+      status: "pending" | "verified" | "rejected" | null;
+    };
+  };
 };
 
 export type ProfileFormType = {

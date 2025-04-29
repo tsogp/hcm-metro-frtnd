@@ -6,7 +6,8 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfilePreviewTab from "./_components/profile-preview-tab";
 import EditProfileTab from "./_components/edit-profile-tab";
-import { ProfileFormType, UserProfileType } from "../../types/profile";
+import IdVerificationTab from "./_components/id-verification-tab";
+import type { ProfileFormType, UserProfileType } from "../../types/profile";
 
 export default function ProfilePage() {
   // Mock user data - in a real app, this would come from your database
@@ -24,6 +25,18 @@ export default function ProfilePage() {
     revolutionaryContribution: true,
     balance: 1250.12,
     profilePicture: null,
+    idVerification: {
+      national: {
+        front: null,
+        back: null,
+        status: null,
+      },
+      student: {
+        front: null,
+        back: null,
+        status: null,
+      },
+    },
   });
 
   // Form state
@@ -49,7 +62,7 @@ export default function ProfilePage() {
     user.profilePicture
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState("preview");
+  const [activeTab, setActiveTab] = useState("edit");
 
   // Create preview URL when a new image is selected
   useEffect(() => {
@@ -101,9 +114,6 @@ export default function ProfilePage() {
 
       setIsSubmitting(false);
 
-      // Switch to preview tab after successful update
-      setActiveTab("preview");
-
       // In a real app, you would show a success message here
       alert("Profile updated successfully!");
     }, 1000);
@@ -117,45 +127,55 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="container mx-auto py-10 px-6 md:px-10 flex flex-col items-center">
-      <h1 className="text-3xl font-bold mb-6">User Profile</h1>
+    <div className="container mx-auto py-10 px-4 md:px-6">
+      <h1 className="text-3xl font-bold mb-6 text-center">User Profile</h1>
 
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="lg:w-3/4 w-full"
-      >
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="preview">Profile Preview</TabsTrigger>
-          <TabsTrigger value="edit">Edit Profile</TabsTrigger>
-        </TabsList>
-
-        {/* Profile Preview Tab */}
-        <TabsContent value="preview">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Profile Preview - Always visible on the left */}
+        <div className="lg:col-span-5">
           <ProfilePreviewTab
             user={user}
             getInitials={getInitials}
             setActiveTab={setActiveTab}
           />
-        </TabsContent>
+        </div>
 
-        {/* Edit Profile Tab */}
-        <TabsContent value="edit">
-          <EditProfileTab
-            user={user}
-            handleSubmit={handleSubmit}
-            previewUrl={previewUrl}
-            getInitials={getInitials}
-            formData={formData}
-            handleInputChange={handleInputChange}
-            setFormData={setFormData}
-            setSelectedImage={setSelectedImage}
-            setPreviewUrl={setPreviewUrl}
-            setActiveTab={setActiveTab}
-            isSubmitting={isSubmitting}
-          />
-        </TabsContent>
-      </Tabs>
+        {/* Editing Tabs - On the right */}
+        <div className="lg:col-span-7">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="edit">Edit Profile</TabsTrigger>
+              <TabsTrigger value="verification">ID Verification</TabsTrigger>
+            </TabsList>
+
+            {/* Edit Profile Tab */}
+            <TabsContent value="edit">
+              <EditProfileTab
+                user={user}
+                handleSubmit={handleSubmit}
+                previewUrl={previewUrl}
+                getInitials={getInitials}
+                formData={formData}
+                handleInputChange={handleInputChange}
+                setFormData={setFormData}
+                setSelectedImage={setSelectedImage}
+                setPreviewUrl={setPreviewUrl}
+                setActiveTab={setActiveTab}
+                isSubmitting={isSubmitting}
+              />
+            </TabsContent>
+
+            {/* ID Verification Tab */}
+            <TabsContent value="verification">
+              <IdVerificationTab user={user} setUser={setUser} />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 }
