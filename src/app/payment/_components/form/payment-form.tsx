@@ -9,7 +9,6 @@ import { Calendar, CreditCard, Link, Lock, Info } from "lucide-react";
 import { motion, useMotionValue, useTransform, animate, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
-import Confetti from "react-confetti";
 import {
   Tooltip,
   TooltipContent,
@@ -17,9 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import { Button } from "@/components/ui/button";
-
 import {
   Form,
   FormControl,
@@ -52,13 +49,12 @@ const formSchema = z.object({
 });
 
 // Update card preview component with 3D tilt
-const CardPreview = ({ cardNumber, cardExpiry, cardType, isLoading, hasError, isSuccess }: { 
+const CardPreview = ({ cardNumber, cardExpiry, cardType, isLoading, hasError }: { 
   cardNumber: string;
   cardExpiry: string;
   cardType: string;
   isLoading?: boolean;
   hasError?: boolean;
-  isSuccess?: boolean;
 }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -91,8 +87,8 @@ const CardPreview = ({ cardNumber, cardExpiry, cardType, isLoading, hasError, is
       animate={{ 
         opacity: 1, 
         y: 0,
-        scale: isLoading ? 0.98 : isSuccess ? 1.02 : isHovered ? 1.01 : 1,
-        boxShadow: hasError ? "0 0 0 2px rgba(239, 68, 68, 0.5)" : isSuccess ? "0 0 0 2px rgba(34, 197, 94, 0.5)" : isHovered ? "0 8px 24px rgba(0,0,0,0.1)" : "none"
+        scale: isLoading ? 0.98 : isHovered ? 1.01 : 1,
+        boxShadow: hasError ? "0 0 0 2px rgba(239, 68, 68, 0.5)" : isHovered ? "0 8px 24px rgba(0,0,0,0.1)" : "none"
       }}
       transition={{ 
         duration: 0.5,
@@ -103,7 +99,6 @@ const CardPreview = ({ cardNumber, cardExpiry, cardType, isLoading, hasError, is
         "transition-all duration-300",
         isLoading && "opacity-80",
         hasError && "ring-2 ring-destructive/50",
-        isSuccess && "ring-2 ring-green-500/50",
         "hover:shadow-lg hover:shadow-primary/20"
       )}
       onMouseMove={handleMouseMove}
@@ -202,11 +197,7 @@ export default function PaymentPage({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [cardType, setCardType] = useState<string>("");
-  const [showConfetti, setShowConfetti] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [countdown, setCountdown] = useState(5);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -218,60 +209,17 @@ export default function PaymentPage({
     },
   });
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (showSuccessMessage) {
-      timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [showSuccessMessage]);
-
-  // Separate effect for navigation
-  useEffect(() => {
-    if (countdown === 0) {
-      router.push('/dashboard');
-    }
-  }, [countdown, router]);
-
   async function handleSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setHasError(false);
-    setIsSuccess(false);
-    setShowSuccessMessage(false);
-    setCountdown(5);
     setErrorMessage("");
 
     try {
       await onSubmit(values);
-      setIsSuccess(true);
-      setTimeout(() => {
-        setShowSuccessMessage(true);
-        setShowConfetti(true);
-        setTimeout(() => {
-          setShowConfetti(false);
-        }, 5000);
-      }, 1000);
+      router.push('/dashboard');
     } catch (error) {
       setHasError(true);
-      setErrorMessage(error instanceof Error ? error.message : "Payment failed. Please try again.");
-      // Add shake animation to form
-      const formElement = document.querySelector('form');
-      if (formElement) {
-        formElement.classList.add('animate-shake');
-        setTimeout(() => {
-          formElement.classList.remove('animate-shake');
-        }, 500);
-      }
+      setErrorMessage("Payment failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -371,7 +319,6 @@ export default function PaymentPage({
             cardType={cardType}
             isLoading={isLoading}
             hasError={hasError}
-            isSuccess={isSuccess}
           />
 
           <div className="space-y-6">
@@ -643,71 +590,6 @@ export default function PaymentPage({
             </Form>
           </div>
         </>
-      )}
-
-      {showConfetti && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 pointer-events-none z-50"
-        >
-          <Confetti
-            width={typeof window !== 'undefined' ? window.innerWidth : 0}
-            height={typeof window !== 'undefined' ? window.innerHeight : 0}
-            recycle={false}
-            numberOfPieces={500}
-            gravity={0.3}
-          />
-        </motion.div>
-      )}
-
-      {showSuccessMessage && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="fixed bottom-4 right-4 z-50 flex items-center justify-end pointer-events-none"
-        >
-          <motion.div
-            initial={{ scale: 0.8, x: 20 }}
-            animate={{ scale: 1, x: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 max-w-sm pointer-events-auto"
-          >
-            <div className="flex items-center gap-3">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0"
-              >
-                <svg
-                  className="w-5 h-5 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <motion.path
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </motion.div>
-              <div>
-                <h3 className="font-semibold text-sm">Metro Ticket Purchased!</h3>
-                <p className="text-muted-foreground text-xs">
-                  Your metro ticket has been successfully purchased.
-                  <br />
-                  Redirecting to your tickets in {countdown}...
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
       )}
     </motion.div>
   );
