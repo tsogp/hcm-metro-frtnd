@@ -33,9 +33,9 @@ export const loginFormSchema = z.object({
     .regex(/\d/, {
       message: "Password must contain at least one digit",
     })
-    .regex(/[@#$%]/, {
+    .regex(/[@#$%!,.]/, {
       message:
-        "Password must contain at least one special character (@, #, $, %)",
+        "Password must contain at least one special character (@, #, $, %, !, ,, .)",
     }),
   remember: z.boolean().optional(),
 });

@@ -22,6 +22,7 @@ import { RegisterData } from "@/types/register";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { register } from "@/action/register";
+import { validateExistingEmail } from "@/services/auth";
 
 export function RegisterForm({
   className,
@@ -87,9 +88,47 @@ export function RegisterForm({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleStep1Submit = (data: Step1Values) => {
-    setFormData((prev) => ({ ...prev, ...data }));
-    setCurrentStep(2);
+  const handleStep1Submit = async (data: Step1Values) => {
+    try {
+      console.log('=== Step 1 Validation Start ===');
+      console.log('Form data:', data);
+      console.log('Email validation:', {
+        email: data.email,
+        endsWithCom: data.email.endsWith('.com'),
+        endsWithVn: data.email.endsWith('.vn'),
+        hasSpecialChars: /[\s<>()[\]\\,;:{}|^~`]/.test(data.email)
+      });
+      
+      console.log('Password validation:', {
+        length: data.password.length,
+        hasUpperCase: /[A-Z]/.test(data.password),
+        hasLowerCase: /[a-z]/.test(data.password),
+        hasDigit: /\d/.test(data.password),
+        hasSpecialChar: /[@#$%!,.]/.test(data.password),
+        specialCharsFound: data.password.match(/[@#$%!,.]/g)
+      });
+
+      // Validate email before proceeding
+      await validateExistingEmail(data.email);
+      setFormData((prev) => ({ ...prev, ...data }));
+      setCurrentStep(2);
+      console.log('=== Step 1 Validation End ===');
+    } catch (error: any) {
+      console.error('=== Step 1 Validation Error ===');
+      console.error('Error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
+      console.error('Form data that caused error:', data);
+      console.error('=== End Validation Error ===');
+      
+      if (error.response?.status === 409) {
+        toast.error("This email is already registered. Please use a different email or login.");
+      } else {
+        toast.error("An error occurred while validating your email. Please try again.");
+      }
+    }
   };
 
   const handleStep2Submit = (data: Step2Values) => {
@@ -110,40 +149,29 @@ export function RegisterForm({
         passengerAddress: formData.address,
         passengerDateOfBirth: formData.dateOfBirth,
         nationalID: data.nationalId,
-        studentID: formData.studentId || null,
+        studentID: data.studentId || null,
         hasDisability: data.disabilityStatus === "yes",
         isRevolutionary: data.revolutionaryContribution === "yes",
       },
     };
 
-    const onRegisterAction = register(userData);
-    // const onRegisterAction = new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     console.log(userData);
-    //     resolve(true);
-    //   }, 3000);
-    // });
+    console.log('Form data before submission:', formData);
+    console.log('Step 3 data:', data);
+    console.log('Final user data:', userData);
 
-    toast.promise(onRegisterAction, {
-      loading: "We're getting things ready for you...",
-
-      success: () => {
+    try {
+      const response = await register(userData);
+      if (response.success) {
+        toast.success("Registration successful!");
         router.push("/dashboard");
-        return "You're all set.";
-      },
-      error: (e) => {
-        switch (e.response.status) {
-          case 400:
-            return e.response.data.message as string;
-          case 404:
-            return e.response.data.message as string;
-          case 409:
-            return e.response.data.message as string;
-          default:
-            return "Internal Server Error";
-        }
-      },
-    });
+      } else {
+        toast.error(response.message || "Registration failed");
+      }
+    } catch (error: any) {
+      console.error('Registration error in form:', error);
+      const errorMessage = error.response?.data?.message || "An error occurred during registration";
+      toast.error(errorMessage);
+    }
   };
 
   const handleBack = () => {

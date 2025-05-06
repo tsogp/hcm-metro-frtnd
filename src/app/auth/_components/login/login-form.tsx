@@ -8,6 +8,9 @@ import React from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { login } from "@/services/auth";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { User } from "lucide-react";
 import {
@@ -25,6 +28,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
+  const router = useRouter();
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -34,8 +38,42 @@ export function LoginForm({
     },
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log(data);
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      console.log('=== Login Process Start ===');
+      console.log('Form data:', data);
+      console.log('Email validation:', {
+        email: data.email,
+        endsWithCom: data.email.endsWith('.com'),
+        endsWithVn: data.email.endsWith('.vn'),
+        hasSpecialChars: /[\s<>()[\]\\,;:{}|^~`]/.test(data.email)
+      });
+      
+      console.log('Password validation:', {
+        length: data.password.length,
+        hasUpperCase: /[A-Z]/.test(data.password),
+        hasLowerCase: /[a-z]/.test(data.password),
+        hasDigit: /\d/.test(data.password),
+        hasSpecialChar: /[@#$%!,.]/.test(data.password),
+        specialCharsFound: data.password.match(/[@#$%!,.]/g)
+      });
+
+      const response = await login(data.email, data.password);
+      console.log('Login response:', response);
+      toast.success("Login successful!");
+      router.push("/dashboard");
+      console.log('=== Login Process End ===');
+    } catch (error: any) {
+      console.error('=== Login Error Details ===');
+      console.error('Error status:', error.response?.status);
+      console.error('Error data:', error.response?.data);
+      console.error('Error message:', error.message);
+      console.error('Form data that caused error:', data);
+      console.error('=== End Error Details ===');
+      
+      const errorMessage = error.response?.data?.message || "Invalid email or password";
+      toast.error(errorMessage);
+    }
   };
 
   return (
