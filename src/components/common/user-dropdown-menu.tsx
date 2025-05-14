@@ -13,10 +13,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserStore } from "@/store/user-store";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/config/routes";
 
 export function UserDropdownMenu() {
   const { logout } = useUserStore();
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -64,6 +67,7 @@ export function UserDropdownMenu() {
           onClick={() => {
             logout();
             setOpen(false);
+            router.push(ROUTES.LANDING);
           }}
         >
           <LogOut className="mr-2 h-4 w-4" />

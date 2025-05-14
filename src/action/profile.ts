@@ -13,26 +13,13 @@ export interface ProfileData {
   isRevolutionary: boolean;
 }
 
-interface ProfileResponse {
-  success: boolean;
-  message: string;
-  data: ProfileData;
-}
-
 export async function getMyProfile(): Promise<ProfileData> {
   try {
-    const response = await fetch("/api/profile/my-info", {
-      method: "GET",
-      credentials: "include",
+    const response = await API.get("/profile/my-info", {
+      withCredentials: true,
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to fetch profile");
-    }
-
-    const data = await response.json();
-    return data.data;
+    return response.data;
   } catch (error: any) {
     console.error("Failed to fetch user profile:", error);
     if (error.response?.status === 403) {

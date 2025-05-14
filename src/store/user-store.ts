@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { signIn } from "@/action/auth";
+import { logout, signIn } from "@/action/auth";
 import { getMyProfile } from "@/action/profile";
 
 interface UserData {
@@ -54,14 +54,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
   logout: async () => {
     try {
-      const response = await fetch("/api/logout", {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        throw new Error("Logout failed");
-      }
-
+      await logout();
       set({ currentUser: undefined });
     } catch (error) {
       console.error("Logout error:", error);
@@ -82,7 +75,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
   checkAuth: async () => {
     try {
       // First check if we have an auth token
-      const response = await fetch("/api/auth/check", {
+      const response = await fetch("/api/auth/auth-check", {
         method: "GET",
         credentials: "include",
       });

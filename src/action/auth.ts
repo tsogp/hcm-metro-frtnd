@@ -40,3 +40,9 @@ export async function validateLoginData(email: string) {
     throw error;
   }
 }
+
+export const logout = async () => {
+  await API.post("/auth/logout", {
+    withCredentials: true,
+  });
+};
