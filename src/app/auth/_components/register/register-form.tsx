@@ -26,6 +26,7 @@ import { format, parseISO } from "date-fns";
 import { useUserStore } from "@/store/user-store";
 import { signIn } from "@/action/auth";
 import API from "@/utils/axiosClient";
+import { ROUTES } from "@/config/routes";
 
 export function RegisterForm({
   className,
@@ -158,7 +159,7 @@ export function RegisterForm({
 
       success: async (res) => {
         await login(userData.email, userData.password);
-        router.push("/dashboard");
+        router.push(ROUTES.DASHBOARD);
         return "Registration successful! Signing you in...";
       },
       error: (e) => {

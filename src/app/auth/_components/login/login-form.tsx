@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/auth-context";
+import { useUserStore } from "@/store/user-store";
 
 import { User } from "lucide-react";
 import {
@@ -23,15 +23,15 @@ import {
 } from "@/components/ui/form";
 import { PasswordInput } from "@/components/input/password-input";
 import { loginFormSchema, LoginFormValues } from "@/schemas/login";
+import { ROUTES } from "@/config/routes";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
+  const { login } = useUserStore();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuth();
-  const from = searchParams.get("from") || "/";
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
@@ -43,22 +43,27 @@ export function LoginForm({
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    try {
-      console.log("Attempting login, redirect path:", from);
-      const response = await login(data.email, data.password, data.remember);
-      console.log("Login response:", response);
+    const onLoginAction = login(data.email, data.password);
 
-      if (response?.success) {
-        toast.success("Login successful");
-        // Use Next.js router for client-side navigation
-        window.location.href = from;
-      } else {
-        throw new Error(response?.message || "Login failed");
-      }
-    } catch (error: any) {
-      console.error("Login error:", error);
-      toast.error(error.response?.data?.message || error.message || "Login failed");
-    }
+    toast.promise(onLoginAction, {
+      loading: "Logging in...",
+      success: () => {
+        router.push(searchParams.get("from") || ROUTES.DASHBOARD);
+        return "Login successful. Redirecting to dashboard...";
+      },
+      error: (e) => {
+        switch (e.response.status) {
+          case 401:
+            return e.response.data?.message || "Invalid credentials";
+          case 403:
+            return e.response.data?.message || "Access denied";
+          case 500:
+            return e.response.data?.message || "Internal server error";
+          default:
+            return e.response.data?.message || "Login failed";
+        }
+      },
+    });
   };
 
   return (
@@ -93,48 +98,45 @@ export function LoginForm({
             )}
           />
 
-        <FormField
-          control={loginForm.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <PasswordInput
-                  placeholder="Enter your password"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="flex items-center justify-between">
           <FormField
             control={loginForm.control}
-            name="remember"
+            name="password"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+              <FormItem>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <PasswordInput placeholder="Enter your password" {...field} />
                 </FormControl>
-                <FormLabel className="text-sm font-normal">
-                  Remember me
-                </FormLabel>
+                <FormMessage />
               </FormItem>
             )}
           />
-          <Link
-            href="/auth/forgot-password"
-            className="text-sm text-primary hover:underline"
-          >
-            Forgot password?
-          </Link>
-        </div>
+
+          <div className="flex items-center justify-between">
+            <FormField
+              control={loginForm.control}
+              name="remember"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="text-sm font-normal">
+                    Remember me
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm text-primary hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
 
           <Button type="submit" className="w-full">
             Login

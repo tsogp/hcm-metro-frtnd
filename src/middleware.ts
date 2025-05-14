@@ -8,15 +8,25 @@ interface JwtToken {
   exp: number;
 }
 
-// Define passenger-only routes
-const passengerOnlyRoutes = [
-  "/profile",
-];
+const passengerOnlyRoutes = ["/profile"];
+
+const landingToDashboardRoutes = ["/dashboard"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
+  const referer = request.headers.get("referer");
   const token = request.cookies.get("user_auth")?.value;
+
+  if (
+    isLandingToDashboardRoute(pathname) &&
+    referer?.includes(ROUTES.LANDING)
+  ) {
+    if (!token) {
+      const url = new URL(ROUTES.AUTH.LOGIN, request.url);
+      url.searchParams.set("from", pathname);
+      return NextResponse.redirect(url);
+    }
+  }
 
   if (isPassengerOnlyRoute(pathname)) {
     if (!token) {
@@ -59,6 +69,10 @@ function isPassengerOnlyRoute(pathname: string): boolean {
 
 function isAuthenticationRoute(pathname: string): boolean {
   return pathname === ROUTES.AUTH.LOGIN || pathname === ROUTES.AUTH.REGISTER;
+}
+
+function isLandingToDashboardRoute(pathname: string): boolean {
+  return landingToDashboardRoutes.some((route) => pathname.startsWith(route));
 }
 
 export const config = {
