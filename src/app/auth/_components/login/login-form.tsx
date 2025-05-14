@@ -8,6 +8,9 @@ import React from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/auth-context";
 
 import { User } from "lucide-react";
 import {
@@ -20,13 +23,16 @@ import {
 } from "@/components/ui/form";
 import { PasswordInput } from "@/components/input/password-input";
 import { loginFormSchema, LoginFormValues } from "@/schemas/login";
-import { signIn } from "@/action/auth";
-import { toast } from "sonner";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login } = useAuth();
+  const from = searchParams.get("from") || "/";
+
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -36,23 +42,23 @@ export function LoginForm({
     },
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    // const onLoginAction = signIn({
-    //   email: data.email,
-    //   password: data.password,
-    // });
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      console.log("Attempting login, redirect path:", from);
+      const response = await login(data.email, data.password, data.remember);
+      console.log("Login response:", response);
 
-    // toast.promise(onLoginAction, {
-    //   loading: "Authenticating user...",
-    //   success: async (data) => {
-        
-
-    //     return "User authenticated successfully";
-    //   },
-    //   error: "Invalid email or password",
-    // });
-    console.log(data);
-    
+      if (response?.success) {
+        toast.success("Login successful");
+        // Use Next.js router for client-side navigation
+        window.location.href = from;
+      } else {
+        throw new Error(response?.message || "Login failed");
+      }
+    } catch (error: any) {
+      console.error("Login error:", error);
+      toast.error(error.response?.data?.message || error.message || "Login failed");
+    }
   };
 
   return (
@@ -87,29 +93,25 @@ export function LoginForm({
             )}
           />
 
-          <FormField
-            control={loginForm.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center">
-                  <FormLabel>Password</FormLabel>
-                  <a
-                    href="#"
-                    className="ml-auto text-xs underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-                <FormControl>
-                  <PasswordInput {...field} placeholder="Enter your password" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <FormField
+          control={loginForm.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <PasswordInput
+                  placeholder="Enter your password"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* <FormField
+        <div className="flex items-center justify-between">
+          <FormField
             control={loginForm.control}
             name="remember"
             render={({ field }) => (
@@ -125,7 +127,14 @@ export function LoginForm({
                 </FormLabel>
               </FormItem>
             )}
-          /> */}
+          />
+          <Link
+            href="/auth/forgot-password"
+            className="text-sm text-primary hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
 
           <Button type="submit" className="w-full">
             Login

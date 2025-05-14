@@ -21,6 +21,7 @@ import { Form } from "@/components/ui/form";
 import { RegisterData } from "@/types/register";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { validateExistingEmail } from "@/services/auth";
 import { register, validateRegister } from "@/action/register";
 import { format, parseISO } from "date-fns";
 import { auth } from "@/action/auth";
