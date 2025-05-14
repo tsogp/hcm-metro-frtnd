@@ -21,11 +21,11 @@ import { Form } from "@/components/ui/form";
 import { RegisterData } from "@/types/register";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { validateExistingEmail } from "@/services/auth";
 import { register, validateRegister } from "@/action/register";
 import { format, parseISO } from "date-fns";
-import { auth } from "@/action/auth";
 import { useUserStore } from "@/store/user-store";
+import { signIn } from "@/action/auth";
+import API from "@/utils/axiosClient";
 
 export function RegisterForm({
   className,
@@ -109,16 +109,19 @@ export function RegisterForm({
         return "Valid email address";
       },
       error: (e) => {
-        switch (e.response.status) {
-          case 400:
-            return e.response.data.message as string;
-          case 409:
-            return e.response.data.message as string;
-          case 500:
-            return e.response.data.message as string;
-          default:
-            return "Internal Server Error";
+        if (e?.response?.status) {
+          switch (e.response.status) {
+            case 400:
+              return e.response.data?.message || "Invalid request";
+            case 409:
+              return e.response.data?.message || "Conflict occurred";
+            case 500:
+              return e.response.data?.message || "Internal Server Error";
+            default:
+              return e.response.data?.message || "Internal Server Error";
+          }
         }
+        return "Internal Server Error";
       },
     });
   };
@@ -154,43 +157,24 @@ export function RegisterForm({
       loading: "We're getting things ready for you...",
 
       success: async (res) => {
-        await auth({
-          email: formData.email,
-          password: formData.password,
-        });
-
-        const currentUser = {
-          email: userData.email,
-          password: userData.password,
-          confirmPassword: userData.password,
-          firstName: userData.passengerData.passengerFirstName,
-          middleName: userData.passengerData.passengerMiddleName,
-          lastName: userData.passengerData.passengerLastName,
-          nationalId: userData.passengerData.nationalID,
-          dateOfBirth: userData.passengerData.passengerDateOfBirth,
-          address: userData.passengerData.passengerAddress,
-          phoneNumber: userData.passengerData.passengerPhone,
-          studentId: userData.passengerData.studentID,
-          disabilityStatus: userData.passengerData.hasDisability ? "yes" : "no",
-          revolutionaryContribution: userData.passengerData.isRevolutionary ? "yes" : "no",
-          googleId: null,
-        }
-
-        login(currentUser);
+        await login(userData.email, userData.password);
         router.push("/dashboard");
-        return "You're all set.";
+        return "Registration successful! Signing you in...";
       },
       error: (e) => {
-        switch (e.response.status) {
-          case 400:
-            return e.response.data.message as string;
-          case 404:
-            return e.response.data.message as string;
-          case 409:
-            return e.response.data.message as string;
-          default:
-            return "Internal Server Error";
+        if (e?.response?.status) {
+          switch (e.response.status) {
+            case 400:
+              return e.response.data?.message || "Invalid request";
+            case 404:
+              return e.response.data?.message || "Resource not found";
+            case 409:
+              return e.response.data?.message || "Conflict occurred";
+            default:
+              return e.response.data?.message || "Internal Server Error";
+          }
         }
+        return "Internal Server Error";
       },
     });
   };

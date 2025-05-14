@@ -15,6 +15,12 @@ export type User = {
   googleId: string | null;
 };
 
-// export type JWTPayload = {
-//
-// }
+export type JWTPayload = {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  role?: string;
+  iat?: number;
+  exp?: number;
+};
