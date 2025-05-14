@@ -1,48 +1,42 @@
-import { API } from "@/utils/axiosClient";
-import { jwtDecode } from "jwt-decode";
+import API from "@/utils/axiosClient";
 
 interface AuthData {
   email: string;
   password: string;
 }
 
-interface JwtPayload {
-  roles: [
-    {
-      authority: string;
-    }
-  ];
-  userId: string;
-  sub: string;
-  iss: string;
-  iat: number;
-  exp: number;
-}
-
-export async function auth(data: AuthData) {
-  await API.post(
-    "/auth/login",
-    {
-      email: data.email,
-      password: data.password,
-    },
-    {
-      baseURL: "http://localhost:3000",
-    }
-  );
-}
-
-export async function signIn(data: AuthData) {
-  const response = await API.post("/auth/login", {
-    email: data.email,
-    password: data.password,
-  });
-
-  const decodedToken = jwtDecode<JwtPayload>(response.data.token);
-
-  return {
-    id: decodedToken.userId,
-    email: decodedToken.sub,
-    roles: decodedToken.roles[0].authority,
+export interface AuthResponse {
+  token: string;
+  user: {
+    id: string;
+    email: string;
+    roles: string;
   };
+}
+
+export async function signIn(data: AuthData): Promise<AuthResponse> {
+  try {
+    const response = await API.post<AuthResponse>("/auth/login", data, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Login failed:", error);
+    throw error;
+  }
+}
+
+export async function validateLoginData(email: string) {
+  try {
+    const response = await API.get(
+      `/auth/validate?email=${encodeURIComponent(email)}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Validation failed:", error);
+    throw error;
+  }
 }
