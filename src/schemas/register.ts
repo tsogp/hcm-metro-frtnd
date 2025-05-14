@@ -20,21 +20,21 @@ export const step1Schema = z
       })
       .transform((val) => val.toLowerCase()),
     password: z
-      .string(),
-      // .min(8, "Password must be at least 8 characters")
-      // .regex(/[A-Z]/, {
-      //   message: "Password must contain at least one uppercase letter",
-      // })
-      // .regex(/[a-z]/, {
-      //   message: "Password must contain at least one lowercase letter",
-      // })
-      // .regex(/\d/, {
-      //   message: "Password must contain at least one digit",
-      // })
-      // .regex(/[@#$%]/, {
-      //   message:
-      //     "Password must contain at least one special character (@, #, $, %)",
-      // }),
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, {
+        message: "Password must contain at least one uppercase letter",
+      })
+      .regex(/[a-z]/, {
+        message: "Password must contain at least one lowercase letter",
+      })
+      .regex(/\d/, {
+        message: "Password must contain at least one digit",
+      })
+      .regex(/[@#$%]/, {
+        message:
+          "Password must contain at least one special character (@, #, $, %)",
+      }),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
