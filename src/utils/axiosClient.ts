@@ -1,4 +1,5 @@
 import axios from "axios";
+import https from "https";
 
 const backendURL = "https://localhost:8443";
 const isServer = typeof window === "undefined";
@@ -10,8 +11,13 @@ const API = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  // Add this for development to handle self-signed certificates
-  httpsAgent: new (require("https").Agent)({
+
+  /*
+  --------------------------------
+  | ONLY USE THIS IN DEVELOPMENT |
+  --------------------------------
+   */
+  httpsAgent: new https.Agent({
     rejectUnauthorized: false,
   }),
 });
