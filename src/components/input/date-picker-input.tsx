@@ -1,7 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { format, getMonth, getYear, setMonth, setYear } from "date-fns";
+import {
+  format,
+  formatDate,
+  getMonth,
+  getYear,
+  parseISO,
+  setMonth,
+  setYear,
+} from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -111,6 +119,7 @@ export function DatePicker({
   };
 
   const handleSelect = (selectedData: Date | undefined) => {
+    // console.log("selectedData", selectedData);
     if (selectedData && !isPastDate(selectedData)) {
       setDate(selectedData);
     }
@@ -127,6 +136,7 @@ export function DatePicker({
             className
           )}
         >
+          {/* {JSON.stringify(date)} */}
           {date ? format(date, "PPP") : <span>Pick a date</span>}
           <CalendarIcon className="ml-auto size-4" />
         </Button>

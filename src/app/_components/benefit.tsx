@@ -40,6 +40,8 @@ function BenefitSection() {
               alt="Passengers using the Ho Chi Minh City Metro"
               fill
               className="object-cover"
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>
           <div className="space-y-8">

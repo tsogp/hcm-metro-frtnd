@@ -8,6 +8,9 @@ import React from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { useUserStore } from "@/store/user-store";
 
 import { User } from "lucide-react";
 import {
@@ -20,11 +23,16 @@ import {
 } from "@/components/ui/form";
 import { PasswordInput } from "@/components/input/password-input";
 import { loginFormSchema, LoginFormValues } from "@/schemas/login";
+import { ROUTES } from "@/config/routes";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
+  const { login } = useUserStore();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -34,8 +42,28 @@ export function LoginForm({
     },
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log(data);
+  const onSubmit = async (data: LoginFormValues) => {
+    const onLoginAction = login(data.email, data.password);
+
+    toast.promise(onLoginAction, {
+      loading: "Logging in...",
+      success: () => {
+        router.push(searchParams.get("from") || ROUTES.DASHBOARD);
+        return "Login successful. Redirecting to dashboard...";
+      },
+      error: (e) => {
+        switch (e.response.status) {
+          case 401:
+            return e.response.data?.message || "Invalid credentials";
+          case 403:
+            return e.response.data?.message || "Access denied";
+          case 500:
+            return e.response.data?.message || "Internal server error";
+          default:
+            return e.response.data?.message || "Login failed";
+        }
+      },
+    });
   };
 
   return (
@@ -75,40 +103,40 @@ export function LoginForm({
             name="password"
             render={({ field }) => (
               <FormItem>
-                <div className="flex items-center">
-                  <FormLabel>Password</FormLabel>
-                  <a
-                    href="#"
-                    className="ml-auto text-xs underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <PasswordInput {...field} placeholder="Enter your password" />
+                  <PasswordInput placeholder="Enter your password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* <FormField
-            control={loginForm.control}
-            name="remember"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel className="text-sm font-normal">
-                  Remember me
-                </FormLabel>
-              </FormItem>
-            )}
-          /> */}
+          <div className="flex items-center justify-between">
+            <FormField
+              control={loginForm.control}
+              name="remember"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="text-sm font-normal">
+                    Remember me
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm text-primary hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
 
           <Button type="submit" className="w-full">
             Login

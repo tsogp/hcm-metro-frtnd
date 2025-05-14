@@ -1,4 +1,4 @@
-import { API } from "@/utils/axiosClient";
+import API from "@/utils/axiosClient";
 
 interface RegisterRequest {
   email: string;
@@ -19,12 +19,38 @@ interface RegisterRequest {
 }
 
 export const register = async (data: RegisterRequest) => {
-  try {
-    const response = await API.post("/auth/register", data);
-    console.log(response);
-    
-    return response;
-  } catch (error) {
-    throw error;
+  const response = await fetch("/api/auth/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Registration failed");
   }
+
+  return response.json();
+};
+
+export const validateRegister = async (validateData: {
+  email: string;
+  password: string;
+}) => {
+  const response = await fetch(
+    `/api/auth/validate?email=${encodeURIComponent(validateData.email)}`,
+    {
+      method: "GET",
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Validation failed");
+  }
+
+  return response.json();
 };

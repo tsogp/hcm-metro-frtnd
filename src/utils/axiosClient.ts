@@ -1,9 +1,45 @@
 import axios from "axios";
+import https from "https";
 
-const backendURL = "http://localhost:8080";
-
+const backendURL = "https://localhost:8443";
 const isServer = typeof window === "undefined";
 
-export const API = axios.create({
+// Create axios instance
+const API = axios.create({
   baseURL: backendURL,
+  withCredentials: true, // This is important for CORS with credentials
+  headers: {
+    "Content-Type": "application/json",
+  },
+
+  /*
+  --------------------------------
+  | ONLY USE THIS IN DEVELOPMENT |
+  --------------------------------
+   */
+  httpsAgent: new https.Agent({
+    rejectUnauthorized: false,
+  }),
 });
+
+// Request interceptor
+API.interceptors.request.use((config) => {
+  try {
+    return config;
+  } catch (error) {
+    if (!isServer) {
+      console.error("Request interceptor error", error);
+    }
+    return Promise.reject(error);
+  }
+});
+
+// Response interceptor for handling errors
+API.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export default API;

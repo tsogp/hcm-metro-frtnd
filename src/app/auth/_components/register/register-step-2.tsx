@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { DatePicker } from "@/components/input/date-picker-input";
-import { formatDate, getYear } from "date-fns";
+import { format, formatDate, getYear, parseISO } from "date-fns";
 
 interface Step2Props {
   formData: RegisterData;
@@ -21,6 +21,7 @@ interface Step2Props {
 }
 
 export function Step2({ formData, handleInputChange, step2Form }: Step2Props) {
+  // const dateOfBirth = step2Form.watch("dateOfBirth");
   return (
     <div className="grid gap-5">
       <FormField
@@ -148,9 +149,8 @@ export function Step2({ formData, handleInputChange, step2Form }: Step2Props) {
               <DatePicker
                 date={field.value ? new Date(field.value) : undefined}
                 setDate={(date) => {
-                  const isoDate = formatDate(date, "yyyy-MM-dd");
+                  const isoDate = format(date, "yyyy-MM-dd");
                   field.onChange(isoDate);
-
                   handleInputChange({
                     target: {
                       name: "dateOfBirth",
