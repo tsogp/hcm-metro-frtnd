@@ -1,7 +1,7 @@
 "use client";
 
-import { AppHeader } from "@/components/custom/app-header";
-import Footer from "@/app/_components/footer";
+import { AppHeader } from "@/components/common/app-header";
+import Footer from "@/app/_components/common/footer";
 
 export default function PaymentLayout({
   children,

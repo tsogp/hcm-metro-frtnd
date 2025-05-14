@@ -1,10 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { TrainFront, Map, Search, Calendar, Clock, ArrowRight } from "lucide-react";
+import {
+  TrainFront,
+  Map,
+  Search,
+  Calendar,
+  Clock,
+  ArrowRight,
+} from "lucide-react";
 import Link from "next/link";
-import { AppHeader } from "@/components/custom/app-header";
-import { UserDropdownMenu } from "@/components/custom/user-dropdown-menu";
+import { AppHeader } from "@/components/common/app-header";
+import { UserDropdownMenu } from "@/components/common/user-dropdown-menu";
 import { MetroExplorer } from "./_components/metro-explorer";
 import { MetroSearch } from "./_components/metro-search";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -22,10 +29,18 @@ export default function MetroExplorerPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <AppHeader onCartClick={openCart} />
-      <CartSheet open={isOpen} onOpenChange={(open) => open ? openCart() : closeCart()} />
-      
+      <CartSheet
+        open={isOpen}
+        onOpenChange={(open) => (open ? openCart() : closeCart())}
+      />
+
       <div className="flex-1 container mx-auto py-8 px-4">
-        <Tabs defaultValue="explore" value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs
+          defaultValue="explore"
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full"
+        >
           <TabsList className="grid grid-cols-4 mb-8">
             <TabsTrigger value="explore">Explore</TabsTrigger>
             <TabsTrigger value="search">Search</TabsTrigger>
@@ -60,4 +75,4 @@ export default function MetroExplorerPage() {
       </div>
     </div>
   );
-} 
+}

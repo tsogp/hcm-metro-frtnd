@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { AppHeader } from "@/components/custom/app-header";
-import Footer from "@/app/_components/footer";
+import { AppHeader } from "@/components/common/app-header";
+import Footer from "@/app/_components/common/footer";
 import { CartSheet } from "@/components/cart/cart-sheet";
 
 export default function ProfileLayout({

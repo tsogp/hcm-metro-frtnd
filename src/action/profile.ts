@@ -21,13 +21,18 @@ interface ProfileResponse {
 
 export async function getMyProfile(): Promise<ProfileData> {
   try {
-    const response = await API.get<ProfileResponse>("/profile/my-info", {
-      withCredentials: true,
+    const response = await fetch("/api/profile/my-info", {
+      method: "GET",
+      credentials: "include",
     });
 
-    console.log("Profile response:", response.data);
-    
-    return response.data.data;
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to fetch profile");
+    }
+
+    const data = await response.json();
+    return data.data;
   } catch (error: any) {
     console.error("Failed to fetch user profile:", error);
     if (error.response?.status === 403) {

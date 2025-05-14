@@ -3,8 +3,8 @@ import StatSection from "./_components/stats";
 import FeatureSection from "./_components/features";
 import BenefitSection from "./_components/benefit";
 import ContactSection from "./_components/contact";
-import { Navbar } from "./_components/nav";
-import Footer from "./_components/footer";
+import { Navbar } from "./_components/common/nav";
+import Footer from "./_components/common/footer";
 
 export default function LandingPage() {
   return (
