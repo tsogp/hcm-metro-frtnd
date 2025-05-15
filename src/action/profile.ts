@@ -25,21 +25,6 @@ export const getCurrentUserProfile = async (): Promise<ProfileData> => {
   }
 };
 
-export const getProfileImg = async (): Promise<ProfileImageResponse> => {
-  try {
-    const response = await API.get("/profile/profile-image", {
-      withCredentials: true,
-    });
-
-    console.log("PROFILE IMAGE RESPONSE", response.data.data);
-
-    return response.data.data;
-  } catch (error: any) {
-    console.error("Failed to fetch user profile image:", error);
-    return null;
-  }
-};
-
 export const updateProfileInfo = async (data: {
   passengerPhone: string;
   passengerAddress: string;
@@ -62,16 +47,107 @@ export const updateProfileCredentials = async (data: {
   return response.data;
 };
 
+export const getProfileImage = async (): Promise<ProfileImageResponse> => {
+  try {
+    const response = await API.get("/profile/profile-image", {
+      withCredentials: true,
+    });
+
+    console.log("PROFILE IMAGE RESPONSE", response.data.data);
+
+    return response.data.data;
+  } catch (error: any) {
+    console.error("Failed to fetch user profile image:", error);
+    return null;
+  }
+};
+
 export const updateProfileImage = async (file: File) => {
-  const formData = new FormData();
-  formData.append("file", file);
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
 
-  const response = await API.post("/profile/upload-profile-image", formData, {
-    withCredentials: true,
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+    const response = await API.post("/profile/upload-profile-image", formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-  return response.data;
+    return response.data;
+  } catch (error: any) {
+    console.error("Failed to update profile image:", error);
+    throw error;
+  }
+};
+
+type UploadStudentCardImagesParams = {
+  frontImageType: "STUDENT_ID_FRONT" | "NATIONAL_ID_FRONT";
+  backImageType: "STUDENT_ID_BACK" | "NATIONAL_ID_BACK";
+  frontFile: File;
+  backFile: File;
+};
+
+type CardImagesResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    nationalIdPictures: [
+      {
+        mimeType: string;
+        base64: string;
+      },
+      {
+        mimeType: string;
+        base64: string;
+      }
+    ];
+    studentIdPictures: [
+      {
+        mimeType: string;
+        base64: string;
+      },
+      {
+        mimeType: string;
+        base64: string;
+      }
+    ];
+  };
+};
+
+export const getCardImages = async (): Promise<CardImagesResponse> => {
+  try {
+    const response = await API.get("/profile/card-images", {
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Failed to get card images:", error);
+    throw error;
+  }
+};
+
+export const updateCardImages = async (data: UploadStudentCardImagesParams) => {
+  try {
+    const formData = new FormData();
+    formData.append("frontFile", data.frontFile);
+    formData.append("backFile", data.backFile);
+
+    const response = await API.post("/profile/upload-card-images", formData, {
+      params: {
+        frontImageType: data.frontImageType,
+        backImageType: data.backImageType,
+      },
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Failed to update card images:", error);
+    throw error;
+  }
 };

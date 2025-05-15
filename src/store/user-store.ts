@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { logout, signIn } from "@/action/auth";
-import { getCurrentUserProfile, getProfileImg } from "@/action/profile";
+import { getCurrentUserProfile, getProfileImage } from "@/action/profile";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 interface UserData {
@@ -45,7 +45,7 @@ export const useUserStore = create<UserStore>()(
       fetchUserProfile: async () => {
         try {
           const profileData = await getCurrentUserProfile();
-          const profileImg = await getProfileImg();
+          const profileImg = await getProfileImage();
           const userData: UserData = {
             ...profileData,
             profilePicture: profileImg?.profileImage?.base64 ?? null,
@@ -71,7 +71,7 @@ export const useUserStore = create<UserStore>()(
         try {
           await signIn({ email, password });
           const userData = await get().fetchUserProfile();
-          const profileImg = await getProfileImg();
+          const profileImg = await getProfileImage();
           set({
             currentUser: {
               ...userData,
@@ -79,7 +79,6 @@ export const useUserStore = create<UserStore>()(
             },
           });
 
-          console.log(userData);
           return userData;
         } catch (error: any) {
           console.error("Login error:", error);
@@ -101,13 +100,13 @@ export const useUserStore = create<UserStore>()(
           }
 
           const profileData = await getCurrentUserProfile();
-          const profileImg = await getProfileImg();
+          const profileImg = await getProfileImage();
           const userData: UserData = {
             ...profileData,
             profilePicture: profileImg?.profileImage?.base64 ?? null,
           };
 
-          console.log(userData);
+          console.log("CHECK USER:", userData);
           set({ currentUser: userData, isLoading: false });
           return true;
         } catch (error) {

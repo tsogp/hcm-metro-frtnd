@@ -16,12 +16,12 @@ export type UserProfileType = {
     national: {
       front: string | null;
       back: string | null;
-      status: "pending" | "verified" | "rejected" | null;
+      status: "verified" | null;
     };
     student: {
       front: string | null;
       back: string | null;
-      status: "pending" | "verified" | "rejected" | null;
+      status: "verified" | null;
     };
   };
 };

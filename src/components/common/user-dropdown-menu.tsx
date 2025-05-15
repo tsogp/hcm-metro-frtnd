@@ -22,13 +22,22 @@ import { useUserStore } from "@/store/user-store";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/config/routes";
 import Image from "next/image";
+import { useCartStore } from "@/store/cart-store";
 
 export function UserDropdownMenu() {
   const { currentUser, logout } = useUserStore();
+  const { clearCart } = useCartStore();
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
   const fullName = `${currentUser?.passengerFirstName} ${currentUser?.passengerMiddleName} ${currentUser?.passengerLastName}`;
+
+  const handleLogoutClicked = () => {
+    logout();
+    clearCart();
+    setOpen(false);
+    router.push(ROUTES.LANDING);
+  };
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -48,6 +57,8 @@ export function UserDropdownMenu() {
             }
             alt="Profile Picture"
             fill
+            priority
+            sizes="size-8"
             className="object-cover"
           />
         </Button>
@@ -86,9 +97,7 @@ export function UserDropdownMenu() {
         <DropdownMenuItem
           className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
           onClick={() => {
-            logout();
-            setOpen(false);
-            router.push(ROUTES.LANDING);
+            handleLogoutClicked();
           }}
         >
           <LogOut className="mr-2 h-4 w-4" />
