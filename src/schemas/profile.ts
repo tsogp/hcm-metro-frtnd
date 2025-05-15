@@ -43,6 +43,7 @@ export const profileFormSchema = z
         "Password must contain at least one special character (@, #, $, %)"
       ),
     confirmPassword: z.string().optional(),
+    studentId: z.string().optional(),
     phoneNumber: z
       .string()
       .min(1, "Phone number is required")

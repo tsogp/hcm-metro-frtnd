@@ -222,6 +222,31 @@ function EditProfileForm({
                 )}
               />
             ))}
+
+            <FormField
+              control={editProfileForm.control}
+              name={"studentId" as keyof ProfileFormValues}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Student ID</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Enter your student ID"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleInputChange(e);
+                      }}
+                    />
+                  </FormControl>
+                  <FormDescription className="text-xs text-muted-foreground">
+                    This field is optional
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
 

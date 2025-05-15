@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import {
   Card,
   CardHeader,
@@ -7,7 +9,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,9 +47,11 @@ function EditProfileTab({
     email: user?.email || "",
     password: "",
     confirmPassword: "",
+    studentId: user?.studentId || "",
     phoneNumber: user?.phoneNumber || "",
     address: user?.address || "",
   };
+
   const editProfileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: defaultFormValues,
@@ -57,10 +61,18 @@ function EditProfileTab({
 
   useEffect(() => {
     if (user) {
-      editProfileForm.reset(defaultFormValues);
-      setFormData(defaultFormValues);
+      const values = {
+        email: user.email || "",
+        password: "",
+        confirmPassword: "",
+        studentId: user.studentId || "",
+        phoneNumber: user.phoneNumber || "",
+        address: user.address || "",
+      };
+      editProfileForm.reset(values);
+      setFormData(values);
     }
-  }, [user]);
+  }, [user, setFormData]);
 
   const onSubmit = (data: ProfileFormValues) => {
     setFormData({ ...formData, ...data });
@@ -70,12 +82,13 @@ function EditProfileTab({
   const hasFormChanges = () => {
     const currentValues = editProfileForm.getValues();
     return (
-      currentValues.email !== defaultFormValues.email ||
-      currentValues.phoneNumber !== defaultFormValues.phoneNumber ||
-      currentValues.address !== defaultFormValues.address ||
+      currentValues.email !== user?.email ||
+      currentValues.phoneNumber !== user?.phoneNumber ||
+      currentValues.address !== user?.address ||
       currentValues.password !== "" ||
       currentValues.confirmPassword !== "" ||
-      previewUrl !== user?.profilePicture
+      previewUrl !== null ||
+      currentValues.studentId !== user?.studentId
     );
   };
 
@@ -83,7 +96,7 @@ function EditProfileTab({
     editProfileForm.reset(defaultFormValues);
     setFormData({ ...formData, ...defaultFormValues });
     setSelectedImage(null);
-    setPreviewUrl(user?.profilePicture || null);
+    setPreviewUrl(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 

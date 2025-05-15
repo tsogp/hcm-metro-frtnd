@@ -74,7 +74,14 @@ export const step3Schema = z.object({
     .string()
     .min(1, "National ID is required")
     .regex(/\d{12}$/, "National ID must be 12 digits"),
-  studentId: z.string().optional(),
+  studentId: z
+    .string()
+    .max(15, "Student ID must be at most 15 characters")
+    .regex(
+      /^[a-zA-Z0-9]*$/,
+      "Student ID must contain only alphanumeric characters"
+    )
+    .optional(),
   disabilityStatus: z.enum(["yes", "no"]),
   revolutionaryContribution: z.enum(["yes", "no"]),
 });

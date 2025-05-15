@@ -6,8 +6,8 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfilePreviewTab from "./_components/preview/profile-preview-tab";
 import EditProfileTab from "./_components/edit/edit-profile-tab";
-import IdVerificationTab from "./_components/id/id-verification-tab";
-import type { ProfileFormType, UserProfileType } from "@/types/profile";
+import type { ProfileFormValues } from "@/schemas/profile";
+import type { UserProfileType } from "@/types/profile";
 import {
   getCurrentUserProfile,
   getProfileImage,
@@ -17,6 +17,7 @@ import {
 } from "@/action/profile";
 import { toast } from "sonner";
 import { useUserStore } from "@/store/user-store";
+import IdVerificationTab from "./_components/id/id-verification-tab";
 
 export default function ProfilePage() {
   const { setCurrentUser } = useUserStore();
@@ -41,12 +42,22 @@ export default function ProfilePage() {
     },
   });
 
-  const [formData, setFormData] = useState<ProfileFormType>({
+  const [formData, setFormData] = useState<ProfileFormValues>({
     email: "",
     password: "",
     confirmPassword: "",
     phoneNumber: "",
     address: "",
+    studentId: "",
+  });
+
+  const [initialFormData, setInitialFormData] = useState<ProfileFormValues>({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phoneNumber: "",
+    address: "",
+    studentId: "",
   });
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -65,7 +76,7 @@ export default function ProfilePage() {
         const userProfile = await getCurrentUserProfile();
         const profileImg = await getProfileImage();
 
-        setUser({
+        const userData = {
           email: userProfile.passengerEmail,
           firstName: userProfile.passengerFirstName,
           middleName: userProfile.passengerMiddleName,
@@ -83,15 +94,21 @@ export default function ProfilePage() {
             national: { front: null, back: null, status: null },
             student: { front: null, back: null, status: null },
           },
-        });
+        };
 
-        setFormData({
+        setUser(userData);
+
+        const formValues = {
           email: userProfile.passengerEmail,
           password: "",
           confirmPassword: "",
           phoneNumber: userProfile.passengerPhone,
           address: userProfile.passengerAddress,
-        });
+          studentId: userProfile.studentID || "",
+        };
+
+        setFormData(formValues);
+        setInitialFormData(formValues);
       } catch (error) {
         console.error("Failed to fetch user profile:", error);
         toast.error("Failed to load user profile");
@@ -127,54 +144,91 @@ export default function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setPreviewUrl(null);
 
     try {
-      // Update info and credentials in parallel
-      const infoPromise = updateProfileInfo({
-        passengerPhone: formData.phoneNumber,
-        passengerAddress: formData.address,
-      });
+      // Check what has changed
+      const hasCredentialsChanged =
+        formData.email !== initialFormData.email ||
+        formData.password !== initialFormData.password;
 
-      const credentialsPromise = updateProfileCredentials({
-        passengerEmail: formData.email,
-        password: formData.password || undefined,
-      });
+      const hasInfoChanged =
+        formData.phoneNumber !== initialFormData.phoneNumber ||
+        formData.address !== initialFormData.address ||
+        formData.studentId !== initialFormData.studentId;
 
-      toast.promise(infoPromise, {
-        loading: "Updating profile...",
-        success: "Profile updated successfully!",
-        error: "Failed to update profile. Please try again.",
-      });
+      const hasImageChanged = selectedImage !== null;
 
-      toast.promise(credentialsPromise, {
-        loading: "Updating credentials...",
-        success: "Credentials updated successfully!",
-        error: "Failed to update credentials. Please try again.",
-      });
+      // Create an array to store all promises
+      const promises = [];
+      const toastPromises = [];
 
-      // Wait for both to finish
-      await Promise.all([infoPromise, credentialsPromise]);
-
-      if (selectedImage) {
-        const onUploadImageAction = updateProfileImage(selectedImage);
-
-        toast.promise(onUploadImageAction, {
-          loading: "Updating image...",
-          success: () => {
-            return "Image updated successfully!";
-          },
-          error: "Failed to update image. Please try again.",
+      // Only update credentials if they've changed
+      if (hasCredentialsChanged) {
+        const credentialsPromise = updateProfileCredentials({
+          passengerEmail: formData.email,
+          password: formData.password || undefined,
         });
-        await onUploadImageAction;
+
+        const credentialsToast = toast.promise(credentialsPromise, {
+          loading: "Updating credentials...",
+          success: "Credentials updated successfully!",
+          error: "Failed to update credentials. Please try again.",
+        });
+
+        promises.push(credentialsPromise);
+        toastPromises.push(credentialsToast);
       }
 
+      if (hasInfoChanged) {
+        const infoPromise = updateProfileInfo({
+          passengerPhone: formData.phoneNumber,
+          passengerAddress: formData.address,
+          // studentID: formData.studentId,
+        });
+
+        const infoToast = toast.promise(infoPromise, {
+          loading: "Updating profile...",
+          success: "Profile updated successfully!",
+          error: "Failed to update profile. Please try again.",
+        });
+
+        promises.push(infoPromise);
+        toastPromises.push(infoToast);
+      }
+
+      // Only update image if it's changed
+      if (hasImageChanged && selectedImage) {
+        const imagePromise = updateProfileImage(selectedImage);
+
+        const imageToast = toast.promise(imagePromise, {
+          loading: "Updating image...",
+          success: "Image updated successfully!",
+          error: "Failed to update image. Please try again.",
+        });
+
+        promises.push(imagePromise);
+        toastPromises.push(imageToast);
+      }
+
+      // If nothing has changed, show a message
+      if (!hasCredentialsChanged && !hasInfoChanged && !hasImageChanged) {
+        toast.info("No changes to save");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Wait for all promises to resolve
+      await Promise.all(promises);
+
+      // Refresh user data
       const userProfile = await getCurrentUserProfile();
       const profileImg = await getProfileImage();
+
       setCurrentUser({
         ...userProfile,
         profilePicture: profileImg?.profileImage?.base64 ?? null,
       });
+
       setUser({
         email: userProfile.passengerEmail,
         firstName: userProfile.passengerFirstName,
@@ -192,13 +246,33 @@ export default function ProfilePage() {
         idVerification: user.idVerification, // Preserve existing verification data
       });
 
+      // Update initial form data to match current form data
+      setInitialFormData({
+        ...formData,
+        password: "",
+        confirmPassword: "",
+      });
+
+      // Reset password fields
       setFormData((prev) => ({
         ...prev,
         password: "",
         confirmPassword: "",
       }));
 
+      // Reset selected image
+      setSelectedImage(null);
+
+      // Increment refresh key to trigger a refresh
       setRefreshKey((prev) => prev + 1);
+
+      // Show success message if no specific toasts were shown
+      if (toastPromises.length === 0) {
+        toast.success("Profile updated successfully!");
+      }
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      toast.error("An error occurred while updating your profile");
     } finally {
       setIsSubmitting(false);
     }
