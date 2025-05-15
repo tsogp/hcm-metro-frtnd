@@ -95,6 +95,8 @@ function EditProfileForm({
                   fill
                   className="object-cover"
                   onError={() => setImageSrc("/images/default-avatar.jpg")}
+                  sizes="128px"
+                  priority={imageSrc === "/images/default-avatar.jpg"}
                 />
               )}
             </div>

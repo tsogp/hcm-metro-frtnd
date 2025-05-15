@@ -6,11 +6,11 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfilePreviewTab from "./_components/preview/profile-preview-tab";
 import EditProfileTab from "./_components/edit/edit-profile-tab";
-import IdVerificationTab from "./_components/id-verification-tab";
+import IdVerificationTab from "./_components/id/id-verification-tab";
 import type { ProfileFormType, UserProfileType } from "@/types/profile";
 import {
   getCurrentUserProfile,
-  getProfileImg,
+  getProfileImage,
   updateProfileCredentials,
   updateProfileImage,
   updateProfileInfo,
@@ -35,6 +35,10 @@ export default function ProfilePage() {
     revolutionaryContribution: false,
     balance: 0.0,
     profilePicture: null,
+    idVerification: {
+      national: { front: null, back: null, status: null },
+      student: { front: null, back: null, status: null },
+    },
   });
 
   const [formData, setFormData] = useState<ProfileFormType>({
@@ -48,6 +52,7 @@ export default function ProfilePage() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState("edit");
   const [refreshKey, setRefreshKey] = useState(0);
@@ -55,32 +60,44 @@ export default function ProfilePage() {
   // Fetch user profile on update or on page load
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const userProfile = await getCurrentUserProfile();
-      const profileImg = await getProfileImg();
+      setIsLoading(true);
+      try {
+        const userProfile = await getCurrentUserProfile();
+        const profileImg = await getProfileImage();
 
-      setUser({
-        email: userProfile.passengerEmail,
-        firstName: userProfile.passengerFirstName,
-        middleName: userProfile.passengerMiddleName,
-        lastName: userProfile.passengerLastName,
-        phoneNumber: userProfile.passengerPhone,
-        address: userProfile.passengerAddress,
-        dateOfBirth: userProfile.passengerDateOfBirth,
-        nationalId: userProfile.nationalID,
-        studentId: userProfile.studentID,
-        disabilityStatus: userProfile.hasDisability,
-        revolutionaryContribution: userProfile.isRevolutionary,
-        balance: 1000,
-        profilePicture: profileImg?.profileImage?.base64 ?? null,
-      });
+        setUser({
+          email: userProfile.passengerEmail,
+          firstName: userProfile.passengerFirstName,
+          middleName: userProfile.passengerMiddleName,
+          lastName: userProfile.passengerLastName,
+          phoneNumber: userProfile.passengerPhone,
+          address: userProfile.passengerAddress,
+          dateOfBirth: userProfile.passengerDateOfBirth,
+          nationalId: userProfile.nationalID,
+          studentId: userProfile.studentID,
+          disabilityStatus: userProfile.hasDisability,
+          revolutionaryContribution: userProfile.isRevolutionary,
+          balance: 1000,
+          profilePicture: profileImg?.profileImage?.base64 ?? null,
+          idVerification: {
+            national: { front: null, back: null, status: null },
+            student: { front: null, back: null, status: null },
+          },
+        });
 
-      setFormData({
-        email: userProfile.passengerEmail,
-        password: "",
-        confirmPassword: "",
-        phoneNumber: userProfile.passengerPhone,
-        address: userProfile.passengerAddress,
-      });
+        setFormData({
+          email: userProfile.passengerEmail,
+          password: "",
+          confirmPassword: "",
+          phoneNumber: userProfile.passengerPhone,
+          address: userProfile.passengerAddress,
+        });
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+        toast.error("Failed to load user profile");
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchUserProfile();
   }, [refreshKey]);
@@ -153,7 +170,7 @@ export default function ProfilePage() {
       }
 
       const userProfile = await getCurrentUserProfile();
-      const profileImg = await getProfileImg();
+      const profileImg = await getProfileImage();
       setCurrentUser({
         ...userProfile,
         profilePicture: profileImg?.profileImage?.base64 ?? null,
@@ -172,6 +189,7 @@ export default function ProfilePage() {
         revolutionaryContribution: userProfile.isRevolutionary,
         balance: 1000,
         profilePicture: profileImg?.profileImage?.base64 ?? null,
+        idVerification: user.idVerification, // Preserve existing verification data
       });
 
       setFormData((prev) => ({
