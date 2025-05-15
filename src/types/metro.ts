@@ -14,14 +14,11 @@ export type MetroStation = {
 export type MetroLine = {
   id: string;
   name: string;
-  color: string;
-  stations: MetroStation[];
-  operatingHours: {
-    start: string;
-    end: string;
-  };
-  frequency: number; // in minutes
-  status: 'operational' | 'maintenance' | 'planned';
+  first_arrival: string;
+  train_frequency: string;
+  total_duration: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type MetroRoute = {
@@ -29,8 +26,7 @@ export type MetroRoute = {
   fromStation: string;
   toStation: string;
   lineId: string;
-  duration: number; // in minutes
-  distance: number; // in kilometers
+  duration: number;
   price: number;
   stops: string[];
 };
@@ -40,10 +36,41 @@ export type MetroTicket = {
   routeId: string;
   fromStation: string;
   toStation: string;
-  departureTime: string;
-  arrivalTime: string;
   price: number;
   type: 'single' | 'day' | 'week' | 'month';
-  validUntil: string;
-  isAvailable: boolean;
+};
+
+export type SuspensionType = "EMERGENCY" | "MAINTAINENCE";
+
+export type Station = {
+  id: string;
+  name: string;
+  address: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Schedule = {
+  metro_line_id: string;
+  station_id: string;
+  order: number;
+  arrival_time: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AlertStation = {
+  alert_id: string;
+  station_id: string;
+};
+
+export type SuspensionAlert = {
+  id: string;
+  suspension_type: SuspensionType;
+  metro_line_id: string;
+  type: string;
+  description: string;
+  expected_restore_time: string;
+  created_at: string;
+  updated_at: string;
 }; 
