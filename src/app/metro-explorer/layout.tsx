@@ -1,9 +1,10 @@
 "use client";
 
-import { AppHeader } from "@/components/custom/app-header";
-import Footer from "@/app/_components/footer";
+import { AppHeader } from "@/components/common/app-header";
 import { CartSheet } from "@/components/cart/cart-sheet";
 import { useCartStore } from "@/store/cart-store";
+import Footer from "../_components/common/footer";
+
 
 export default function MetroExplorerLayout({
   children,
