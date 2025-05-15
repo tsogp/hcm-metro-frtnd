@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { useUserStore } from "@/store/user-store";
 
 export default function ProfilePage() {
-  const { currentUser, setCurrentUser } = useUserStore();
+  const { setCurrentUser } = useUserStore();
 
   const [user, setUser] = useState<UserProfileType>({
     email: "",
@@ -110,6 +110,7 @@ export default function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setPreviewUrl(null);
 
     try {
       // Update info and credentials in parallel
@@ -117,7 +118,7 @@ export default function ProfilePage() {
         passengerPhone: formData.phoneNumber,
         passengerAddress: formData.address,
       });
-  
+
       const credentialsPromise = updateProfileCredentials({
         passengerEmail: formData.email,
         password: formData.password || undefined,
@@ -138,43 +139,39 @@ export default function ProfilePage() {
       // Wait for both to finish
       await Promise.all([infoPromise, credentialsPromise]);
 
-      // Handle image upload (wait for it to finish)
-      let newProfilePicture =
-        currentUser?.profilePicture ?? "/images/default-avatar.jpg";
       if (selectedImage) {
-        const imagePromise = updateProfileImage(selectedImage);
-        toast.promise(imagePromise, {
+        const onUploadImageAction = updateProfileImage(selectedImage);
+
+        toast.promise(onUploadImageAction, {
           loading: "Updating image...",
-          success: (response) => {
-            newProfilePicture = response.data.profileImage.base64;
+          success: () => {
             return "Image updated successfully!";
           },
           error: "Failed to update image. Please try again.",
         });
+        await onUploadImageAction;
       }
 
-      // Now update state with the new image
-      setUser((prev) => ({
-        ...prev,
-        email: formData.email,
-        phoneNumber: formData.phoneNumber,
-        address: formData.address,
-        profilePicture: newProfilePicture,
-      }));
-
+      const userProfile = await getCurrentUserProfile();
+      const profileImg = await getProfileImg();
       setCurrentUser({
-        passengerEmail: formData.email,
-        passengerPhone: formData.phoneNumber,
-        passengerAddress: formData.address,
-        profilePicture: newProfilePicture,
-        passengerFirstName: currentUser?.passengerFirstName ?? "",
-        passengerMiddleName: currentUser?.passengerMiddleName ?? "",
-        passengerLastName: currentUser?.passengerLastName ?? "",
-        passengerDateOfBirth: currentUser?.passengerDateOfBirth ?? "",
-        nationalID: currentUser?.nationalID ?? "",
-        studentID: currentUser?.studentID ?? "",
-        hasDisability: currentUser?.hasDisability ?? false,
-        isRevolutionary: currentUser?.isRevolutionary ?? false,
+        ...userProfile,
+        profilePicture: profileImg?.profileImage?.base64 ?? null,
+      });
+      setUser({
+        email: userProfile.passengerEmail,
+        firstName: userProfile.passengerFirstName,
+        middleName: userProfile.passengerMiddleName,
+        lastName: userProfile.passengerLastName,
+        phoneNumber: userProfile.passengerPhone,
+        address: userProfile.passengerAddress,
+        dateOfBirth: userProfile.passengerDateOfBirth,
+        nationalId: userProfile.nationalID,
+        studentId: userProfile.studentID,
+        disabilityStatus: userProfile.hasDisability,
+        revolutionaryContribution: userProfile.isRevolutionary,
+        balance: 1000,
+        profilePicture: profileImg?.profileImage?.base64 ?? null,
       });
 
       setFormData((prev) => ({

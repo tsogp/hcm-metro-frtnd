@@ -54,12 +54,11 @@ function EditProfileTab({
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   useEffect(() => {
     if (user) {
       editProfileForm.reset(defaultFormValues);
       setFormData(defaultFormValues);
-      if (!previewUrl) setPreviewUrl(user.profilePicture || null);
     }
   }, [user]);
 
@@ -111,7 +110,7 @@ function EditProfileTab({
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const showRemoveButton = previewUrl && previewUrl !== user?.profilePicture;
+  const showRemoveButton = previewUrl ? true : false;
 
   return (
     <Card>
