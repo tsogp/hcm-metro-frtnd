@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 export interface TicketCartItem {
   id: string;
@@ -73,7 +73,8 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: "cart-storage",
+      name: "user-cart",
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );
