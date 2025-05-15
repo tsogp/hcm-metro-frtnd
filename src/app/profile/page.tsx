@@ -4,78 +4,99 @@ import type React from "react";
 
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProfilePreviewTab from "./_components/profile-preview-tab";
-import EditProfileTab from "./_components/edit-profile-tab";
+import ProfilePreviewTab from "./_components/preview/profile-preview-tab";
+import EditProfileTab from "./_components/edit/edit-profile-tab";
 import IdVerificationTab from "./_components/id-verification-tab";
 import type { ProfileFormType, UserProfileType } from "@/types/profile";
+import {
+  getCurrentUserProfile,
+  getProfileImg,
+  updateProfileCredentials,
+  updateProfileImage,
+  updateProfileInfo,
+} from "@/action/profile";
+import { toast } from "sonner";
+import { useUserStore } from "@/store/user-store";
 
 export default function ProfilePage() {
-  // Mock user data - in a real app, this would come from your database
+  const { currentUser, setCurrentUser } = useUserStore();
+
   const [user, setUser] = useState<UserProfileType>({
-    email: "user@example.com",
-    firstName: "Nguyen",
-    middleName: "Son",
-    lastName: "Tung",
-    phoneNumber: "0121234567",
-    address: "702 Nguyen Van Linh, District 7, HCMC, Vietnam",
-    dateOfBirth: "1990/05/15",
-    nationalId: "AB123456789",
-    studentId: "-",
+    email: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    phoneNumber: "",
+    address: "",
+    dateOfBirth: "",
+    nationalId: "",
+    studentId: "",
     disabilityStatus: false,
-    revolutionaryContribution: true,
-    balance: 1250.12,
+    revolutionaryContribution: false,
+    balance: 0.0,
     profilePicture: null,
-    idVerification: {
-      national: {
-        front: null,
-        back: null,
-        status: null,
-      },
-      student: {
-        front: null,
-        back: null,
-        status: null,
-      },
-    },
   });
 
-  // Form state
   const [formData, setFormData] = useState<ProfileFormType>({
-    email: user.email,
+    email: "",
     password: "",
     confirmPassword: "",
-    firstName: user.firstName,
-    middleName: user.middleName,
-    lastName: user.lastName,
-    phoneNumber: user.phoneNumber,
-    address: user.address,
-    dateOfBirth: user.dateOfBirth,
-    nationalId: user.nationalId,
-    studentId: user.studentId || "",
-    disabilityStatus: user.disabilityStatus,
-    revolutionaryContribution: user.revolutionaryContribution,
+    phoneNumber: "",
+    address: "",
   });
 
-  // Profile picture state
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    user.profilePicture
-  );
+  const [previewUrl, setPreviewUrl] = useState<string | null>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState("edit");
 
-  // Create preview URL when a new image is selected
+  const [activeTab, setActiveTab] = useState("edit");
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Fetch user profile on update or on page load
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const userProfile = await getCurrentUserProfile();
+      const profileImg = await getProfileImg();
+
+      setUser({
+        email: userProfile.passengerEmail,
+        firstName: userProfile.passengerFirstName,
+        middleName: userProfile.passengerMiddleName,
+        lastName: userProfile.passengerLastName,
+        phoneNumber: userProfile.passengerPhone,
+        address: userProfile.passengerAddress,
+        dateOfBirth: userProfile.passengerDateOfBirth,
+        nationalId: userProfile.nationalID,
+        studentId: userProfile.studentID,
+        disabilityStatus: userProfile.hasDisability,
+        revolutionaryContribution: userProfile.isRevolutionary,
+        balance: 1000,
+        profilePicture: profileImg?.profileImage?.base64 ?? null,
+      });
+
+      setFormData({
+        email: userProfile.passengerEmail,
+        password: "",
+        confirmPassword: "",
+        phoneNumber: userProfile.passengerPhone,
+        address: userProfile.passengerAddress,
+      });
+    };
+    fetchUserProfile();
+  }, [refreshKey]);
+
+  // Create a preview URL for the selected image
   useEffect(() => {
     if (selectedImage) {
       const objectUrl = URL.createObjectURL(selectedImage);
       setPreviewUrl(objectUrl);
 
-      // Clean up the URL when component unmounts or when the selected image changes
       return () => URL.revokeObjectURL(objectUrl);
+    } else {
+      setPreviewUrl(null);
     }
   }, [selectedImage]);
 
-  // Handle form input changes
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -86,44 +107,86 @@ export default function ProfilePage() {
     });
   };
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      // In a real app, you would upload the image to a server here
-      // and get back a URL to store in the user object
+    try {
+      // Update info and credentials in parallel
+      const infoPromise = updateProfileInfo({
+        passengerPhone: formData.phoneNumber,
+        passengerAddress: formData.address,
+      });
+  
+      const credentialsPromise = updateProfileCredentials({
+        passengerEmail: formData.email,
+        password: formData.password || undefined,
+      });
 
-      // Update user data
-      setUser({
-        ...user,
+      toast.promise(infoPromise, {
+        loading: "Updating profile...",
+        success: "Profile updated successfully!",
+        error: "Failed to update profile. Please try again.",
+      });
+
+      toast.promise(credentialsPromise, {
+        loading: "Updating credentials...",
+        success: "Credentials updated successfully!",
+        error: "Failed to update credentials. Please try again.",
+      });
+
+      // Wait for both to finish
+      await Promise.all([infoPromise, credentialsPromise]);
+
+      // Handle image upload (wait for it to finish)
+      let newProfilePicture =
+        currentUser?.profilePicture ?? "/images/default-avatar.jpg";
+      if (selectedImage) {
+        const imagePromise = updateProfileImage(selectedImage);
+        toast.promise(imagePromise, {
+          loading: "Updating image...",
+          success: (response) => {
+            newProfilePicture = response.data.profileImage.base64;
+            return "Image updated successfully!";
+          },
+          error: "Failed to update image. Please try again.",
+        });
+      }
+
+      // Now update state with the new image
+      setUser((prev) => ({
+        ...prev,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
         address: formData.address,
-        profilePicture: previewUrl, // Update profile picture
+        profilePicture: newProfilePicture,
+      }));
+
+      setCurrentUser({
+        passengerEmail: formData.email,
+        passengerPhone: formData.phoneNumber,
+        passengerAddress: formData.address,
+        profilePicture: newProfilePicture,
+        passengerFirstName: currentUser?.passengerFirstName ?? "",
+        passengerMiddleName: currentUser?.passengerMiddleName ?? "",
+        passengerLastName: currentUser?.passengerLastName ?? "",
+        passengerDateOfBirth: currentUser?.passengerDateOfBirth ?? "",
+        nationalID: currentUser?.nationalID ?? "",
+        studentID: currentUser?.studentID ?? "",
+        hasDisability: currentUser?.hasDisability ?? false,
+        isRevolutionary: currentUser?.isRevolutionary ?? false,
       });
 
-      // Reset password fields
-      setFormData({
-        ...formData,
+      setFormData((prev) => ({
+        ...prev,
         password: "",
         confirmPassword: "",
-      });
+      }));
 
+      setRefreshKey((prev) => prev + 1);
+    } finally {
       setIsSubmitting(false);
-
-      // In a real app, you would show a success message here
-      alert("Profile updated successfully!");
-    }, 1000);
-
-    console.log(user);
-  };
-
-  // Get initials for avatar fallback
-  const getInitials = () => {
-    return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`;
+    }
   };
 
   return (
@@ -133,14 +196,9 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Profile Preview - Always visible on the left */}
         <div className="lg:col-span-5">
-          <ProfilePreviewTab
-            user={user}
-            getInitials={getInitials}
-            setActiveTab={setActiveTab}
-          />
+          <ProfilePreviewTab user={user} setActiveTab={setActiveTab} />
         </div>
 
-        {/* Editing Tabs - On the right */}
         <div className="lg:col-span-7">
           <Tabs
             value={activeTab}
@@ -157,8 +215,7 @@ export default function ProfilePage() {
               <EditProfileTab
                 user={user}
                 handleSubmit={handleSubmit}
-                previewUrl={previewUrl}
-                getInitials={getInitials}
+                previewUrl={previewUrl || null}
                 formData={formData}
                 handleInputChange={handleInputChange}
                 setFormData={setFormData}

@@ -26,16 +26,17 @@ export const register = async (data: RegisterRequest) => {
   return response.data;
 };
 
-export const validateRegister = async (validateData: {
-  email: string;
-  password: string;
-}) => {
-  const response = await API.get(
-    `/auth/validate?email=${encodeURIComponent(validateData.email)}`,
-    {
-      withCredentials: true,
-    }
-  );
-
-  return response.data;
+export const validateRegister = async (email: string) => {
+  try {
+    const response = await API.get(
+      `/auth/validate-existing-email?email=${encodeURIComponent(email)}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Validation failed:", error);
+    throw error;
+  }
 };

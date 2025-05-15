@@ -39,7 +39,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           {children}
-          <Toaster position="bottom-right" duration={500} />
+          <Toaster position="bottom-right" duration={1500} />
         </AuthProvider>
       </ThemeProvider>
 

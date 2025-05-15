@@ -14,7 +14,7 @@ export interface AuthResponse {
   };
 }
 
-export async function signIn(data: AuthData): Promise<AuthResponse> {
+export const signIn = async (data: AuthData): Promise<AuthResponse> => {
   try {
     const response = await API.post<AuthResponse>("/auth/login", data, {
       withCredentials: true,
@@ -22,21 +22,6 @@ export async function signIn(data: AuthData): Promise<AuthResponse> {
     return response.data;
   } catch (error) {
     console.error("Login failed:", error);
-    throw error;
-  }
-}
-
-export async function validateLoginData(email: string) {
-  try {
-    const response = await API.get(
-      `/auth/validate?email=${encodeURIComponent(email)}`,
-      {
-        withCredentials: true,
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Validation failed:", error);
     throw error;
   }
 }

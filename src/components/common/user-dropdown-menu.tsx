@@ -1,7 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { User, LogOut, Pen, Wallet } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  User,
+  LogOut,
+  Pen,
+  Wallet,
+  SquareUserRound,
+  UserPen,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,34 +18,48 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserStore } from "@/store/user-store";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/config/routes";
+import Image from "next/image";
 
 export function UserDropdownMenu() {
-  const { logout } = useUserStore();
+  const { currentUser, logout } = useUserStore();
   const [open, setOpen] = useState(false);
   const router = useRouter();
+
+  const fullName = `${currentUser?.passengerFirstName} ${currentUser?.passengerMiddleName} ${currentUser?.passengerLastName}`;
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src="/images/default-avatar.jpg" alt="User" />
-            <AvatarFallback>
-              <User className="h-4 w-4" />
-            </AvatarFallback>
-          </Avatar>
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 rounded-full overflow-hidden border-1 border-gray-300"
+        >
+          <Image
+            src={
+              typeof currentUser?.profilePicture === "string" &&
+              currentUser?.profilePicture.length > 0
+                ? currentUser?.profilePicture.startsWith("data:image")
+                  ? currentUser?.profilePicture
+                  : `data:image/png;base64,${currentUser?.profilePicture}`
+                : "/images/default-avatar.jpg"
+            }
+            alt="Profile Picture"
+            fill
+            className="object-cover"
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">User</p>
+            <p className="text-sm font-medium leading-none">
+              {fullName ?? "GUEST"}
+            </p>
             <p className="text-xs leading-none text-muted-foreground">
-              user@example.com
+              {currentUser?.passengerEmail ?? ""}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -46,11 +67,11 @@ export function UserDropdownMenu() {
         <DropdownMenuItem
           className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
           onClick={() => {
-            window.location.href = "/profile";
+            router.push(ROUTES.PROFILE.ROOT);
           }}
         >
-          <Pen className="mr-2 h-4 w-4" />
-          <span>Edit Profile</span>
+          <UserPen className="mr-2 h-4 w-4" />
+          <span>My Profile</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
