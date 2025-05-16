@@ -5,6 +5,7 @@ import { TicketItemDisplay } from "./ticket-item-display";
 import { useCartStore } from "@/store/cart-store";
 import { TicketType } from "@/action/ticket-type";
 import { MetrolineStationSchedule } from "@/types/metroline";
+import { useServerCart } from "@/components/cart/cart-provider";
 
 interface TicketListProps {
   selectedTrip: MetrolineStationSchedule;
@@ -12,6 +13,8 @@ interface TicketListProps {
 }
 
 export function TicketList({ selectedTrip, ticketTypes }: TicketListProps) {
+  const { addCartItem, refreshCart } = useServerCart();
+
   const [quantities, setQuantities] = useState<Record<string, number>>(
     ticketTypes.reduce(
       (acc, ticket) => ({ ...acc, [ticket.ticketType]: 0 }),
@@ -33,7 +36,7 @@ export function TicketList({ selectedTrip, ticketTypes }: TicketListProps) {
     }
   };
 
-  const handleAddToCart = (ticketType: string) => {
+  const handleAddToCartStore = (ticketType: string) => {
     const ticketInTypes = ticketTypes.find((t) => t.ticketType === ticketType);
     if (!ticketInTypes) {
       return;
@@ -41,7 +44,7 @@ export function TicketList({ selectedTrip, ticketTypes }: TicketListProps) {
 
     const isFreeTicket = ticketInTypes.ticketType === "FREE";
     const ticketQuantity = isFreeTicket ? 1 : quantities[ticketType];
-    
+
     if (ticketQuantity > 0) {
       if (isFreeTicket) {
         handleIncrement("FREE");
@@ -62,6 +65,21 @@ export function TicketList({ selectedTrip, ticketTypes }: TicketListProps) {
         expiryInterval: ticketInTypes.expiryDescription,
       });
     }
+  };
+
+  const handleAddToCart = (ticketType: string) => {
+    const cartItemData = {
+      lineId: selectedTrip.schedules[0].metroLineId,
+      startStationId: selectedTrip.schedules[0].stationId,
+      endStationId:
+        selectedTrip.schedules[selectedTrip.schedules.length - 1].stationId,
+      ticketType: ticketType,
+      amount: quantities[ticketType],
+    };
+
+    handleAddToCartStore(ticketType);
+    addCartItem(cartItemData);
+    refreshCart();
   };
 
   return (

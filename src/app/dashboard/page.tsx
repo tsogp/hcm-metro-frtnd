@@ -10,10 +10,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { MetrolineStationSchedule } from "@/types/metroline";
 
-import {
-  getAllTicketTypes,
-  TicketType,
-} from "@/action/ticket-type";
+import { getAllTicketTypes, TicketType } from "@/action/ticket-type";
 import { getMetrolineStationsSchedule } from "@/action/schedule-trip";
 import ScheduleTripList from "@/app/dashboard/_components/schedule/schedule-trip-list";
 import { useUserStore } from "@/store/user-store";
@@ -111,7 +108,6 @@ export default function Dashboard() {
   const handleSelectTrip = (index: number) => {
     setSelectedTripIndex(index);
     console.log(metrolineTripSchedule[index]);
-    
   };
 
   return (

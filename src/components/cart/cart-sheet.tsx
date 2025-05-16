@@ -12,13 +12,15 @@ import {
 
 import { formatCurrency } from "@/lib/utils";
 import { ShoppingCart } from "lucide-react";
-import { TicketCartItem, useCartStore } from "@/store/cart-store";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
-import { useRouter } from "next/navigation";
 import TicketCartItemDisplay from "./ticket-cart-display";
+import { useServerCart } from "./cart-provider";
+import { CartItemFromServer, updateCartItem } from "@/action/cart";
+import Link from "next/link";
+import { toast } from "sonner";
 
-interface CartProps {
+interface CartSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isStatic?: boolean;
@@ -32,53 +34,106 @@ export function CartSheet({
   isStatic = false,
   staticPanel = false,
   hideActions = false,
-}: CartProps) {
-  const router = useRouter();
-  const {
-    items,
-    addItem,
-    removeItem,
-    getTotalPrice,
-    updateQuantity,
-    clearCart,
-  } = useCartStore();
+}: CartSheetProps) {
+  const { cartItems, refreshCart, removeCartItem, clearAllCartItems } =
+    useServerCart();
 
   const [showClearDialog, setShowClearDialog] = useState(false);
 
-  const handleDecrease = (item: TicketCartItem) => {
-    if (item.quantity > 1) {
-      addItem({
-        ...item,
-        quantity: -1,
-      });
-    } else {
-      removeItem(item.ticketTypeName);
-    }
-  };
+  const handleDecrease = async (item: CartItemFromServer) => {
+    const onDecreaseAction =
+      item.amount > 1
+        ? updateCartItem({
+            cartItemId: item.cartItemId,
+            newAmount: item.amount - 1,
+          })
+        : removeCartItem(item.cartItemId);
 
-  const handleIncrease = (item: TicketCartItem) => {
-    addItem({
-      ...item,
-      quantity: 1,
+    toast.promise(onDecreaseAction, {
+      loading: "Decreasing item quantity...",
+      success: "Item quantity decreased successfully",
+      error: "Failed to decrease item quantity. Please try again.",
     });
+
+    await onDecreaseAction;
+    refreshCart();
   };
 
-  const handleQuantityChange = (item: TicketCartItem, value: string) => {
-    const newQuantity = parseInt(value);
-    if (!isNaN(newQuantity) && newQuantity > 0) {
-      updateQuantity(item.ticketTypeName, newQuantity);
+  const handleIncrease = async (item: CartItemFromServer) => {
+    const onIncreaseAction = updateCartItem({
+      cartItemId: item.cartItemId,
+      newAmount: item.amount + 1,
+    });
+
+    toast.promise(onIncreaseAction, {
+      loading: "Increasing item quantity...",
+      success: "Item quantity increased successfully",
+      error: "Failed to increase item quantity. Please try again.",
+    });
+
+    await onIncreaseAction;
+    refreshCart();
+  };
+
+  const handleQuantityChange = async (
+    item: CartItemFromServer,
+    value: string
+  ) => {
+    let onUpdateAction: Promise<any>;
+
+    // If the value is empty, set it to 0 (which will trigger removal)
+    if (value === "") {
+      onUpdateAction = removeCartItem(item.cartItemId);
+    } else {
+      const newQuantity = parseInt(value);
+
+      // If parsing fails or quantity is invalid, show error and refresh
+      if (isNaN(newQuantity) || newQuantity < 0) {
+        toast.error("Please enter a valid quantity");
+        refreshCart();
+        return;
+      }
+
+      // If quantity is 0, remove the item
+      if (newQuantity === 0) {
+        onUpdateAction = removeCartItem(item.cartItemId);
+      } else {
+        // Otherwise update with the new quantity
+        onUpdateAction = updateCartItem({
+          cartItemId: item.cartItemId,
+          newAmount: newQuantity,
+        });
+      }
     }
+
+    toast.promise(onUpdateAction, {
+      loading: "Updating item quantity...",
+      success: "Item quantity updated successfully",
+      error: "Failed to update item quantity. Please try again.",
+    });
+
+    await onUpdateAction;
+    refreshCart();
   };
 
-  const handleClearCart = () => {
-    clearCart();
-    setShowClearDialog(false);
+  const handleClearCart = async () => {
+    const onClearAction = clearAllCartItems();
+
+    toast.promise(onClearAction, {
+      loading: "Clearing cart...",
+      success: "Cart cleared successfully",
+      error: "Failed to clear cart. Please try again.",
+    });
+
+    await onClearAction;
+    refreshCart();
   };
 
-  const handleCheckout = () => {
-    if (items.length > 0) {
-      router.push("/payment");
-    }
+  const getTotalPrice = () => {
+    return cartItems.reduce(
+      (total, item) => total + item.price * item.amount,
+      0
+    );
   };
 
   const cartContent = (
@@ -107,7 +162,7 @@ export function CartSheet({
         </SheetHeader>
       )}
       <div className="flex-1 overflow-y-auto">
-        {items.length === 0 ? (
+        {cartItems.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
             <ShoppingCart className="h-12 w-12 text-muted-foreground/60" />
             <p className="text-lg font-medium">Your cart is empty</p>
@@ -117,9 +172,10 @@ export function CartSheet({
           </div>
         ) : (
           <div className="space-y-2 px-2">
-            {items.map((item: TicketCartItem) => (
+            {cartItems.map((item, index) => (
               <TicketCartItemDisplay
-                key={item.ticketTypeName}
+                // key={item.cartItemId}
+                key={index}
                 item={item}
                 handleDecrease={handleDecrease}
                 handleIncrease={handleIncrease}
@@ -151,16 +207,16 @@ export function CartSheet({
               />
               <Button
                 className="text-base min-h-10 font-bold bg-accent hover:bg-accent/80 text-white"
-                disabled={items.length === 0}
-                onClick={handleCheckout}
+                disabled={cartItems.length === 0}
+                asChild
               >
-                Checkout
+                <Link href="/payment">Checkout</Link>
               </Button>
 
               <Button
                 variant="outline"
                 className="text-base min-h-10 font-bold border-secondary text-secondary hover:bg-secondary/10 hover:text-secondary"
-                disabled={items.length === 0}
+                disabled={cartItems.length === 0}
                 onClick={() => setShowClearDialog(true)}
               >
                 Clear
@@ -189,16 +245,16 @@ export function CartSheet({
               />
               <Button
                 className="text-base min-h-10 font-bold bg-accent hover:bg-accent/80 text-white"
-                disabled={items.length === 0}
-                onClick={handleCheckout}
+                disabled={cartItems.length === 0}
+                asChild
               >
-                Checkout
+                <Link href="/payment">Checkout</Link>
               </Button>
 
               <Button
                 variant="outline"
                 className="text-base min-h-10 font-bold border-secondary text-secondary hover:bg-secondary/10 hover:text-secondary"
-                disabled={items.length === 0}
+                disabled={cartItems.length === 0}
                 onClick={() => setShowClearDialog(true)}
               >
                 Clear

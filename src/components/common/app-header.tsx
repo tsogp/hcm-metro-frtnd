@@ -1,20 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Search, ShoppingCart, TrainFront } from "lucide-react";
+import { ShoppingCart, TrainFront } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { UserDropdownMenu } from "@/components/common/user-dropdown-menu";
 import { AppSidebar } from "@/components/common/app-sidebar";
-import { useCartStore } from "@/store/cart-store";
+import { useServerCart } from "../cart/cart-provider";
 
 interface AppHeaderProps {
   onCartClick: () => void;
 }
 
 export function AppHeader({ onCartClick }: AppHeaderProps) {
-  const { items } = useCartStore();
-
+  const { cartItems } = useServerCart();
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-secondary text-white">
       <div className="flex h-16 items-center px-4 sm:px-6 lg:px-8 max-w-full mx-auto">
@@ -34,11 +32,14 @@ export function AppHeader({ onCartClick }: AppHeaderProps) {
             className="relative text-white hover:bg-secondary-foreground/10"
             onClick={onCartClick}
           >
-            <ShoppingCart className="size-6" />
-            <span className="absolute -top-0.5 -right-0.5 flex size-5 font-medium items-center justify-center rounded-full bg-accent text-xs text-white border-1">
-              {items.length}
-            </span>
+            <ShoppingCart className="h-5 w-5" />
+            {cartItems.length > 0 && (
+              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-xs font-bold flex items-center justify-center">
+                {cartItems.length}
+              </span>
+            )}
           </Button>
+
           <UserDropdownMenu />
         </div>
       </div>

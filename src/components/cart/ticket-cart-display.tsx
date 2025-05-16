@@ -5,14 +5,14 @@ import { Minus } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
-import { TicketCartItem } from "@/store/cart-store";
+import { CartItemFromServer } from "@/action/cart";
 import { Input } from "../ui/input";
 
 interface TicketCartItemDisplayProps {
-  item: TicketCartItem;
-  handleDecrease: (item: TicketCartItem) => void;
-  handleIncrease: (item: TicketCartItem) => void;
-  handleQuantityChange: (item: TicketCartItem, value: string) => void;
+  item: CartItemFromServer;
+  handleDecrease: (item: CartItemFromServer) => void;
+  handleIncrease: (item: CartItemFromServer) => void;
+  handleQuantityChange: (item: CartItemFromServer, value: string) => void;
   editable?: boolean;
 }
 
@@ -21,26 +21,23 @@ function TicketCartItemDisplay({
   handleDecrease,
   handleIncrease,
   handleQuantityChange,
-  editable,
+  editable = true,
 }: TicketCartItemDisplayProps) {
   const getTicketTypeParts = () => {
-    const typeName = item.ticketTypeName;
-
-    if (typeName === "FREE") {
-      return {
-        period: "Free",
-      };
+    const ticketTypeName = item.ticketTypeName;
+    if (!ticketTypeName) {
+      return { period: "Unknown", userType: "Unknown" };
     }
 
     let period = "";
-    if (typeName.includes("ONE_WAY")) period = "One Way";
-    else if (typeName.includes("DAILY")) period = "Daily";
-    else if (typeName.includes("THREE_DAY")) period = "Three Day";
-    else if (typeName.includes("MONTHLY")) period = "Monthly";
+    if (ticketTypeName.includes("ONE_WAY")) period = "One Way";
+    else if (ticketTypeName.includes("DAILY")) period = "Daily";
+    else if (ticketTypeName.includes("THREE_DAY")) period = "Three Day";
+    else if (ticketTypeName.includes("MONTHLY")) period = "Monthly";
 
     let userType = "";
-    if (typeName.includes("STUDENT")) userType = "Student";
-    else if (typeName.includes("ADULT")) userType = "Adult";
+    if (ticketTypeName.includes("STUDENT")) userType = "Student";
+    else if (ticketTypeName.includes("ADULT")) userType = "Adult";
 
     return { period, userType };
   };
@@ -74,7 +71,7 @@ function TicketCartItemDisplay({
         </div>
         <p className="text-sm text-muted-foreground group-hover:text-muted-foreground/80">
           <span className="font-bold">Expiry: </span>
-          {item.expiryInterval}
+          {item.duration}
         </p>
       </div>
 
@@ -87,7 +84,7 @@ function TicketCartItemDisplay({
               className="size-8 text-secondary hover:bg-secondary/10 hover:text-secondary/80"
               onClick={() => handleDecrease(item)}
             >
-              {item.quantity === 1 ? (
+              {item.amount === 1 ? (
                 <Trash2 className="h-4 w-4" />
               ) : (
                 <Minus className="h-4 w-4" />
@@ -96,7 +93,8 @@ function TicketCartItemDisplay({
             <Input
               type="number"
               min="1"
-              value={item.quantity}
+              value={item.amount}
+              disabled={true}
               onChange={(e) => handleQuantityChange(item, e.target.value)}
               className="w-16 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
@@ -110,16 +108,16 @@ function TicketCartItemDisplay({
             </Button>
           </div>
           <p className="font-bold text-xl group-hover:text-secondary/80">
-            {formatCurrency(item.price * item.quantity)}
+            {formatCurrency(item.price * item.amount)}
           </p>
         </div>
       ) : (
         <div className="flex justify-between">
           <p className="text-sm text-muted-foreground group-hover:text-muted-foreground/80 font-bold">
-            Quantity: {item.quantity}
+            Quantity: {item.amount}
           </p>
           <p className="font-bold text-xl group-hover:text-secondary/80">
-            {formatCurrency(item.price * item.quantity)}
+            {formatCurrency(item.price * item.amount)}
           </p>
         </div>
       )}
