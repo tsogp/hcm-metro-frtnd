@@ -1,6 +1,6 @@
 import API from "@/utils/axiosClient";
 
-interface Ticket {
+interface TicketType {
   ticketType: string;
   typeName: string;
   price: number;
@@ -23,12 +23,9 @@ interface Ticket {
   active: boolean;
 }
 
-export const getAllTicketTypes = async (metroLineId: string): Promise<Ticket[]> => {
+export const getAllTicketTypes = async (): Promise<TicketType[]> => {
   try {
-    const response = await API.get("/ticket/ticket-type", {
-      params: {
-        metroLineId,
-      },
+    const response = await API.get("/ticket/ticket-types", {
       withCredentials: true,
     });
     return response.data.data;
@@ -38,11 +35,10 @@ export const getAllTicketTypes = async (metroLineId: string): Promise<Ticket[]> 
   }
 };
 
-export const getBestTicketTypes = async (passengerId: string, email: string): Promise<Ticket[]> => {
+export const getBestTicketTypes = async (passengerId: string, email: string): Promise<TicketType[]> => {
   try {
-    const response = await API.get("/ticket/best-ticket-type", {
+    const response = await API.get("/ticket/best-ticket", {
       params: {
-        passengerId,
         email,
       },
       withCredentials: true,

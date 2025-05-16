@@ -11,7 +11,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 
 import {
@@ -29,17 +28,23 @@ import {
 } from "@/components/ui/card";
 import { DatePicker } from "@/components/input/date-picker-input";
 import { TimePicker } from "@/components/input/timer-picker-input";
-import {
+import type {
   RecentSearch,
   SearchTicketFormValues,
 } from "@/types/search-ticket-form";
 import RecentSearchList from "./recent-search-list";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { searchFormSchema } from "@/schemas/search-ticket-form";
-import { Station } from "@/types/station";
+import type { Station } from "@/types/station";
 import { getAllStations } from "@/action/stations";
+import { log } from "util";
+import { formatLocalISO } from "@/lib/utils";
 
-export default function SearchForm() {
+interface SearchFormProps {
+  onSearch: (startId: string, endId: string, dateTime: string) => void;
+}
+
+export default function SearchForm({ onSearch }: SearchFormProps) {
   const [stations, setStations] = useState<Station[]>([]);
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -154,8 +159,16 @@ export default function SearchForm() {
     const limitedSearches = updatedSearches.slice(0, 5);
 
     localStorage.setItem("recentSearches", JSON.stringify(limitedSearches));
-
     setRecentSearches(limitedSearches.slice(0, 4));
+
+    // Format the date and time for the API
+    const dateObj = new Date(data.departureDate);
+    const [hours, minutes] = data.departureTime.split(":").map(Number);
+    dateObj.setHours(hours, minutes, 0);
+    const formattedDateTime = formatLocalISO(dateObj);
+    
+    // Call the onSearch callback with the form data
+    onSearch(data.departure, data.destination, formattedDateTime);
   };
 
   return (
