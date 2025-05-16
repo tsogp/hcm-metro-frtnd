@@ -130,8 +130,6 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
   };
 
   const onSubmit = (data: SearchTicketFormValues) => {
-    console.log(data);
-
     const existingSearchesJSON = localStorage.getItem("recentSearches");
     let existingSearches: RecentSearch[] = [];
 
@@ -166,7 +164,7 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
     const [hours, minutes] = data.departureTime.split(":").map(Number);
     dateObj.setHours(hours, minutes, 0);
     const formattedDateTime = formatLocalISO(dateObj);
-    
+
     // Call the onSearch callback with the form data
     onSearch(data.departure, data.destination, formattedDateTime);
   };

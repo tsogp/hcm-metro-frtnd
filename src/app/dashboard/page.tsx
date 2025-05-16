@@ -4,75 +4,64 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { TicketList } from "@/components/ticket/ticket-list";
+import { TicketList } from "@/app/dashboard/_components/ticket/ticket-list";
 import SearchForm from "@/app/dashboard/_components/search-ticket-form";
-import { useState } from "react";
-import { Minus, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { MetroLine, MetrolineStationSchedule } from "@/types/metroline";
 import { getMetrolineById } from "@/action/metroline";
-import { getAllTicketTypes } from "@/action/ticket-type";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  getAllTicketTypes,
+  getBestTicketTypes,
+  TicketType,
+} from "@/action/ticket-type";
 import { getMetrolineStationsSchedule } from "@/action/schedule-trip";
-
-import { formatCurrency } from "@/lib/utils";
-import ScheduleTripList from "./_components/schedule/schedule-trip-list";
-
-interface Ticket {
-  ticketType: string;
-  typeName: string;
-  price: number;
-  expiryDescription: string;
-  requirementDescription: string;
-  expiryInterval: {
-    seconds: number;
-    zero: boolean;
-    nano: number;
-    negative: boolean;
-    positive: boolean;
-    units: [
-      {
-        durationEstimated: boolean;
-        timeBased: boolean;
-        dateBased: boolean;
-      }
-    ];
-  };
-  active: boolean;
-}
+import ScheduleTripList from "@/app/dashboard/_components/schedule/schedule-trip-list";
+import { useUserStore } from "@/store/user-store";
 
 export default function Dashboard() {
+  const { currentUser, checkAuth } = useUserStore();
   const [metrolineTripSchedule, setMetrolineTripSchedule] = useState<
     MetrolineStationSchedule[]
   >([]);
   const [selectedTripIndex, setSelectedTripIndex] = useState<number | null>(
     null
   );
-  const [selectedMetroLine, setSelectedMetroLine] = useState<MetroLine | null>(
-    null
-  );
-  const [ticketTypes, setTicketTypes] = useState<Ticket[]>([]);
-  const [selectedTicketType, setSelectedTicketType] = useState<string>("");
-  const [quantity, setQuantity] = useState<number>(1);
+  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingTickets, setIsLoadingTickets] = useState(false);
-  const [isLoadingMetroLine, setIsLoadingMetroLine] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const initializeUser = async () => {
+      await checkAuth();
+    };
+    initializeUser();
+  }, [checkAuth]);
+
+  useEffect(() => {
+    const fetchTicketTypes = async () => {
+      try {
+        let types: TicketType[] = [];
+
+        // Only try to get best ticket types if we have a valid user with email
+        // if (currentUser && currentUser.passengerEmail) {
+        //   console.log(
+        //     "Fetching best ticket types for user:",
+        //     currentUser.passengerEmail
+        //   );
+        //   types = await getBestTicketTypes(currentUser.passengerEmail);
+        // }
+
+        types = await getAllTicketTypes();
+        setTicketTypes(Array.isArray(types) ? types : []);
+      } catch (error) {
+        console.error("Error fetching ticket types:", error);
+        setTicketTypes([]);
+      }
+    };
+    fetchTicketTypes();
+  }, [currentUser?.passengerEmail]);
 
   const handleSearch = async (
     startId: string,
@@ -83,9 +72,6 @@ export default function Dashboard() {
     setError(null);
     setHasSearched(true);
     setSelectedTripIndex(null);
-    setSelectedMetroLine(null);
-    setTicketTypes([]);
-    setSelectedTicketType("");
 
     try {
       const onSearchingTripScheduleAction = getMetrolineStationsSchedule(
@@ -97,7 +83,6 @@ export default function Dashboard() {
         loading: "Searching trip schedule...",
         success: async (trips) => {
           setMetrolineTripSchedule(trips);
-          console.log("TRIPS: ", trips);
 
           if (
             trips &&
@@ -105,20 +90,14 @@ export default function Dashboard() {
             trips[0].schedules &&
             trips[0].schedules.length > 0
           ) {
-            const metroLineId = trips[0].schedules[0].metroLineId;
-            const metroLineDetails = await getMetrolineById(metroLineId);
-            console.log("METRO LINE DETAILS: ", metroLineDetails);
+            return "Available trips found for next 60 minutes";
           }
-
-          return "Available trips found for next 60 minutes";
         },
         error: (error) => {
           console.error("Error fetching schedules:", error);
           return "Failed to find trip schedule";
         },
       });
-
-      console.log("SEARCHED METROLINE: ", onSearchingTripScheduleAction);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An unknown error occurred"
@@ -130,86 +109,14 @@ export default function Dashboard() {
     }
   };
 
-  // const handleSelectTrip = async (index: number) => {
-  //   setSelectedTripIndex(index);
-  //   setQuantity(1);
-  //   setIsDialogOpen(true);
-
-  //   const selectedTrip = metrolineTripSchedule[index];
-  //   const metroLineId = selectedTrip.schedules[0].metroLineId;
-
-  //   // Fetch metro line details
-  //   setIsLoadingMetroLine(true);
-  //   try {
-  //     const metroLine = await getMetrolineById(metroLineId);
-  //     setSelectedMetroLine(metroLine);
-  //   } catch (error) {
-  //     console.error("Error fetching metro line details:", error);
-  //     toast.error("Failed to load metro line details");
-  //   } finally {
-  //     setIsLoadingMetroLine(false);
-  //   }
-
-  //   // Fetch ticket types for this metro line
-  //   setIsLoadingTickets(true);
-  //   try {
-  //     const tickets = await getAllTicketTypes(metroLineId);
-  //     setTicketTypes(tickets);
-
-  //     // Set default selected ticket type
-  //     if (tickets.length > 0) {
-  //       setSelectedTicketType(tickets[0].ticketType);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching ticket types:", error);
-  //     toast.error("Failed to load ticket types");
-  //   } finally {
-  //     setIsLoadingTickets(false);
-  //   }
-  // };
-
-  const handleIncrement = () => {
-    setQuantity(quantity + 1);
-  };
-
-  const handleDecrement = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-    }
-  };
-
-  const handleAddToCart = () => {
-    if (selectedTripIndex === null || !selectedMetroLine) return;
-
-    const selectedTrip = metrolineTripSchedule[selectedTripIndex];
-    const selectedTicket = ticketTypes.find(
-      (t) => t.ticketType === selectedTicketType
-    );
-
-    console.log(selectedTicket);
-
-    if (!selectedTicket) {
-      toast.error("Please select a ticket type");
-      return;
-    }
-
-    const firstStation = selectedTrip.schedules[0];
-    const lastStation =
-      selectedTrip.schedules[selectedTrip.schedules.length - 1];
-
-    toast.success(
-      `Added to cart: ${quantity} ${selectedTicket.typeName} ticket(s) for ${
-        firstStation.metroLineName
-      } from ${firstStation.stationName} to ${
-        lastStation.stationName
-      } - ${formatCurrency(selectedTicket.price * quantity)}`
-    );
-
-    setIsDialogOpen(false);
+  const handleSelectTrip = (index: number) => {
+    setSelectedTripIndex(index);
+    console.log(metrolineTripSchedule[index]);
+    
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 p-4 mb-20">
+    <div className="w-full min-h-screen max-w-7xl mx-auto space-y-8 p-4 mb-20">
       {/* Hero Section */}
       <section className="relative rounded-xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-secondary/70 to-secondary/50 z-10" />
@@ -248,180 +155,24 @@ export default function Dashboard() {
       {/* Schedule Results Section - Only shown when there are results */}
       <ScheduleTripList
         metrolineTripSchedule={metrolineTripSchedule}
-        // handleSelectTrip={handleSelectTrip}
+        handleSelectTrip={handleSelectTrip}
         hasSearched={hasSearched}
         isLoading={isLoading}
         error={error}
       />
 
-
       {/* Tickets Section */}
-      <section>
-        <h2 className="text-xl md:text-2xl font-bold text-secondary mb-4">
-          Your Tickets
-        </h2>
-        <TicketList />
-      </section>
-
-      {/* Ticket Selection Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Select Ticket Type</DialogTitle>
-          </DialogHeader>
-
-          {selectedTripIndex !== null && (
-            <div className="space-y-4">
-              {isLoadingMetroLine ? (
-                <div className="flex justify-center py-4">
-                  <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-                </div>
-              ) : selectedMetroLine ? (
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Metro Line:</span>
-                    <span>{selectedMetroLine.metroLine.name}</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span className="font-medium">From:</span>
-                    <span>
-                      {
-                        metrolineTripSchedule[selectedTripIndex].schedules[0]
-                          .stationName
-                      }
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span className="font-medium">To:</span>
-                    <span>
-                      {
-                        metrolineTripSchedule[selectedTripIndex].schedules[
-                          metrolineTripSchedule[selectedTripIndex].schedules
-                            .length - 1
-                        ].stationName
-                      }
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-red-500">
-                  Failed to load metro line details
-                </div>
-              )}
-
-              {isLoadingTickets ? (
-                <div className="flex justify-center py-4">
-                  <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-                </div>
-              ) : ticketTypes.length > 0 ? (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="font-medium">Ticket Type:</label>
-                    <Select
-                      value={selectedTicketType}
-                      onValueChange={setSelectedTicketType}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select ticket type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ticketTypes.map((ticket) => (
-                          <SelectItem
-                            key={ticket.ticketType}
-                            value={ticket.ticketType}
-                          >
-                            {ticket.typeName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {selectedTicketType && (
-                    <>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="font-medium">Expires:</span>
-                          <span>
-                            {ticketTypes.find(
-                              (t) => t.ticketType === selectedTicketType
-                            )?.expiryDescription || "-"}
-                          </span>
-                        </div>
-
-                        <div className="flex justify-between">
-                          <span className="font-medium">Price:</span>
-                          <span className="font-bold text-secondary">
-                            {formatCurrency(
-                              ticketTypes.find(
-                                (t) => t.ticketType === selectedTicketType
-                              )?.price || 0
-                            )}
-                          </span>
-                        </div>
-
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">Quantity:</span>
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={handleDecrement}
-                              disabled={quantity <= 1}
-                            >
-                              <Minus className="size-4" />
-                            </Button>
-                            <span className="w-8 text-center">{quantity}</span>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={handleIncrement}
-                            >
-                              <Plus className="size-4" />
-                            </Button>
-                          </div>
-                        </div>
-
-                        <div className="flex justify-between">
-                          <span className="font-medium">Total:</span>
-                          <span className="font-bold text-secondary">
-                            {formatCurrency(
-                              (ticketTypes.find(
-                                (t) => t.ticketType === selectedTicketType
-                              )?.price || 0) * quantity
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <div className="text-amber-500">
-                  No ticket types available for this metro line
-                </div>
-              )}
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button
-              className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground"
-              onClick={handleAddToCart}
-              disabled={
-                isLoadingTickets ||
-                isLoadingMetroLine ||
-                !selectedTicketType ||
-                !selectedMetroLine
-              }
-            >
-              Add to Cart
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {selectedTripIndex !== null && (
+        <section>
+          <h2 className="text-xl md:text-2xl font-bold text-secondary mb-4">
+            Your Tickets
+          </h2>
+          <TicketList
+            selectedTrip={metrolineTripSchedule[selectedTripIndex]}
+            ticketTypes={ticketTypes}
+          />
+        </section>
+      )}
     </div>
   );
 }

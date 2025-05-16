@@ -1,6 +1,6 @@
 import API from "@/utils/axiosClient";
 
-interface TicketType {
+export interface TicketType {
   ticketType: string;
   typeName: string;
   price: number;
@@ -21,7 +21,7 @@ interface TicketType {
     ];
   };
   active: boolean;
-}
+} 
 
 export const getAllTicketTypes = async (): Promise<TicketType[]> => {
   try {
@@ -35,7 +35,7 @@ export const getAllTicketTypes = async (): Promise<TicketType[]> => {
   }
 };
 
-export const getBestTicketTypes = async (passengerId: string, email: string): Promise<TicketType[]> => {
+export const getBestTicketTypes = async (email: string): Promise<TicketType[]> => {
   try {
     const response = await API.get("/ticket/best-ticket", {
       params: {

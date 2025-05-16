@@ -1,13 +1,14 @@
+"use client";
+
 import { formatDuration } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { formatTime } from "@/lib/utils";
-import React from "react";
 import {
   CircleDot,
-  MapPinCheckInside,
+  MapPinIcon as MapPinCheckInside,
   MapPinned,
-  MapPinHouse,
+  MapPinIcon as MapPinHouse,
   TrainFront,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -16,13 +17,13 @@ import type { MetrolineStationSchedule } from "@/types/metroline";
 interface ScheduleTripItemProps {
   trip: MetrolineStationSchedule;
   index: number;
-  // handleSelectTrip: (index: number) => void;
+  handleSelectTrip: (index: number) => void;
 }
 
 function ScheduleTripItem({
   trip,
   index,
-  // handleSelectTrip,
+  handleSelectTrip,
 }: ScheduleTripItemProps) {
   const firstStation = trip.schedules[0];
   const lastStation = trip.schedules[trip.schedules.length - 1];
@@ -103,7 +104,7 @@ function ScheduleTripItem({
       <CardFooter className="flex items-center justify-center bg-muted/20">
         <Button
           className="bg-secondary hover:bg-secondary/90 text-secondary-foreground w-full"
-          // onClick={() => handleSelectTrip(index)}
+          onClick={() => handleSelectTrip(index)}
         >
           Select Trip
         </Button>

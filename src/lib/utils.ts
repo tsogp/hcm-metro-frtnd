@@ -16,12 +16,15 @@ export function scrollToElement(elementId: string) {
 }
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(amount);
+    currency: "VND",
+  })
+    .format(amount)
+    .replace("VND", "đ")
+    .trim();
 }
+
 
 export function formatLocalISO(date: Date, withMicroSeconds = false) {
   const pad = (n: number) => n.toString().padStart(2, "0");
@@ -56,4 +59,4 @@ export function formatDuration(minutes: number | null) {
   }
 
   return `${hours} hr ${remainingMinutes} min`;
-};
+}

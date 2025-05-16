@@ -53,8 +53,6 @@ export const getProfileImage = async (): Promise<ProfileImageResponse> => {
       withCredentials: true,
     });
 
-    console.log("PROFILE IMAGE RESPONSE", response.data.data);
-
     return response.data.data;
   } catch (error: any) {
     console.error("Failed to fetch user profile image:", error);

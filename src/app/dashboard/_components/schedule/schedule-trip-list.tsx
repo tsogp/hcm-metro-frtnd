@@ -1,11 +1,11 @@
 "use client";
 
-import { MetrolineStationSchedule } from "@/types/metroline";
+import type { MetrolineStationSchedule } from "@/types/metroline";
 import ScheduleTripItem from "./schedule-trip-item";
 
 interface ScheduleTripListProps {
   metrolineTripSchedule: MetrolineStationSchedule[];
-  // handleSelectTrip: (index: number) => void;
+  handleSelectTrip: (index: number) => void;
   hasSearched: boolean;
   isLoading: boolean;
   error: string | null;
@@ -13,7 +13,7 @@ interface ScheduleTripListProps {
 
 function ScheduleTripList({
   metrolineTripSchedule,
-  // handleSelectTrip,
+  handleSelectTrip,
   hasSearched,
   isLoading,
   error,
@@ -42,7 +42,7 @@ function ScheduleTripList({
                     key={index}
                     trip={trip}
                     index={index}
-                    // handleSelectTrip={handleSelectTrip}
+                    handleSelectTrip={handleSelectTrip}
                   />
                 ))}
               </div>
