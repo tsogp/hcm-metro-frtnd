@@ -37,7 +37,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { searchFormSchema } from "@/schemas/search-ticket-form";
 import type { Station } from "@/types/station";
 import { getAllStations } from "@/action/stations";
-import { log } from "util";
 import { formatLocalISO } from "@/lib/utils";
 
 interface SearchFormProps {

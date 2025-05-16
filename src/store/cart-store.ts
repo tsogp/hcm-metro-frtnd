@@ -2,18 +2,16 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 export interface TicketCartItem {
-  id: string;
-  name: string;
+  ticketTypeName: string;
+  lineId: string;
+  lineName: string;
+  startStationId: string;
+  startStationName: string;
+  endStationId: string;
+  endStationName: string;
   price: number;
   quantity: number;
-  line: string;
-  startStation: string;
-  endStation: string;
-  type: {
-    name: string;
-    expiryInterval: string;
-  };
-  suspended: boolean;
+  expiryInterval: string;
 }
 
 interface CartStore {
@@ -35,11 +33,13 @@ export const useCartStore = create<CartStore>()(
       isOpen: false,
       addItem: (item) =>
         set((state) => {
-          const existingItem = state.items.find((i) => i.id === item.id);
+          const existingItem = state.items.find(
+            (i) => i.ticketTypeName === item.ticketTypeName
+          );
           if (existingItem) {
             return {
               items: state.items.map((i) =>
-                i.id === item.id
+                i.ticketTypeName === item.ticketTypeName
                   ? { ...i, quantity: i.quantity + item.quantity }
                   : i
               ),
@@ -51,14 +51,18 @@ export const useCartStore = create<CartStore>()(
             isOpen: true,
           };
         }),
-      removeItem: (id) =>
+      removeItem: (ticketTypeName) =>
         set((state) => ({
-          items: state.items.filter((item) => item.id !== id),
+          items: state.items.filter(
+            (item) => item.ticketTypeName !== ticketTypeName
+          ),
         })),
-      updateQuantity: (id, quantity) =>
+      updateQuantity: (ticketTypeName, quantity) =>
         set((state) => ({
           items: state.items.map((item) =>
-            item.id === id ? { ...item, quantity } : item
+            item.ticketTypeName === ticketTypeName
+              ? { ...item, quantity }
+              : item
           ),
         })),
       clearCart: () => set({ items: [] }),

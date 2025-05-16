@@ -15,6 +15,7 @@ interface TicketCartItemDisplayProps {
   handleQuantityChange: (item: TicketCartItem, value: string) => void;
   editable?: boolean;
 }
+
 function TicketCartItemDisplay({
   item,
   handleDecrease,
@@ -22,20 +23,49 @@ function TicketCartItemDisplay({
   handleQuantityChange,
   editable,
 }: TicketCartItemDisplayProps) {
+  const getTicketTypeParts = () => {
+    const typeName = item.ticketTypeName;
+
+    if (typeName === "FREE") {
+      return {
+        period: "Free",
+      };
+    }
+
+    let period = "";
+    if (typeName.includes("ONE_WAY")) period = "One Way";
+    else if (typeName.includes("DAILY")) period = "Daily";
+    else if (typeName.includes("THREE_DAY")) period = "Three Day";
+    else if (typeName.includes("MONTHLY")) period = "Monthly";
+
+    let userType = "";
+    if (typeName.includes("STUDENT")) userType = "Student";
+    else if (typeName.includes("ADULT")) userType = "Adult";
+
+    return { period, userType };
+  };
+
+  const { period, userType } = getTicketTypeParts();
+
   return (
     <div className="flex flex-col gap-2 rounded-lg border p-4 transition-colors border-secondary/20 hover:bg-secondary/5 hover:border-secondary">
       <div className="space-y-1">
         <div className="flex justify-between items-center">
           <p className="text-sm text-muted-foreground group-hover:text-muted-foreground/80">
-            {item.startStation} → {item.endStation}
+            {item.startStationName} → {item.endStationName}
           </p>
-          <Badge variant="outline" className="border-primary text-secondary">
-            {item.type.name}
-          </Badge>
+          <div className="flex gap-2">
+            <Badge
+              variant="outline"
+              className="font-medium text-sm border-blue-400 border-1"
+            >
+              {userType} {period}
+            </Badge>
+          </div>
         </div>
         <div className="flex justify-between items-center gap-2">
           <h4 className="font-bold text-secondary group-hover:text-secondary/80 text-lg">
-            {item.name}
+            {item.lineName}
           </h4>
 
           <p className="font-bold text-secondary group-hover:text-secondary/80">
@@ -44,7 +74,7 @@ function TicketCartItemDisplay({
         </div>
         <p className="text-sm text-muted-foreground group-hover:text-muted-foreground/80">
           <span className="font-bold">Expiry: </span>
-          {item.type.expiryInterval}
+          {item.expiryInterval}
         </p>
       </div>
 
@@ -79,7 +109,7 @@ function TicketCartItemDisplay({
               <Plus className="h-4 w-4" />
             </Button>
           </div>
-          <p className="font-bold text-2xl group-hover:text-secondary/80">
+          <p className="font-bold text-xl group-hover:text-secondary/80">
             {formatCurrency(item.price * item.quantity)}
           </p>
         </div>

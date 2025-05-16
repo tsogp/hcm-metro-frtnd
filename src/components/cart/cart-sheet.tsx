@@ -52,7 +52,7 @@ export function CartSheet({
         quantity: -1,
       });
     } else {
-      removeItem(item.id);
+      removeItem(item.ticketTypeName);
     }
   };
 
@@ -66,7 +66,7 @@ export function CartSheet({
   const handleQuantityChange = (item: TicketCartItem, value: string) => {
     const newQuantity = parseInt(value);
     if (!isNaN(newQuantity) && newQuantity > 0) {
-      updateQuantity(item.id, newQuantity);
+      updateQuantity(item.ticketTypeName, newQuantity);
     }
   };
 
@@ -119,7 +119,7 @@ export function CartSheet({
           <div className="space-y-2 px-2">
             {items.map((item: TicketCartItem) => (
               <TicketCartItemDisplay
-                key={item.id}
+                key={item.ticketTypeName}
                 item={item}
                 handleDecrease={handleDecrease}
                 handleIncrease={handleIncrease}

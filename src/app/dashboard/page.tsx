@@ -8,11 +8,10 @@ import { TicketList } from "@/app/dashboard/_components/ticket/ticket-list";
 import SearchForm from "@/app/dashboard/_components/search-ticket-form";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import type { MetroLine, MetrolineStationSchedule } from "@/types/metroline";
-import { getMetrolineById } from "@/action/metroline";
+import type { MetrolineStationSchedule } from "@/types/metroline";
+
 import {
   getAllTicketTypes,
-  getBestTicketTypes,
   TicketType,
 } from "@/action/ticket-type";
 import { getMetrolineStationsSchedule } from "@/action/schedule-trip";

@@ -1,16 +1,10 @@
 "use client";
 
-import { AlertTriangle, Minus, Plus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { formatCurrency } from "@/lib/utils";
 
 interface TicketForDisplayingSelectedTrip {

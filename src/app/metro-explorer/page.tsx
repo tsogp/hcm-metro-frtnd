@@ -44,7 +44,7 @@ import {
   alertStations,
 } from "@/data/metro-data";
 import { useCartStore } from "@/store/cart-store";
-import { TICKET_TYPES } from "@/components/ticket/ticket-list";
+import { TICKET_TYPES } from "@/app/dashboard/_components/ticket/ticket-list";
 import { Station, MetroLine, AlertStation } from "@/types/metroline";
 
 // Predefined colors for metro lines
