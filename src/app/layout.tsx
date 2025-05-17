@@ -5,7 +5,7 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { ThemeProvider } from "@/components/provider/theme-provider";
 import React from "react";
-import { CartProvider } from "@/components/cart/cart-provider";
+import { CartProvider } from "@/components/provider/cart-provider";
 
 const inter = Inter({
   variable: "--font-inter",

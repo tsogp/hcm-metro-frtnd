@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AppHeader } from "@/components/common/app-header";
+import { AppHeader } from "@/components/common/user-navbar";
 import Footer from "@/app/_components/common/footer";
 import { CartSheet } from "@/components/cart/cart-sheet";
 

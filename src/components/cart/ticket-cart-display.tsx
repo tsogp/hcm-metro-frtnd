@@ -24,7 +24,7 @@ function TicketCartItemDisplay({
   editable = true,
 }: TicketCartItemDisplayProps) {
   const getTicketTypeParts = () => {
-    const ticketTypeName = item.ticketTypeName;
+    const ticketTypeName = item.ticketType;
     if (!ticketTypeName) {
       return { period: "Unknown", userType: "Unknown" };
     }
@@ -112,8 +112,8 @@ function TicketCartItemDisplay({
           </p>
         </div>
       ) : (
-        <div className="flex justify-between">
-          <p className="text-sm text-muted-foreground group-hover:text-muted-foreground/80 font-bold">
+        <div className="flex justify-between items-end">
+          <p className="text-base text-muted-foreground group-hover:text-muted-foreground/80 font-bold">
             Quantity: {item.amount}
           </p>
           <p className="font-bold text-xl group-hover:text-secondary/80">

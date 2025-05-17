@@ -48,35 +48,25 @@ export const updateProfileCredentials = async (data: {
 };
 
 export const getProfileImage = async (): Promise<ProfileImageResponse> => {
-  try {
-    const response = await API.get("/profile/profile-image", {
-      withCredentials: true,
-    });
+  const response = await API.get("/profile/profile-image", {
+    withCredentials: true,
+  });
 
-    return response.data.data;
-  } catch (error: any) {
-    console.error("Failed to fetch user profile image:", error);
-    return null;
-  }
+  return response.data.data;
 };
 
 export const updateProfileImage = async (file: File) => {
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
+  const formData = new FormData();
+  formData.append("file", file);
 
-    const response = await API.post("/profile/upload-profile-image", formData, {
-      withCredentials: true,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+  const response = await API.post("/profile/upload-profile-image", formData, {
+    withCredentials: true,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
-    return response.data;
-  } catch (error: any) {
-    console.error("Failed to update profile image:", error);
-    throw error;
-  }
+  return response.data;
 };
 
 type UploadStudentCardImagesParams = {
@@ -114,38 +104,28 @@ type CardImagesResponse = {
 };
 
 export const getCardImages = async (): Promise<CardImagesResponse> => {
-  try {
-    const response = await API.get("/profile/card-images", {
-      withCredentials: true,
-    });
+  const response = await API.get("/profile/card-images", {
+    withCredentials: true,
+  });
 
-    return response.data;
-  } catch (error: any) {
-    console.error("Failed to get card images:", error);
-    throw error;
-  }
+  return response.data;
 };
 
 export const updateCardImages = async (data: UploadStudentCardImagesParams) => {
-  try {
-    const formData = new FormData();
-    formData.append("frontFile", data.frontFile);
-    formData.append("backFile", data.backFile);
+  const formData = new FormData();
+  formData.append("frontFile", data.frontFile);
+  formData.append("backFile", data.backFile);
 
-    const response = await API.post("/profile/upload-card-images", formData, {
-      params: {
-        frontImageType: data.frontImageType,
-        backImageType: data.backImageType,
-      },
-      withCredentials: true,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+  const response = await API.post("/profile/upload-card-images", formData, {
+    params: {
+      frontImageType: data.frontImageType,
+      backImageType: data.backImageType,
+    },
+    withCredentials: true,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
-    return response.data;
-  } catch (error: any) {
-    console.error("Failed to update card images:", error);
-    throw error;
-  }
+  return response.data;
 };

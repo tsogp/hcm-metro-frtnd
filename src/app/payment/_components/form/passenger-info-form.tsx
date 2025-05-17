@@ -8,15 +8,10 @@ import Link from "next/link";
 import { Info, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { UserData } from "@/store/user-store";
 
 interface PassengerInfoFormProps {
-  passengerData: {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-  };
+  user: UserData;
   email: string;
   setEmail: (email: string) => void;
   acceptedPolicies: boolean;
@@ -40,14 +35,14 @@ const itemVariants = {
 };
 
 export default function PassengerInfoForm({
-  passengerData,
+  user,
   email,
   setEmail,
   acceptedPolicies,
   setAcceptedPolicies,
   handleProceedToPayment,
 }: PassengerInfoFormProps) {
-  const fullName = `${passengerData.firstName} ${passengerData.middleName} ${passengerData.lastName}`;
+  const fullName = `${user.passengerFirstName} ${user.passengerMiddleName} ${user.passengerLastName}`;
 
   return (
     <motion.div
@@ -96,7 +91,7 @@ export default function PassengerInfoForm({
           <div className="relative group">
             <Input
               id="phone"
-              value={passengerData.phone}
+              value={user.passengerPhone}
               disabled
               className={cn(
                 "bg-muted/50",
@@ -142,7 +137,9 @@ export default function PassengerInfoForm({
           <Checkbox
             id="terms"
             checked={acceptedPolicies}
-            onCheckedChange={(checked) => setAcceptedPolicies(checked as boolean)}
+            onCheckedChange={(checked) =>
+              setAcceptedPolicies(checked as boolean)
+            }
             className="mt-1"
           />
           <div className="grid gap-1.5 leading-none">

@@ -18,6 +18,7 @@ import {
 import { toast } from "sonner";
 import { useUserStore } from "@/store/user-store";
 import IdVerificationTab from "./_components/id/id-verification-tab";
+import { getCardImages } from "@/action/profile";
 
 export default function ProfilePage() {
   const { setCurrentUser } = useUserStore();
@@ -59,9 +60,8 @@ export default function ProfilePage() {
     address: "",
     studentId: "",
   });
-
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -278,6 +278,76 @@ export default function ProfilePage() {
     }
   };
 
+  // Add refetch function
+  const refetchCardImages = async () => {
+    try {
+      const response = await getCardImages();
+      const images = response.data;
+
+      if (images && user) {
+        const processedImages: any = {
+          national: {
+            front: null,
+            back: null,
+            status: null,
+          },
+          student: {
+            front: null,
+            back: null,
+            status: null,
+          },
+        };
+
+        // Process all pictures and sort them by imageType
+        const allPictures = [
+          ...(images.nationalIdPictures || []),
+          ...(images.studentIdPictures || []),
+        ];
+
+        allPictures.forEach((picture: any) => {
+          const imageUrl = `data:${picture.mimeType};base64,${picture.base64}`;
+
+          switch (picture.imageType) {
+            case "NATIONAL_ID_FRONT":
+              processedImages.national.front = imageUrl;
+              break;
+            case "NATIONAL_ID_BACK":
+              processedImages.national.back = imageUrl;
+              break;
+            case "STUDENT_ID_FRONT":
+              processedImages.student.front = imageUrl;
+              break;
+            case "STUDENT_ID_BACK":
+              processedImages.student.back = imageUrl;
+              break;
+          }
+        });
+
+        // Set verification status
+        processedImages.national.status = processedImages.national.front
+          ? "verified"
+          : null;
+        processedImages.student.status = processedImages.student.front
+          ? "verified"
+          : null;
+
+        // Update user state with new images
+        setUser((prevUser) => {
+          if (!prevUser) return prevUser;
+          return {
+            ...prevUser,
+            idVerification: processedImages,
+          };
+        });
+
+        // Trigger a refresh of the preview
+        setRefreshKey((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error("Failed to refetch card images:", error);
+    }
+  };
+
   return (
     <div className="container mx-auto py-10 px-4 md:px-6">
       <h1 className="text-3xl font-bold mb-6 text-center">User Profile</h1>
@@ -299,12 +369,11 @@ export default function ProfilePage() {
               <TabsTrigger value="verification">ID Verification</TabsTrigger>
             </TabsList>
 
-            {/* Edit Profile Tab */}
             <TabsContent value="edit">
               <EditProfileTab
                 user={user}
                 handleSubmit={handleSubmit}
-                previewUrl={previewUrl || null}
+                previewUrl={previewUrl}
                 formData={formData}
                 handleInputChange={handleInputChange}
                 setFormData={setFormData}
@@ -315,9 +384,12 @@ export default function ProfilePage() {
               />
             </TabsContent>
 
-            {/* ID Verification Tab */}
             <TabsContent value="verification">
-              <IdVerificationTab user={user} setUser={setUser} />
+              <IdVerificationTab
+                user={user}
+                setUser={setUser}
+                onRefetch={refetchCardImages}
+              />
             </TabsContent>
           </Tabs>
         </div>

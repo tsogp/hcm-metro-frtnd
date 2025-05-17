@@ -5,7 +5,7 @@ import { TicketItemDisplay } from "./ticket-item-display";
 import { useCartStore } from "@/store/cart-store";
 import { TicketType } from "@/action/ticket-type";
 import { MetrolineStationSchedule } from "@/types/metroline";
-import { useServerCart } from "@/components/cart/cart-provider";
+import { useServerCart } from "@/components/provider/cart-provider";
 
 interface TicketListProps {
   selectedTrip: MetrolineStationSchedule;

@@ -88,6 +88,8 @@ export default function Dashboard() {
           ) {
             return "Available trips found for next 60 minutes";
           }
+
+          return "No available trips found for next 60 minutes";
         },
         error: (error) => {
           console.error("Error fetching schedules:", error);

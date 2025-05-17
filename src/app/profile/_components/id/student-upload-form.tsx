@@ -9,10 +9,12 @@ import { toast } from "sonner";
 
 type StudentIdUploadFormProps = {
   setUser?: React.Dispatch<React.SetStateAction<any>>;
+  onRefetch?: () => Promise<void>;
 };
 
 export default function StudentIdUploadForm({
   setUser,
+  onRefetch,
 }: StudentIdUploadFormProps) {
   const [frontImage, setFrontImage] = useState<{
     url: string;
@@ -117,7 +119,7 @@ export default function StudentIdUploadForm({
 
       toast.promise(uploadAction, {
         loading: "Uploading Student ID...",
-        success: () => {
+        success: async () => {
           if (setUser) {
             setUser((prevUser: any) => {
               const updatedIdVerification = {
@@ -144,6 +146,11 @@ export default function StudentIdUploadForm({
           // Reset form after successful upload
           handleRemoveImage("front");
           handleRemoveImage("back");
+
+          // Refetch data if onRefetch is provided
+          if (onRefetch) {
+            await onRefetch();
+          }
 
           return "Student ID uploaded successfully!";
         },

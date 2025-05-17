@@ -4,10 +4,11 @@ import { Card } from "@/components/ui/card";
 import PaymentPage from "../form/payment-form";
 import { Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { UserData } from "@/store/user-store";
 
 function PaymentTab({
   currentStep,
-  passengerData,
+  user,
   email,
   setEmail,
   acceptedPolicies,
@@ -16,7 +17,7 @@ function PaymentTab({
   handleBackToInfo,
 }: {
   currentStep: number;
-  passengerData: any;
+  user: UserData;
   email: string;
   setEmail: (email: string) => void;
   acceptedPolicies: boolean;
@@ -25,26 +26,7 @@ function PaymentTab({
   handleBackToInfo: () => void;
 }) {
   const handlePaymentSubmit = async (cardDetails: any) => {
-    console.log({
-      email,
-      cardDetails,
-      passengerData,
-    });
-    // Here you can add your payment processing logic
-    // For example:
-    // try {
-    //   const redirectUrl = await createCheckoutSession({
-    //     amount: 2000,
-    //     currency: "usd",
-    //     successUrl: `${window.location.origin}/payment/success`,
-    //     cancelUrl: `${window.location.origin}/payment/cancel`,
-    //   });
-    //   if (redirectUrl) {
-    //     router.push(redirectUrl);
-    //   }
-    // } catch (error) {
-    //   console.error("Payment error:", error);
-    // }
+    console.log("Payment details:", cardDetails);
   };
 
   return (
@@ -128,7 +110,7 @@ function PaymentTab({
         >
           {currentStep === 1 ? (
             <PassengerInfoForm
-              passengerData={passengerData}
+              user={user}
               email={email}
               setEmail={setEmail}
               acceptedPolicies={acceptedPolicies}

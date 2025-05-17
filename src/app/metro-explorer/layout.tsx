@@ -1,10 +1,9 @@
 "use client";
 
-import { AppHeader } from "@/components/common/app-header";
+import { AppHeader } from "@/components/common/user-navbar";
 import { CartSheet } from "@/components/cart/cart-sheet";
 import { useCartStore } from "@/store/cart-store";
 import Footer from "../_components/common/footer";
-
 
 export default function MetroExplorerLayout({
   children,
@@ -16,11 +15,14 @@ export default function MetroExplorerLayout({
   return (
     <div>
       <AppHeader onCartClick={openCart} />
-      <CartSheet open={isOpen} onOpenChange={(open) => open ? openCart() : closeCart()} />
+      <CartSheet
+        open={isOpen}
+        onOpenChange={(open) => (open ? openCart() : closeCart())}
+      />
 
       <main className="min-h-screen">{children}</main>
 
       <Footer />
     </div>
   );
-} 
+}

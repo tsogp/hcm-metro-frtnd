@@ -23,13 +23,15 @@ import StudentIdUploadForm from "./student-upload-form";
 type IdVerificationTabProps = {
   user: UserProfileType;
   setUser?: React.Dispatch<React.SetStateAction<UserProfileType>>;
+  onRefetch?: () => Promise<void>;
 };
 
 export default function IdVerificationTab({
   user,
   setUser,
+  onRefetch,
 }: IdVerificationTabProps) {
-  const [cardImages, setCardImages] = useState<CardImagesList>({
+  const [cardImages, setCardImages] = useState({
     national: {
       front: null,
       back: null,
@@ -42,41 +44,76 @@ export default function IdVerificationTab({
 
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchCardImages = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getCardImages();
-        const images = response.data;
+  const fetchCardImages = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getCardImages();
+      const images = response.data;
 
-        console.log(images);
+      if (images) {
+        const processedImages: any = {
+          national: {
+            front: null,
+            back: null,
+            status: null,
+          },
+          student: {
+            front: null,
+            back: null,
+            status: null,
+          },
+        };
 
-        if (images) {
-          const processedImages: any = {
-            national: {
-              front: `data:${images?.nationalIdPictures[0].mimeType};base64,${images?.nationalIdPictures[0].base64}`,
-              back: `data:${images?.nationalIdPictures[1].mimeType};base64,${images?.nationalIdPictures[1].base64}`,
-              status: images?.nationalIdPictures[0] ? "verified" : null,
-            },
-            student: {
-              front: `data:${images?.studentIdPictures[0].mimeType};base64,${images?.studentIdPictures[0].base64}`,
-              back: `data:${images?.studentIdPictures[1].mimeType};base64,${images?.studentIdPictures[1].base64}`,
-              status: images?.studentIdPictures[0] ? "verified" : null,
-            },
-          };
+        // Process all pictures and sort them by imageType
+        const allPictures = [
+          ...(images.nationalIdPictures || []),
+          ...(images.studentIdPictures || []),
+        ];
 
-          setCardImages(processedImages);
-        }
-      } catch (error) {
-        console.error("Failed to fetch card images:", error);
-        toast.error("Failed to load ID card images");
-      } finally {
-        setIsLoading(false);
+        allPictures.forEach((picture: any) => {
+          const imageUrl = `data:${picture.mimeType};base64,${picture.base64}`;
+
+          switch (picture.imageType) {
+            case "NATIONAL_ID_FRONT":
+              processedImages.national.front = imageUrl;
+              break;
+            case "NATIONAL_ID_BACK":
+              processedImages.national.back = imageUrl;
+              break;
+            case "STUDENT_ID_FRONT":
+              processedImages.student.front = imageUrl;
+              break;
+            case "STUDENT_ID_BACK":
+              processedImages.student.back = imageUrl;
+              break;
+          }
+        });
+
+        // Set verification status
+        processedImages.national.status = processedImages.national.front
+          ? "verified"
+          : null;
+        processedImages.student.status = processedImages.student.front
+          ? "verified"
+          : null;
+
+        setCardImages(processedImages);
       }
-    };
+    } catch (error) {
+      console.error(
+        "Failed to fetch card images (User does not have any): ",
+        error
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchCardImages();
-  }, []);
+  useEffect(() => {
+    if (user) {
+      fetchCardImages();
+    }
+  }, [user]);
 
   if (isLoading) {
     return (
@@ -117,12 +154,12 @@ export default function IdVerificationTab({
         </Alert>
 
         {/* National ID Section */}
-        <NationalIdUploadForm setUser={setUser} />
+        <NationalIdUploadForm setUser={setUser} onRefetch={onRefetch} />
 
         <Separator />
 
         {/* Student ID Section */}
-        <StudentIdUploadForm setUser={setUser} />
+        <StudentIdUploadForm setUser={setUser} onRefetch={onRefetch} />
       </CardContent>
     </Card>
   );
