@@ -1,4 +1,6 @@
 import API from "@/utils/axiosClient";
+import { getStationById } from "./stations";
+import { getMetrolineById } from "./metroline";
 
 export interface CartFromServer {
   cartId: string;
@@ -10,6 +12,30 @@ export interface CartFromServer {
 }
 
 export interface CartItemFromServer {
+  cartItemId: string;
+  lineId: string;
+  startStationId: string;
+  endStationId: string;
+  ticketType: string;
+  ticketTypeName: string;
+  price: number;
+  amount: number;
+  createdAt: string;
+  updatedAt: string;
+  displayName: string;
+  duration: string;
+}
+
+export interface CartPreprocessed {
+  cartId: string;
+  passengerId: string;
+  items: CartItemProcessed[];
+  createdAt: string;
+  updatedAt: string;
+  totalPrice: number;
+}
+
+export interface CartItemProcessed {
   cartItemId: string;
   lineId: string;
   lineName: string;
@@ -27,12 +53,56 @@ export interface CartItemFromServer {
   duration: string;
 }
 
-export const getCartItems = async (): Promise<CartFromServer> => {
+export const getCartItems = async (): Promise<CartPreprocessed> => {
   try {
-    const response = await API.get("/cart", {
+    const response = await API.get<CartFromServer>("/cart", {
       withCredentials: true,
     });
-    return response.data.data;
+
+    const cart = response.data.data;
+
+    const lineIdSet = new Set<string>();
+    const startStationIdSet = new Set<string>();
+    const endStationIdSet = new Set<string>();
+
+    for (const item of cart.items) {
+      lineIdSet.add(item.lineId);
+      startStationIdSet.add(item.startStationId);
+      endStationIdSet.add(item.endStationId);
+    }
+
+    const lineIds = Array.from(lineIdSet);
+    const startStationIds = Array.from(startStationIdSet);
+    const endStationIds = Array.from(endStationIdSet);
+
+    const [lines, starts, ends] = await Promise.all([
+      Promise.all(lineIds.map(id         => getMetrolineById(id))),
+      Promise.all(startStationIds.map(id => getStationById(id))),
+      Promise.all(endStationIds.map(id   => getStationById(id)))
+    ]);
+
+    const lineNameById = new Map<string, string>();
+    const stationNameById = new Map<string, string>();
+
+    for (const res of lines) {
+      lineNameById.set(res.metroLine.id, res.metroLine.name);
+    }
+
+    for (const res of [...starts, ...ends]) {
+      stationNameById.set(res.id, res.name);
+    }
+
+    const processedItems: CartItemProcessed[] = cart.items.map((item: CartItemFromServer) => ({
+      ...item,
+      lineName: lineNameById.get(item.lineId) ?? "",
+      startStationName: stationNameById.get(item.startStationId) ?? "",
+      endStationName: stationNameById.get(item.endStationId) ?? "",
+    }));
+
+    return {
+      ...cart,
+      items: processedItems,
+    };
   } catch (error) {
     console.error("Failed to fetch cart data:", error);
     throw error;
