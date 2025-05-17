@@ -15,10 +15,11 @@ import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
 import TicketCartItemDisplay from "./ticket-cart-display";
-import { useServerCart } from "./cart-provider";
+import { useServerCart } from "../provider/cart-provider";
 import { CartItemFromServer, updateCartItem } from "@/action/cart";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface CartSheetProps {
   open: boolean;
@@ -37,7 +38,7 @@ export function CartSheet({
 }: CartSheetProps) {
   const { cartItems, refreshCart, removeCartItem, clearAllCartItems } =
     useServerCart();
-
+  const router = useRouter();
   const [showClearDialog, setShowClearDialog] = useState(false);
 
   const handleDecrease = async (item: CartItemFromServer) => {
@@ -246,9 +247,9 @@ export function CartSheet({
               <Button
                 className="text-base min-h-10 font-bold bg-accent hover:bg-accent/80 text-white"
                 disabled={cartItems.length === 0}
-                asChild
+                onClick={() => router.push("/payment")}
               >
-                <Link href="/payment">Checkout</Link>
+                Checkout
               </Button>
 
               <Button

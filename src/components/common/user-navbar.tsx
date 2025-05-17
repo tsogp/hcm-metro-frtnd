@@ -4,8 +4,8 @@ import Link from "next/link";
 import { ShoppingCart, TrainFront } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserDropdownMenu } from "@/components/common/user-dropdown-menu";
-import { AppSidebar } from "@/components/common/app-sidebar";
-import { useServerCart } from "../cart/cart-provider";
+import { AppSidebar } from "@/components/common/user-sidebar";
+import { useServerCart } from "../provider/cart-provider";
 
 interface AppHeaderProps {
   onCartClick: () => void;
@@ -32,9 +32,9 @@ export function AppHeader({ onCartClick }: AppHeaderProps) {
             className="relative text-white hover:bg-secondary-foreground/10"
             onClick={onCartClick}
           >
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="size-6" />
             {cartItems.length > 0 && (
-              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-xs font-bold flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 rounded-full size-5 bg-red-500 border-blue-100 border-1 text-xs text-blue-100font-bold flex items-center justify-center">
                 {cartItems.length}
               </span>
             )}

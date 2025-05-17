@@ -11,6 +11,7 @@ import { useCartStore } from "@/store/cart-store";
 import { useEffect, useState } from "react";
 import { formatCurrency } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useServerCart } from "@/components/provider/cart-provider";
 
 const PriceItem = ({ label, amount, isTotal = false }: { 
   label: string;
@@ -36,16 +37,20 @@ const PriceItem = ({ label, amount, isTotal = false }: {
 );
 
 export default function CartTab() {
-  const { items, getTotalPrice } = useCartStore();
+  const { cartItems, getCartTotalPrice } = useServerCart();
   const [mounted, setMounted] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const [tax, setTax] = useState(0);
 
   useEffect(() => {
     setMounted(true);
-    setTotalPrice(getTotalPrice());
-    setTax(getTotalPrice() * 0.08);
-  }, [getTotalPrice]);
+    const fetchTotalPrice = async () => {
+      const totalPrice = await getCartTotalPrice();
+      setTotalPrice(totalPrice);
+      setTax(totalPrice * 0.08);
+    };
+    fetchTotalPrice();
+  }, [getCartTotalPrice]);
 
   if (!mounted) {
     return null;
@@ -67,9 +72,9 @@ export default function CartTab() {
       </CardHeader>
       <CardContent className="space-y-2">
         <AnimatePresence>
-          {items.map((item, index) => (
+          {cartItems.map((item, index) => (
             <motion.div
-              key={item.id}
+              key={item.cartItemId}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
@@ -80,6 +85,7 @@ export default function CartTab() {
                 handleDecrease={() => {}}
                 handleIncrease={() => {}}
                 handleQuantityChange={() => {}}
+                editable={false}
               />
             </motion.div>
           ))}

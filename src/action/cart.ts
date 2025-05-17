@@ -106,12 +106,12 @@ export const updateCartItem = async ({
   }
 };
 
-export const getTotalPrice = async () => {
+export const getTotalPrice = async (): Promise<number> => {
   try {
     const response = await API.get("/cart/price", {
       withCredentials: true,
     });
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Failed to get total price:", error);
     throw error;
