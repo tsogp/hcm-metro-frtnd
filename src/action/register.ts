@@ -1,21 +1,23 @@
 import API from "@/utils/axiosClient";
 
+export interface PassengerData {
+  passengerFirstName: string;
+  passengerMiddleName: string;
+  passengerLastName: string;
+  passengerPhone: string;
+  passengerAddress: string;
+  passengerDateOfBirth: string;
+  nationalID: string;
+  studentID: string | null;
+  hasDisability: boolean;
+  isRevolutionary: boolean;
+}
+
 interface RegisterRequest {
   email: string;
   password: string;
   role: "PASSENGER";
-  passengerData: {
-    passengerFirstName: string;
-    passengerMiddleName: string;
-    passengerLastName: string;
-    passengerPhone: string;
-    passengerAddress: string;
-    passengerDateOfBirth: string;
-    nationalID: string;
-    studentID: string | null;
-    hasDisability: boolean;
-    isRevolutionary: boolean;
-  };
+  passengerData: PassengerData
 }
 
 export const register = async (data: RegisterRequest) => {
@@ -25,6 +27,14 @@ export const register = async (data: RegisterRequest) => {
 
   return response.data;
 };
+
+export const googleRegister = async (data: PassengerData) => {
+  const response = await API.post("/auth/fill-google-profile", data, {
+    withCredentials: true,
+  });
+
+  return response.data;
+}
 
 export const validateRegister = async (email: string) => {
   try {

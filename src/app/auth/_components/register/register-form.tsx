@@ -20,28 +20,33 @@ import { cn } from "@/lib/utils";
 import { Form } from "@/components/ui/form";
 import { RegisterData } from "@/types/register";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { register, validateRegister } from "@/action/register";
-import { format, parseISO } from "date-fns";
+import { useRouter, useSearchParams } from "next/navigation";
+import { googleRegister, register, validateRegister } from "@/action/register";
+import { format } from "date-fns";
 import { useUserStore } from "@/store/user-store";
-import { signIn } from "@/action/auth";
-import API from "@/utils/axiosClient";
 import { ROUTES } from "@/config/routes";
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { login } = useUserStore();
+  const { login, fetchUserProfile } = useUserStore();
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
+
+  const searchParams = useSearchParams();
+
+  const givenName = searchParams.get("givenName") || "";
+  const familyName = searchParams.get("familyName") || "";
+  const fromGoogle = searchParams.get("code") !== undefined;
+  
+  const [currentStep, setCurrentStep] = useState(fromGoogle ? 2 : 1);
   const [formData, setFormData] = useState<RegisterData>({
     email: "",
     password: "",
     confirmPassword: "",
-    firstName: "",
+    firstName: fromGoogle ? givenName : "",
     middleName: "",
-    lastName: "",
+    lastName: fromGoogle ? familyName : "",
     nationalId: "",
     dateOfBirth: "",
     address: "",
@@ -130,30 +135,36 @@ export function RegisterForm({
   const handleStep3Submit = async (data: Step3Values) => {
     setFormData((prev) => ({ ...prev, ...data }));
 
+    const passengerData = {
+      passengerFirstName: formData.firstName,
+      passengerMiddleName: formData.middleName,
+      passengerLastName: formData.lastName,
+      passengerPhone: formData.phoneNumber,
+      passengerAddress: formData.address,
+      passengerDateOfBirth: format(formData.dateOfBirth, "dd/MM/yyyy"),
+      nationalID: data.nationalId,
+      studentID: formData.studentId || null,
+      hasDisability: data.disabilityStatus === "yes",
+      isRevolutionary: data.revolutionaryContribution === "yes",
+    }
+
     const userData = {
       email: formData.email,
       password: formData.password,
       role: "PASSENGER" as const,
-      passengerData: {
-        passengerFirstName: formData.firstName,
-        passengerMiddleName: formData.middleName,
-        passengerLastName: formData.lastName,
-        passengerPhone: formData.phoneNumber,
-        passengerAddress: formData.address,
-        passengerDateOfBirth: format(formData.dateOfBirth, "dd/MM/yyyy"),
-        nationalID: data.nationalId,
-        studentID: formData.studentId || null,
-        hasDisability: data.disabilityStatus === "yes",
-        isRevolutionary: data.revolutionaryContribution === "yes",
-      },
+      passengerData
     };
 
-    const onRegisterAction = register(userData);
+    const onRegisterAction = fromGoogle ? googleRegister(passengerData) : register(userData);
     toast.promise(onRegisterAction, {
       loading: "We're getting things ready for you...",
 
       success: async (res) => {
-        await login(userData.email, userData.password);
+        if (fromGoogle) {
+          await fetchUserProfile();
+        } else {
+          await login(userData.email, userData.password);
+        }
         router.push(ROUTES.DASHBOARD);
         return "Registration successful! Signing you in...";
       },
@@ -220,6 +231,7 @@ export function RegisterForm({
                   variant="outline"
                   onClick={handleBack}
                   className="flex-1"
+                  disabled={fromGoogle}
                 >
                   Back
                 </Button>

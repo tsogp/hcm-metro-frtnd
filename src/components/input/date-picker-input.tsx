@@ -60,10 +60,12 @@ export function DatePicker({
   setDate: setExternalDate,
   dateRestriction = "none",
 }: DatePickerProps) {
-  const [internalDate, setInternalDate] = React.useState<Date>(new Date());
+  const [internalDate, setInternalDate] = React.useState<Date | undefined>(
+    undefined
+  );
 
   // Use external date if provided, otherwise use internal state
-  const date = externalDate || internalDate;
+  const date = externalDate ?? internalDate;
   const setDate = setExternalDate || setInternalDate;
 
   const currentDate = new Date();
@@ -145,7 +147,7 @@ export function DatePicker({
         <div className="flex justify-between p-2">
           <Select
             onValueChange={handleMonthChange}
-            value={months[getMonth(date)]}
+            value={date ? months[getMonth(date)] : undefined}
           >
             <SelectTrigger className="w-[110px]">
               <SelectValue placeholder="Month" />
@@ -160,7 +162,7 @@ export function DatePicker({
           </Select>
           <Select
             onValueChange={handleYearChange}
-            value={getYear(date).toString()}
+            value={date ? getYear(date).toString() : undefined}
           >
             <SelectTrigger className="w-[110px]">
               <SelectValue placeholder="Year" />
@@ -179,8 +181,7 @@ export function DatePicker({
           mode="single"
           selected={date}
           onSelect={handleSelect}
-          initialFocus
-          month={date}
+          month={date ?? currentDate}
           onMonthChange={setDate}
           disabled={isPastDate}
         />

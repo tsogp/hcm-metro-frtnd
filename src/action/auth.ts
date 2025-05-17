@@ -1,3 +1,4 @@
+import { GenericResponse } from "@/types/generic";
 import API from "@/utils/axiosClient";
 
 interface AuthData {
@@ -13,6 +14,14 @@ export interface AuthResponse {
     roles: string;
   };
 }
+
+export interface GoogleData {
+  data: { givenName: any; familyName: any; };
+  givenName: string;
+  familyName: string;
+}
+
+export type GoogleAuthResponse = GenericResponse<GoogleData>;
 
 export const signIn = async (data: AuthData): Promise<AuthResponse> => {
   try {
@@ -31,3 +40,17 @@ export const logout = async () => {
     withCredentials: true,
   });
 };
+
+export async function getGoogleAuthLink() {
+  try {
+    const response = await API.get("/auth/google-signup-url");
+    return response.data.data.redirectUrl;
+  } catch (error) {
+    console.error("Get google link failed:", error);
+    throw error;
+  }
+}
+
+export function googleAuth(code: string) {
+  return API.get(`/auth/google?code=${code}`);
+} 

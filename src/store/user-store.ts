@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { logout, signIn } from "@/action/auth";
+import { googleAuth, GoogleData, logout, signIn } from "@/action/auth";
 import { getCurrentUserProfile, getProfileImage } from "@/action/profile";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -26,6 +26,8 @@ type UserState = {
 type UserAction = {
   setCurrentUser: (user: UserData | undefined) => void;
   logout: () => void;
+  loginGoogle: (code: string) => Promise<UserData | GoogleData>;
+  fetchProfileAfterGoogle: () => Promise<UserData>;
   login: (email: string, password: string) => Promise<UserData>;
   checkAuth: () => Promise<boolean>;
   fetchUserProfile: () => Promise<UserData>;
@@ -82,6 +84,47 @@ export const useUserStore = create<UserStore>()(
           return userData;
         } catch (error: any) {
           console.error("Login error:", error);
+          throw error;
+        }
+      },
+      
+      loginGoogle: async (code: string) => {
+        try {
+          const response = await googleAuth(code);
+          if (response.status == 200) {
+            const userData = await get().fetchUserProfile();
+            const profileImg = await getProfileImage();
+            set({
+              currentUser: {
+                ...userData,
+                profilePicture: profileImg?.profileImage?.base64 ?? null,
+              },
+            });
+
+            return userData;
+          } else if (response.status == 206) {
+            return response.data;
+          }
+        }  catch (error: any) {
+          console.error("Google login error:", error);
+          throw error;
+        }
+      },
+
+      fetchProfileAfterGoogle: async () => {
+        try {
+          const userData = await get().fetchUserProfile();
+          const profileImg = await getProfileImage();
+          set({
+            currentUser: {
+              ...userData,
+              profilePicture: profileImg?.profileImage?.base64 ?? null,
+            },
+          });
+
+          return userData;
+        } catch (error: any) {
+          console.error("Fetch profile after Google register error:", error);
           throw error;
         }
       },

@@ -62,7 +62,7 @@ export function Step2({ formData, handleInputChange, step2Form }: Step2Props) {
                   field.onChange(e);
                   handleInputChange(e);
                 }}
-                placeholder="Enter your middle name (optional)"
+                placeholder="Enter your middle name"
               />
             </FormControl>
             <FormMessage />
@@ -147,7 +147,7 @@ export function Step2({ formData, handleInputChange, step2Form }: Step2Props) {
             <FormLabel>Date of Birth</FormLabel>
             <FormControl>
               <DatePicker
-                date={field.value ? new Date(field.value) : undefined}
+                date={field.value && !isNaN(Date.parse(field.value)) ? new Date(field.value) : undefined}
                 setDate={(date) => {
                   const isoDate = format(date, "yyyy-MM-dd");
                   field.onChange(isoDate);
