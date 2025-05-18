@@ -93,21 +93,26 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Book Now Carousel Section */}
+      {/* Book Now Carousel Section - Full Width */}
+      <div className="w-full">
         <BookNowCarousel />
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search Section */}
         <section className="mt-10">
           <SearchForm onSearch={handleSearch} />
         </section>
 
         {/* Nearest Stations Section */}
-        <NearestStations className="mt-8" />
+        <div className="mt-8">
+        <NearestStations />
+      </div>
 
         {/* Active Metro Lines Section */}
-        <ActiveMetrolines className="mt-8" />
-
+        <div className="mt-8">
+        <ActiveMetrolines />
+      </div>
         {/* User Feedback Section */}
         <UserFeedback className="mt-26 mb-10" />
 

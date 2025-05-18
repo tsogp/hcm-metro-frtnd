@@ -15,12 +15,11 @@ export function BookNowCarousel({ className }: BookNowCarouselProps) {
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(true);
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: false,
+    loop: true,
     align: 'center',
     slidesToScroll: 1,
     duration: 20,
     dragFree: true,
-    containScroll: 'trimSnaps',
   });
 
   const scrollPrev = useCallback(() => {
@@ -73,96 +72,66 @@ export function BookNowCarousel({ className }: BookNowCarouselProps) {
   ];
 
   return (
-    <div className={cn('relative w-full overflow-hidden py-4', className)}>
+    <div className={cn('relative w-screen overflow-hidden', className)}>
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
-          {slides.map((slide, index) => {
-            const isActive = selectedIndex === index;
-            const isNext = index === (selectedIndex + 1) % slides.length;
-            const isPrev = index === (selectedIndex - 1 + slides.length) % slides.length;
-            
-
-            return (
-              <div
-                key={slide.id}
-                className="relative flex-[0_0_100%] min-w-0 px-32"
-                style={{
-                  perspective: '1500px',
-                }}
-              >
+          {slides.map((slide) => (
+            <div
+              key={slide.id}
+              className="relative flex-[0_0_100%] min-w-0"
+            >
+              <div className="relative h-[60vh] w-screen">
+                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40 z-10" />
                 <div
-                  className={cn(
-                    'relative h-[300px] md:h-[400px] rounded-xl overflow-hidden transition-all duration-700 ease-out',
-                    'transform-gpu',
-                    isActive && 'scale-100 z-20',
-                    isNext && 'scale-75 -translate-x-[250px] -rotate-y-40 z-10',
-                    isPrev && 'scale-75 translate-x-[250px] rotate-y-40 z-10',
-                    !isActive && !isNext && !isPrev && 'scale-50 opacity-50'
-                  )}
-                  style={{
-                    transformStyle: 'preserve-3d',
-                    transformOrigin: isNext ? '0% 50%' : isPrev ? '100% 50%' : '50% 50%',
+                  className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                  style={{ 
+                    backgroundImage: `url(${slide.image})`,
+                    imageRendering: 'crisp-edges',
+                    backgroundSize: 'center',
+                    backgroundPosition: 'center',
+                    transition: 'transform 0.3s ease-in-out'
                   }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40 z-10" />
-                  <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 ease-out"
-                    style={{ 
-                      backgroundImage: `url(${slide.image})`,
-                      imageRendering: 'crisp-edges',
-                      objectFit: 'cover',
-                      objectPosition: 'center'
-                    }}
-                  />
-                  <div className="relative z-20 h-full flex flex-col justify-center px-8 md:px-16 max-w-2xl mx-auto">
-                    <div className="space-y-4">
-                      <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
-                        {slide.title}
-                      </h2>
-                      <p className="text-base md:text-lg text-white/90 max-w-xl leading-relaxed">
-                        {slide.description}
-                      </p>
-                      <Button
-                        size="lg"
-                        className="mt-6 px-6 py-4 text-base bg-white text-black hover:bg-white/90 transition-all duration-300 transform hover:scale-105"
-                      >
-                        Book Now
-                      </Button>
-                    </div>
+                />
+                <div className="relative z-20 h-full flex flex-col justify-center px-8 md:px-16 max-w-4xl mx-auto">
+                  <div className="space-y-4">
+                    <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight">
+                      {slide.title}
+                    </h2>
+                    <p className="text-lg md:text-xl text-white/90 max-w-2xl leading-relaxed">
+                      {slide.description}
+                    </p>
+                    <Button
+                      size="lg"
+                      className="mt-6 px-8 py-6 text-lg bg-white text-black hover:bg-white/90 transition-all duration-300"
+                    >
+                      Book Now
+                    </Button>
                   </div>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
 
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-30 flex justify-between px-4 md:px-8">
-        <div className="w-12">
-          {canScrollPrev && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-all duration-300 transform hover:scale-110"
-              onClick={scrollPrev}
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-          )}
-        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-all duration-300"
+          onClick={scrollPrev}
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
 
-        <div className="w-12">
-          {canScrollNext && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-all duration-300 transform hover:scale-110"
-              onClick={scrollNext}
-            >
-              <ChevronRight className="h-6 w-6" />
-            </Button>
-          )}
-        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-all duration-300"
+          onClick={scrollNext}
+        >
+          <ChevronRight className="h-6 w-6" />
+        </Button>
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3">
