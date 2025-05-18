@@ -147,7 +147,7 @@ export function NearestStations() {
 
   return (
     <Card className="border-2 rounded-xl shadow-sm mt-12">
-      <CardContent className="pt-6">
+      <CardContent>
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-primary">
             Nearest Stations
@@ -169,9 +169,6 @@ export function NearestStations() {
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-primary" />
                   <span className="font-medium text-gray-900 dark:text-white">{station.name}</span>
-                  <Badge variant="secondary" className="ml-2">
-                    {station.distance}
-                  </Badge>
                 </div>
                 <div className="flex items-center gap-2 mt-2 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center gap-1">
@@ -180,27 +177,13 @@ export function NearestStations() {
                   </div>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                className="text-secondary hover:text-secondary/90"
-              >
-                View Schedule
-              </Button>
+              <Badge variant="secondary" className="text-base px-4 py-2">
+                {station.distance}
+              </Badge>
             </div>
           ))}
         </div>
       </CardContent>
-
-      <CardFooter className="relative flex lg:justify-start justify-center">
-        <Link href="/metro-explorer">
-          <Button
-            type="button"
-            className="absolute top-1/2 border-2 shadow-sm bg-secondary hover:bg-secondary/90 text-secondary-foreground px-10 py-6 rounded-full text-base"
-          >
-            View All Stations
-          </Button>
-        </Link>
-      </CardFooter>
     </Card>
   );
 } 

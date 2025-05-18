@@ -17,6 +17,7 @@ import { useUserStore } from "@/store/user-store";
 import { BookNowCarousel } from "./_components/BookNowCarousel";
 import { UserFeedback } from './_components/UserFeedback';
 import { NearestStations } from './_components/NearestStations';
+import { ActiveMetrolines } from './_components/ActiveMetrolines';
 
 export default function Dashboard() {
   const { currentUser, checkAuth } = useUserStore();
@@ -97,15 +98,18 @@ export default function Dashboard() {
         <BookNowCarousel />
 
         {/* Search Section */}
-        <section className="mt-8">
+        <section className="mt-10">
           <SearchForm onSearch={handleSearch} />
         </section>
 
         {/* Nearest Stations Section */}
-        <NearestStations />
+        <NearestStations className="mt-8" />
+
+        {/* Active Metro Lines Section */}
+        <ActiveMetrolines className="mt-8" />
 
         {/* User Feedback Section */}
-        <UserFeedback className="mt-8" />
+        <UserFeedback className="mt-26 mb-10" />
 
         {/* Schedule Results Section - Only shown when there are results */}
         <ScheduleTripList
