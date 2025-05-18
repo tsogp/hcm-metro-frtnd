@@ -76,7 +76,7 @@ export default function AboutPage() {
                 viewport={{ once: true }}
               >
                 <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
-                  <stat.icon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                  <stat.icon className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   {stat.value}
@@ -171,6 +171,74 @@ export default function AboutPage() {
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   {value.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Developers Section */}
+      <section className="py-16 bg-white dark:bg-gray-800">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Our Developers
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Meet the talented team behind HCMC Metro
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                name: "Nguyen Son Tung",
+                role: "Team Leader, Frontend Developer, Backend Developer",
+                image: "/images/default-avatar.jpg"
+              },
+              {
+                name: "Nguyen Tuan Dung",
+                role: "Frontend Developer",
+                image: "/images/default-avatar.jpg"
+              },
+              {
+                name: "Pavel Potemkin",
+                role: "Backend Developer",
+                image: "/images/default-avatar.jpg"
+              },
+              {
+                name: "Phan Trong Nguyen",
+                role: "Backend Developer",
+                image: "/images/default-avatar.jpg"
+              }
+            ].map((developer, index) => (
+              <motion.div
+                key={index}
+                className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden">
+                  <img
+                    src={developer.image}
+                    alt={developer.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  {developer.name}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {developer.role}
                 </p>
               </motion.div>
             ))}
