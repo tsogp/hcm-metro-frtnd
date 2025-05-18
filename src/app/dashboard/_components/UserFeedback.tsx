@@ -15,7 +15,7 @@ export function UserFeedback({ className }: UserFeedbackProps) {
       role: 'Daily Commuter',
       rating: 5,
       comment: 'The metro system has made my daily commute so much easier. Clean, efficient, and always on time!',
-      avatar: '/images/default-avatar.jpg',
+      avatar: '/images/feedback/avatar_2.jpg',
     },
     {
       id: 2,
@@ -23,7 +23,7 @@ export function UserFeedback({ className }: UserFeedbackProps) {
       role: 'Business Traveler',
       rating: 4,
       comment: 'Great connectivity across the city. The smart card system is very convenient for frequent travelers.',
-      avatar: '/images/default-avatar.jpg',
+      avatar: '/images/feedback/avatar_1.jpg',
     },
     {
       id: 3,
@@ -31,7 +31,7 @@ export function UserFeedback({ className }: UserFeedbackProps) {
       role: 'Student',
       rating: 5,
       comment: 'Affordable and reliable service. The student discount program is really helpful!',
-      avatar: '/images/default-avatar.jpg',
+      avatar: '/images/feedback/avatar_3.jpg',
     },
   ];
 

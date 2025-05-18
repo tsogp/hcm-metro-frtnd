@@ -56,13 +56,13 @@ export function BookNowCarousel({ className }: BookNowCarouselProps) {
       id: 1,
       title: 'Modern Metro Network',
       description: 'Experience seamless travel with our state-of-the-art metro system, connecting you to every corner of the city',
-      image: '/images/metro_system.jpg',
+      image: '/images/carousel/metro_system.jpg',
     },
     {
       id: 2,
       title: 'Smart Ticketing',
       description: 'Quick and easy travel with our contactless smart cards and mobile ticketing solutions',
-      image: '/images/metro_payment.jpg',
+      image: '/images/carousel/metro_payment.jpg',
     },
     {
       id: 3,

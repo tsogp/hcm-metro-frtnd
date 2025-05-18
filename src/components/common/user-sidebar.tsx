@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CreditCard, Home, Map, Menu, Ticket, X } from "lucide-react";
+import { CreditCard, Home, Map, Menu, Ticket, X, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -29,6 +29,11 @@ export function UserSidebar() {
           title: "Metro Explorer",
           href: "/metro-explorer",
           icon: Map,
+        },
+        {
+          title: "About Us",
+          href: "/about",
+          icon: Info,
         },
       ],
     },
