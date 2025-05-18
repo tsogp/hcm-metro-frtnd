@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { googleAuth, GoogleData, logout, signIn } from "@/action/auth";
 import { getCurrentUserProfile, getProfileImage } from "@/action/profile";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { getUserBalance } from "@/action/payment";
 
 export interface UserData {
   passengerEmail: string;
@@ -16,6 +17,7 @@ export interface UserData {
   hasDisability: boolean;
   isRevolutionary: boolean;
   profilePicture: string | null;
+  balance: number;
 }
 
 type UserState = {
@@ -48,8 +50,10 @@ export const useUserStore = create<UserStore>()(
         try {
           const profileData = await getCurrentUserProfile();
           const profileImg = await getProfileImage();
+          const balance = (await getUserBalance()).balance;
           const userData: UserData = {
             ...profileData,
+            balance,
             profilePicture: profileImg?.profileImage?.base64 ?? null,
           };
           set({ currentUser: userData });
@@ -74,9 +78,11 @@ export const useUserStore = create<UserStore>()(
           await signIn({ email, password });
           const userData = await get().fetchUserProfile();
           const profileImg = await getProfileImage();
+          const balance = (await getUserBalance()).balance;
           set({
             currentUser: {
               ...userData,
+              balance,
               profilePicture: profileImg?.profileImage?.base64 ?? null,
             },
           });
@@ -94,9 +100,11 @@ export const useUserStore = create<UserStore>()(
           if (response.status == 200) {
             const userData = await get().fetchUserProfile();
             const profileImg = await getProfileImage();
+            const balance = (await getUserBalance()).balance;
             set({
               currentUser: {
                 ...userData,
+                balance,
                 profilePicture: profileImg?.profileImage?.base64 ?? null,
               },
             });
@@ -115,9 +123,11 @@ export const useUserStore = create<UserStore>()(
         try {
           const userData = await get().fetchUserProfile();
           const profileImg = await getProfileImage();
+          const balance = (await getUserBalance()).balance;
           set({
             currentUser: {
               ...userData,
+              balance,
               profilePicture: profileImg?.profileImage?.base64 ?? null,
             },
           });
@@ -150,8 +160,10 @@ export const useUserStore = create<UserStore>()(
           // Only fetch profile if we have a valid auth token
           const profileData = await getCurrentUserProfile();
           const profileImg = await getProfileImage();
+          const balance = (await getUserBalance()).balance;
           const userData: UserData = {
             ...profileData,
+            balance,
             profilePicture: profileImg?.profileImage?.base64 ?? null,
           };
 
