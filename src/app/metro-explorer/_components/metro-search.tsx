@@ -1,30 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { 
-  Search, 
   MapPin, 
-  Clock, 
-  ArrowRight, 
-  Calendar, 
-  Train,
   ChevronDown,
-  ChevronUp,
-  CheckCircle2,
-  AlertCircle,
-  Construction,
-  Navigation
+  Train,
+  Navigation,
+  Clock,
+  Search,
 } from "lucide-react";
-import { metroLines, metroRoutes, stations } from "@/data/metro-data";
-import { formatCurrency } from "@/lib/utils";
-import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 import { 
   Command, 
   CommandEmpty, 
@@ -37,114 +24,118 @@ import {
   PopoverContent, 
   PopoverTrigger 
 } from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { useCartStore } from "@/store/cart-store";
-import { motion, AnimatePresence } from "framer-motion";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { getAllStations } from "@/action/stations";
+import { Station } from "@/types/station";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 export function MetroSearch() {
-  const router = useRouter();
-  const { openCart } = useCartStore();
-  const [fromStation, setFromStation] = useState<string>("");
-  const [toStation, setToStation] = useState<string>("");
-  const [date, setDate] = useState<Date>(new Date());
-  const [fromOpen, setFromOpen] = useState(false);
-  const [toOpen, setToOpen] = useState(false);
-  const [dateOpen, setDateOpen] = useState(false);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [expandedRoutes, setExpandedRoutes] = useState<string[]>([]);
+  const [selectedStation, setSelectedStation] = useState<string>("");
+  const [stationOpen, setStationOpen] = useState(false);
+  const [stations, setStations] = useState<Station[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const toggleRoute = (routeId: string) => {
-    setExpandedRoutes(prev => 
-      prev.includes(routeId) 
-        ? prev.filter(id => id !== routeId) 
-        : [...prev, routeId]
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const data = await getAllStations();
+        setStations(data);
+      } catch (err) {
+        setError("Failed to load stations. Please try again later.");
+        console.error("Error fetching stations:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStations();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading stations...</p>
+        </div>
+      </div>
     );
-  };
+  }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "operational":
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case "maintenance":
-        return <Construction className="h-4 w-4 text-amber-500" />;
-      case "planned":
-        return <AlertCircle className="h-4 w-4 text-blue-500" />;
-      default:
-        return null;
-    }
-  };
-
-  const handleSearch = () => {
-    if (!fromStation || !toStation) return;
-
-    const results = metroRoutes.filter(route => 
-      route.fromStation === fromStation && route.toStation === toStation
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-[400px]">
+        <div className="text-center text-destructive">
+          <p>{error}</p>
+        </div>
+      </div>
     );
-
-    setSearchResults(results);
-  };
-
-  const handleBuyTicket = (routeId: string) => {
-    const route = metroRoutes.find(r => r.id === routeId);
-    if (route) {
-      openCart();
-      router.push(`/payment?from=${route.fromStation}&to=${route.toStation}`);
-    }
-  };
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-        <div className="space-y-1">
-          <h2 className="text-xl font-bold">Find Your Route</h2>
+        <div className="space-y-1.5">
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <Search className="h-6 w-6 text-primary" />
+            Find Station
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Search for the best route between stations
+            Search for a specific station in the network
           </p>
         </div>
       </div>
 
-      <Card>
+      <Card className="border-2">
+        <CardHeader className="bg-muted/50 border-b px-6 py-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Train className="h-5 w-5 text-primary" />
+            Station Search
+          </CardTitle>
+        </CardHeader>
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="from">From</Label>
-              <Popover open={fromOpen} onOpenChange={setFromOpen}>
+              <Label htmlFor="station" className="text-base">Select Station</Label>
+              <Popover open={stationOpen} onOpenChange={setStationOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     role="combobox"
-                    aria-expanded={fromOpen}
-                    className="w-full justify-between"
+                    aria-expanded={stationOpen}
+                    className="w-full justify-between h-12 text-base"
                   >
-                    {fromStation
-                      ? stations.find((station) => station.id === fromStation)?.name
-                      : "Select departure station"}
+                    <span className="truncate text-left">
+                      {selectedStation
+                        ? stations.find((station) => station.id === selectedStation)?.name
+                        : "Search for a station..."}
+                    </span>
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
+                <PopoverContent className="w-full p-0" align="start">
                   <Command>
-                    <CommandInput placeholder="Search stations..." />
+                    <CommandInput placeholder="Type station name..." className="h-12" />
                     <CommandEmpty>No station found.</CommandEmpty>
-                    <CommandGroup>
+                    <CommandGroup className="max-h-[300px] overflow-auto">
                       {stations.map((station) => (
                         <CommandItem
                           key={station.id}
                           value={station.name}
                           onSelect={() => {
-                            setFromStation(station.id);
-                            setFromOpen(false);
+                            setSelectedStation(station.id);
+                            setStationOpen(false);
                           }}
+                          className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/50"
                         >
-                          <MapPin className="mr-2 h-4 w-4" />
-                          {station.name}
-                          {station.isTransferStation && (
-                            <Badge variant="outline" className="ml-2 text-xs">
-                              Transfer
-                            </Badge>
-                          )}
+                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold shrink-0">
+                            <MapPin className="h-4 w-4" />
+                          </div>
+                          <div className="flex-1 min-w-0 text-left">
+                            <div className="font-medium truncate text-left">{station.name}</div>
+                            <div className="text-sm text-muted-foreground truncate text-left">{station.address}</div>
+                          </div>
                         </CommandItem>
                       ))}
                     </CommandGroup>
@@ -153,240 +144,65 @@ export function MetroSearch() {
               </Popover>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="to">To</Label>
-              <Popover open={toOpen} onOpenChange={setToOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={toOpen}
-                    className="w-full justify-between"
-                  >
-                    {toStation
-                      ? stations.find((station) => station.id === toStation)?.name
-                      : "Select destination station"}
-                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput placeholder="Search stations..." />
-                    <CommandEmpty>No station found.</CommandEmpty>
-                    <CommandGroup>
-                      {stations.map((station) => (
-                        <CommandItem
-                          key={station.id}
-                          value={station.name}
-                          onSelect={() => {
-                            setToStation(station.id);
-                            setToOpen(false);
-                          }}
-                        >
-                          <MapPin className="mr-2 h-4 w-4" />
-                          {station.name}
-                          {station.isTransferStation && (
-                            <Badge variant="outline" className="ml-2 text-xs">
-                              Transfer
-                            </Badge>
-                          )}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="date">Date</Label>
-              <Popover open={dateOpen} onOpenChange={setDateOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between"
-                  >
-                    {format(date, "PPP")}
-                    <Calendar className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <CalendarComponent
-                    mode="single"
-                    selected={date}
-                    onSelect={(newDate) => {
-                      if (newDate) {
-                        setDate(newDate);
-                        setDateOpen(false);
-                      }
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <Button 
-              className="w-full" 
-              onClick={handleSearch}
-              disabled={!fromStation || !toStation}
-            >
-              Search Routes
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <AnimatePresence>
-        {searchResults.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>Search Results</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {searchResults.map((route) => {
-                    const fromStationData = stations.find(s => s.id === route.fromStation);
-                    const toStationData = stations.find(s => s.id === route.toStation);
-                    const line = metroLines.find(l => l.id === route.lineId);
-                    const isExpanded = expandedRoutes.includes(route.id);
-                    
-                    return (
-                      <Card key={route.id} className="overflow-hidden">
-                        <div 
-                          className="h-2" 
-                          style={{ backgroundColor: line?.color }}
-                        />
-                        <CardContent className="p-4">
-                          <Collapsible open={isExpanded} onOpenChange={() => toggleRoute(route.id)}>
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                              <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                  <div 
-                                    className="w-3 h-3 rounded-full" 
-                                    style={{ backgroundColor: line?.color }}
-                                  />
-                                  <span className="font-medium">{line?.name}</span>
-                                  {line && getStatusIcon(line.status)}
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                  <MapPin className="h-4 w-4" />
-                                  <span>{fromStationData?.name}</span>
-                                  <ArrowRight className="h-3 w-3" />
-                                  <span>{toStationData?.name}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                  <Clock className="h-4 w-4" />
-                                  <span>{route.duration} min</span>
-                                  <span>•</span>
-                                  <span>{route.distance} km</span>
-                                </div>
+            {selectedStation && (
+              <div className="mt-6">
+                <Card className="border-2">
+                  <CardHeader className="bg-muted/50 border-b px-6 py-4">
+                    <CardTitle className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-primary" />
+                      Station Details
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="space-y-6">
+                      {(() => {
+                        const station = stations.find(s => s.id === selectedStation);
+                        if (!station) return null;
+                        
+                        return (
+                          <>
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary shrink-0">
+                                <Train className="h-6 w-6" />
                               </div>
-                              
-                              <div className="flex flex-col md:items-end gap-2">
-                                <div className="text-lg font-bold">
-                                  {formatCurrency(route.price)}
-                                </div>
-                                <div className="flex gap-2">
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => toggleRoute(route.id)}
-                                  >
-                                    {isExpanded ? (
-                                      <>
-                                        <ChevronUp className="mr-2 h-4 w-4" />
-                                        Hide Details
-                                      </>
-                                    ) : (
-                                      <>
-                                        <ChevronDown className="mr-2 h-4 w-4" />
-                                        Show Details
-                                      </>
-                                    )}
-                                  </Button>
-                                  <Button 
-                                    size="sm"
-                                    onClick={() => handleBuyTicket(route.id)}
-                                  >
-                                    Buy Ticket
-                                  </Button>
-                                </div>
+                              <div className="flex-1 min-w-0 text-left">
+                                <h3 className="text-xl font-bold truncate text-left">{station.name}</h3>
+                                <Badge variant="secondary" className="mt-1">ID: {station.id}</Badge>
                               </div>
                             </div>
                             
-                            <CollapsibleContent className="pt-4">
-                              <Separator className="mb-4" />
+                            <Separator />
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div className="space-y-4">
-                                <div>
-                                  <h3 className="text-sm font-medium mb-2">Route Details</h3>
-                                  <div className="space-y-2">
-                                    {route.stops.map((stopId: string, index: number) => {
-                                      const stop = stations.find(s => s.id === stopId);
-                                      const isTransfer = stop?.isTransferStation;
-                                      
-                                      return (
-                                        <div key={stopId} className="flex items-start gap-2">
-                                          <div className="flex flex-col items-center pt-1">
-                                            <div 
-                                              className="w-2 h-2 rounded-full" 
-                                              style={{ backgroundColor: line?.color }}
-                                            />
-                                            {index < route.stops.length - 1 && (
-                                              <div 
-                                                className="w-0.5 h-6" 
-                                                style={{ backgroundColor: line?.color }}
-                                              />
-                                            )}
-                                          </div>
-                                          <div>
-                                            <div className="font-medium">{stop?.name}</div>
-                                            {isTransfer && (
-                                              <div className="text-xs text-muted-foreground">
-                                                Transfer Station
-                                              </div>
-                                            )}
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
+                                <div className="flex items-start gap-3">
+                                  <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                                  <div className="flex-1 min-w-0 text-left">
+                                    <div className="font-medium text-sm text-muted-foreground text-left">Address</div>
+                                    <div className="mt-1 break-words text-left">{station.address}</div>
                                   </div>
                                 </div>
                                 
-                                <div>
-                                  <h3 className="text-sm font-medium mb-2">Schedule</h3>
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                      <div className="text-sm text-muted-foreground">Departure</div>
-                                      <div className="font-medium">08:00</div>
-                                    </div>
-                                    <div className="space-y-1">
-                                      <div className="text-sm text-muted-foreground">Arrival</div>
-                                      <div className="font-medium">08:25</div>
-                                    </div>
+                                <div className="flex items-start gap-3">
+                                  <Navigation className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                                  <div className="flex-1 min-w-0 text-left">
+                                    <div className="font-medium text-sm text-muted-foreground text-left">Coordinates</div>
+                                    <div className="mt-1 text-left">{station.latitude}, {station.longitude}</div>
                                   </div>
                                 </div>
                               </div>
-                            </CollapsibleContent>
-                          </Collapsible>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 } 
