@@ -5,37 +5,64 @@ import { Minus } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
-import { TicketCartItem } from "@/store/cart-store";
+import { CartItemFromServer } from "@/action/cart";
 import { Input } from "../ui/input";
 
 interface TicketCartItemDisplayProps {
-  item: TicketCartItem;
-  handleDecrease: (item: TicketCartItem) => void;
-  handleIncrease: (item: TicketCartItem) => void;
-  handleQuantityChange: (item: TicketCartItem, value: string) => void;
+  item: CartItemFromServer;
+  handleDecrease: (item: CartItemFromServer) => void;
+  handleIncrease: (item: CartItemFromServer) => void;
+  handleQuantityChange: (item: CartItemFromServer, value: string) => void;
   editable?: boolean;
 }
+
 function TicketCartItemDisplay({
   item,
   handleDecrease,
   handleIncrease,
   handleQuantityChange,
-  editable,
+  editable = true,
 }: TicketCartItemDisplayProps) {
+  const getTicketTypeParts = () => {
+    const ticketTypeName = item.ticketType;
+    if (!ticketTypeName) {
+      return { period: "Unknown", userType: "Unknown" };
+    }
+
+    let period = "";
+    if (ticketTypeName.includes("ONE_WAY")) period = "One Way";
+    else if (ticketTypeName.includes("DAILY")) period = "Daily";
+    else if (ticketTypeName.includes("THREE_DAY")) period = "Three Day";
+    else if (ticketTypeName.includes("MONTHLY")) period = "Monthly";
+
+    let userType = "";
+    if (ticketTypeName.includes("STUDENT")) userType = "Student";
+    else if (ticketTypeName.includes("ADULT")) userType = "Adult";
+
+    return { period, userType };
+  };
+
+  const { period, userType } = getTicketTypeParts();
+
   return (
     <div className="flex flex-col gap-2 rounded-lg border p-4 transition-colors border-secondary/20 hover:bg-secondary/5 hover:border-secondary">
       <div className="space-y-1">
         <div className="flex justify-between items-center">
           <p className="text-sm text-muted-foreground group-hover:text-muted-foreground/80">
-            {item.startStation} → {item.endStation}
+            {item.startStationName} → {item.endStationName}
           </p>
-          <Badge variant="outline" className="border-primary text-secondary">
-            {item.type.name}
-          </Badge>
+          <div className="flex gap-2">
+            <Badge
+              variant="outline"
+              className="font-medium text-sm border-blue-400 border-1"
+            >
+              {userType} {period}
+            </Badge>
+          </div>
         </div>
         <div className="flex justify-between items-center gap-2">
           <h4 className="font-bold text-secondary group-hover:text-secondary/80 text-lg">
-            {item.name}
+            {item.lineName}
           </h4>
 
           <p className="font-bold text-secondary group-hover:text-secondary/80">
@@ -44,7 +71,7 @@ function TicketCartItemDisplay({
         </div>
         <p className="text-sm text-muted-foreground group-hover:text-muted-foreground/80">
           <span className="font-bold">Expiry: </span>
-          {item.type.expiryInterval}
+          {item.duration}
         </p>
       </div>
 
@@ -57,7 +84,7 @@ function TicketCartItemDisplay({
               className="size-8 text-secondary hover:bg-secondary/10 hover:text-secondary/80"
               onClick={() => handleDecrease(item)}
             >
-              {item.quantity === 1 ? (
+              {item.amount === 1 ? (
                 <Trash2 className="h-4 w-4" />
               ) : (
                 <Minus className="h-4 w-4" />
@@ -66,7 +93,8 @@ function TicketCartItemDisplay({
             <Input
               type="number"
               min="1"
-              value={item.quantity}
+              value={item.amount}
+              disabled={true}
               onChange={(e) => handleQuantityChange(item, e.target.value)}
               className="w-16 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
@@ -79,17 +107,17 @@ function TicketCartItemDisplay({
               <Plus className="h-4 w-4" />
             </Button>
           </div>
-          <p className="font-bold text-2xl group-hover:text-secondary/80">
-            {formatCurrency(item.price * item.quantity)}
+          <p className="font-bold text-xl group-hover:text-secondary/80">
+            {formatCurrency(item.price * item.amount)}
           </p>
         </div>
       ) : (
-        <div className="flex justify-between">
-          <p className="text-sm text-muted-foreground group-hover:text-muted-foreground/80 font-bold">
-            Quantity: {item.quantity}
+        <div className="flex justify-between items-end">
+          <p className="text-base text-muted-foreground group-hover:text-muted-foreground/80 font-bold">
+            Quantity: {item.amount}
           </p>
           <p className="font-bold text-xl group-hover:text-secondary/80">
-            {formatCurrency(item.price * item.quantity)}
+            {formatCurrency(item.price * item.amount)}
           </p>
         </div>
       )}

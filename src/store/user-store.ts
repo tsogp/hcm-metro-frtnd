@@ -3,7 +3,7 @@ import { googleAuth, GoogleData, logout, signIn } from "@/action/auth";
 import { getCurrentUserProfile, getProfileImage } from "@/action/profile";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-interface UserData {
+export interface UserData {
   passengerEmail: string;
   passengerFirstName: string;
   passengerMiddleName: string;

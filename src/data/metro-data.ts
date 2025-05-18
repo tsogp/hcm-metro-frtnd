@@ -1,7 +1,30 @@
-import { MetroLine, MetroStation, MetroRoute, MetroTicket } from "@/types/metro";
+import {
+  MetroLine,
+  MetroStation,
+  MetroRoute,
+  MetroTicket,
+  Station,
+  Schedule,
+  SuspensionAlert,
+  AlertStation,
+} from "@/types/metroline";
 
 // Metro Stations
-export const stations: MetroStation[] = [
+export const stations: Station[] = [
+  {
+    id: "550e8400-e29b-41d4-a716-446655440002",
+    name: "Central Station",
+    address: "123 Main Street",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+  {
+    id: "550e8400-e29b-41d4-a716-446655440003",
+    name: "Downtown Station",
+    address: "456 Market Street",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
   {
     id: "s1",
     name: "Ben Thanh",
@@ -31,7 +54,7 @@ export const stations: MetroStation[] = [
     id: "s4",
     name: "Reunification Palace",
     code: "RP",
-    coordinates: { lat: 10.7770, lng: 106.6952 },
+    coordinates: { lat: 10.777, lng: 106.6952 },
     facilities: ["escalator", "ticket-counter"],
     isTransferStation: false,
   },
@@ -65,7 +88,13 @@ export const stations: MetroStation[] = [
     name: "Tan Son Nhat International Airport",
     code: "TSN",
     coordinates: { lat: 10.8188, lng: 106.6517 },
-    facilities: ["elevator", "escalator", "restroom", "ticket-counter", "information-desk"],
+    facilities: [
+      "elevator",
+      "escalator",
+      "restroom",
+      "ticket-counter",
+      "information-desk",
+    ],
     isTransferStation: false,
   },
   {
@@ -107,34 +136,28 @@ export const stations: MetroStation[] = [
 // Metro Lines
 export const metroLines: MetroLine[] = [
   {
-    id: "line1",
+    id: "550e8400-e29b-41d4-a716-446655440000",
     name: "Line 1",
-    color: "#E30613", // Red
-    stations: stations.filter(s => ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"].includes(s.id)),
-    operatingHours: {
-      start: "05:30",
-      end: "23:00",
-    },
-    frequency: 5,
-    status: "operational",
+    first_arrival: "05:00:00",
+    train_frequency: "00:10:00",
+    total_duration: "01:30:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
   },
   {
-    id: "line2",
+    id: "550e8400-e29b-41d4-a716-446655440001",
     name: "Line 2",
-    color: "#00A651", // Green
-    stations: stations.filter(s => ["s1", "s9", "s10", "s11"].includes(s.id)),
-    operatingHours: {
-      start: "05:30",
-      end: "23:00",
-    },
-    frequency: 6,
-    status: "operational",
+    first_arrival: "05:30:00",
+    train_frequency: "00:15:00",
+    total_duration: "01:45:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
   },
   {
     id: "line3",
     name: "Line 3",
     color: "#F9A01B", // Yellow
-    stations: stations.filter(s => ["s6", "s9", "s12"].includes(s.id)),
+    stations: stations.filter((s) => ["s6", "s9", "s12"].includes(s.id)),
     operatingHours: {
       start: "05:30",
       end: "23:00",
@@ -146,7 +169,7 @@ export const metroLines: MetroLine[] = [
     id: "line4",
     name: "Line 4",
     color: "#00AEEF", // Blue
-    stations: stations.filter(s => ["s12"].includes(s.id)),
+    stations: stations.filter((s) => ["s12"].includes(s.id)),
     operatingHours: {
       start: "05:30",
       end: "23:00",
@@ -306,4 +329,110 @@ export const metroTickets: MetroTicket[] = [
     validUntil: "2023-12-31T23:59:59",
     isAvailable: true,
   },
-]; 
+];
+
+export const schedules: Schedule[] = [
+  {
+    metro_line_id: "550e8400-e29b-41d4-a716-446655440000",
+    station_id: "550e8400-e29b-41d4-a716-446655440002",
+    order: 1,
+    arrival_time: "05:00:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+  {
+    metro_line_id: "550e8400-e29b-41d4-a716-446655440000",
+    station_id: "550e8400-e29b-41d4-a716-446655440003",
+    order: 2,
+    arrival_time: "05:15:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+  // Line 2 schedules
+  {
+    metro_line_id: "550e8400-e29b-41d4-a716-446655440001",
+    station_id: "s1",
+    order: 1,
+    arrival_time: "05:30:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+  {
+    metro_line_id: "550e8400-e29b-41d4-a716-446655440001",
+    station_id: "s9",
+    order: 2,
+    arrival_time: "05:45:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+  {
+    metro_line_id: "550e8400-e29b-41d4-a716-446655440001",
+    station_id: "s10",
+    order: 3,
+    arrival_time: "06:00:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+  {
+    metro_line_id: "550e8400-e29b-41d4-a716-446655440001",
+    station_id: "s11",
+    order: 4,
+    arrival_time: "06:15:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+  // Line 3 schedules
+  {
+    metro_line_id: "line3",
+    station_id: "s6",
+    order: 1,
+    arrival_time: "05:30:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+  {
+    metro_line_id: "line3",
+    station_id: "s9",
+    order: 2,
+    arrival_time: "05:45:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+  {
+    metro_line_id: "line3",
+    station_id: "s12",
+    order: 3,
+    arrival_time: "06:00:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+  // Line 4 schedules
+  {
+    metro_line_id: "line4",
+    station_id: "s12",
+    order: 1,
+    arrival_time: "05:30:00",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+];
+
+export const suspensionAlerts: SuspensionAlert[] = [
+  {
+    id: "550e8400-e29b-41d4-a716-446655440004",
+    suspension_type: "MAINTAINENCE",
+    metro_line_id: "550e8400-e29b-41d4-a716-446655440000",
+    type: "Scheduled Maintenance",
+    description: "Line 1 will be under maintenance from 10 PM to 4 AM",
+    expected_restore_time: "2024-01-02T04:00:00Z",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  },
+];
+
+export const alertStations: AlertStation[] = [
+  {
+    alert_id: "550e8400-e29b-41d4-a716-446655440004",
+    station_id: "550e8400-e29b-41d4-a716-446655440002",
+  },
+];

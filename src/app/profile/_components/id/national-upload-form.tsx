@@ -9,10 +9,12 @@ import { toast } from "sonner";
 
 type NationalIdUploadFormProps = {
   setUser?: React.Dispatch<React.SetStateAction<any>>;
+  onRefetch?: () => Promise<void>;
 };
 
 export default function NationalIdUploadForm({
   setUser,
+  onRefetch,
 }: NationalIdUploadFormProps) {
   const [frontImage, setFrontImage] = useState<{
     url: string;
@@ -117,11 +119,10 @@ export default function NationalIdUploadForm({
 
       toast.promise(uploadAction, {
         loading: "Uploading National ID...",
-        success: () => {
+        success: async () => {
           // Update user state if setUser is provided
           if (setUser) {
             setUser((prevUser: any) => {
-              // Create a copy of the current idVerification or initialize if it doesn't exist
               const updatedIdVerification = {
                 ...(prevUser.idVerification || {
                   national: { front: null, back: null, status: null },
@@ -146,6 +147,11 @@ export default function NationalIdUploadForm({
           // Reset form after successful upload
           handleRemoveImage("front");
           handleRemoveImage("back");
+
+          // Refetch data if onRefetch is provided
+          if (onRefetch) {
+            await onRefetch();
+          }
 
           return "National ID uploaded successfully!";
         },

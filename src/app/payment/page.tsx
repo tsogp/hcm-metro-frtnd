@@ -1,22 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import CartTab from "@/app/payment/_components/tab/cart-tab";
 import PaymentTab from "@/app/payment/_components/tab/payment-tab";
-
-const passengerData = {
-  firstName: "Nguyen",
-  middleName: "Son",
-  lastName: "Tung",
-  phone: "0123 456 789",
-  email: "tungnguyen@gmail.com",
-};
+import { UserData, useUserStore } from "@/store/user-store";
 
 export default function PaymentPage() {
   const [currentStep, setCurrentStep] = useState(1);
-  const [email, setEmail] = useState(passengerData.email);
   const [acceptedPolicies, setAcceptedPolicies] = useState(false);
+
+  const { currentUser, checkAuth } = useUserStore();
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const initializeUser = async () => {
+      await checkAuth();
+    };
+    initializeUser();
+  }, [checkAuth]);
+
+  useEffect(() => {
+    if (currentUser) {
+      setEmail(currentUser.passengerEmail);
+    }
+  }, [currentUser]);
 
   const handleProceedToPayment = () => {
     if (acceptedPolicies) {
@@ -40,7 +48,7 @@ export default function PaymentPage() {
         <div className="w-full lg:w-2/3">
           <PaymentTab
             currentStep={currentStep}
-            passengerData={passengerData}
+            user={currentUser as UserData}
             email={email}
             setEmail={setEmail}
             acceptedPolicies={acceptedPolicies}

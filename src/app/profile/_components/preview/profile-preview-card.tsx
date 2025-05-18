@@ -44,16 +44,48 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
         if (images) {
           const processedImages: any = {
             national: {
-              front: `data:${images?.nationalIdPictures[0].mimeType};base64,${images?.nationalIdPictures[0].base64}`,
-              back: `data:${images?.nationalIdPictures[1].mimeType};base64,${images?.nationalIdPictures[1].base64}`,
-              status: images?.nationalIdPictures[0] ? "verified" : null,
+              front: null,
+              back: null,
+              status: null,
             },
             student: {
-              front: `data:${images?.studentIdPictures[0].mimeType};base64,${images?.studentIdPictures[0].base64}`,
-              back: `data:${images?.studentIdPictures[1].mimeType};base64,${images?.studentIdPictures[1].base64}`,
-              status: images?.studentIdPictures[0] ? "verified" : null,
+              front: null,
+              back: null,
+              status: null,
             },
           };
+
+          const allPictures = [
+            ...(images.nationalIdPictures || []),
+            ...(images.studentIdPictures || []),
+          ];
+
+          allPictures.forEach((picture: any) => {
+            const imageUrl = `data:${picture.mimeType};base64,${picture.base64}`;
+
+            switch (picture.imageType) {
+              case "NATIONAL_ID_FRONT":
+                processedImages.national.front = imageUrl;
+                break;
+              case "NATIONAL_ID_BACK":
+                processedImages.national.back = imageUrl;
+                break;
+              case "STUDENT_ID_FRONT":
+                processedImages.student.front = imageUrl;
+                break;
+              case "STUDENT_ID_BACK":
+                processedImages.student.back = imageUrl;
+                break;
+            }
+          });
+
+          // Set verification status
+          processedImages.national.status = processedImages.national.front
+            ? "verified"
+            : null;
+          processedImages.student.status = processedImages.student.front
+            ? "verified"
+            : null;
 
           setCardImages(processedImages);
         }
@@ -67,7 +99,10 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
     fetchCardImages();
   }, []);
 
-  const getVerificationStatusBadge = (status: "verified" | null) => {
+  const getVerificationStatusBadge = (
+    status: "verified" | null,
+    type: "national" | "student"
+  ) => {
     if (!status) return null;
     if (status === "verified") {
       return (
@@ -76,7 +111,7 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
           className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1"
         >
           <ShieldCheck className="h-3 w-3" />
-          Verified
+          {type === "student" ? "Student Verified" : "Verified"}
         </Badge>
       );
     }
@@ -139,8 +174,9 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
 
             {/* Show verification status badges if available */}
             {hasNationalIdVerification &&
-              getVerificationStatusBadge("verified")}
-            {hasStudentIdVerification && getVerificationStatusBadge("verified")}
+              getVerificationStatusBadge("verified", "national")}
+            {hasStudentIdVerification &&
+              getVerificationStatusBadge("verified", "student")}
           </div>
         </div>
 
@@ -192,7 +228,7 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
                 <div className="flex items-center gap-2">
                   <p className="font-medium">{user.nationalId}</p>
                   {hasNationalIdVerification &&
-                    getVerificationStatusBadge("verified")}
+                    getVerificationStatusBadge("verified", "national")}
                 </div>
               </div>
               <div className="space-y-1">
@@ -202,7 +238,7 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
                     {user.studentId || <Minus className="size-4" />}
                   </p>
                   {hasStudentIdVerification &&
-                    getVerificationStatusBadge("verified")}
+                    getVerificationStatusBadge("verified", "student")}
                 </div>
               </div>
               <div className="space-y-1">

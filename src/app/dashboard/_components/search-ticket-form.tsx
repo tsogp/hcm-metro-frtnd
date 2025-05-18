@@ -11,7 +11,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 
 import {
@@ -29,35 +28,23 @@ import {
 } from "@/components/ui/card";
 import { DatePicker } from "@/components/input/date-picker-input";
 import { TimePicker } from "@/components/input/timer-picker-input";
-import {
+import type {
   RecentSearch,
   SearchTicketFormValues,
 } from "@/types/search-ticket-form";
 import RecentSearchList from "./recent-search-list";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { searchFormSchema } from "@/schemas/search-ticket-form";
+import type { Station } from "@/types/station";
+import { getAllStations } from "@/action/stations";
+import { formatLocalISO } from "@/lib/utils";
 
-// Types for our form
+interface SearchFormProps {
+  onSearch: (startId: string, endId: string, dateTime: string) => void;
+}
 
-// Types for our location data
-type Location = {
-  id: string;
-  name: string;
-};
-
-// Mock data
-const MOCK_LOCATIONS: Location[] = [
-  { id: "hcm", name: "TP. Hồ Chí Minh" },
-  { id: "dl", name: "Đà Lạt" },
-  { id: "ag", name: "An Giang" },
-  { id: "br", name: "Bà Rịa" },
-  { id: "vt", name: "Vũng Tàu" },
-  { id: "hn", name: "Hà Nội" },
-  { id: "dn", name: "Đà Nẵng" },
-];
-
-export default function SearchForm() {
-  const [locations, setLocations] = useState<Location[]>([]);
+export default function SearchForm({ onSearch }: SearchFormProps) {
+  const [stations, setStations] = useState<Station[]>([]);
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -79,19 +66,9 @@ export default function SearchForm() {
     const fetchLocations = async () => {
       setIsLoading(true);
       try {
-        // In a real app, this would be a fetch to your API
-        // await fetch('/api/locations')
-
-        // Simulating API response
-        setTimeout(() => {
-          setLocations(MOCK_LOCATIONS);
-
-          // Set default values after data is loaded
-          form.setValue("departure", "");
-          form.setValue("destination", "");
-
-          setIsLoading(false);
-        }, 500);
+        const stations = await getAllStations();
+        setStations(stations);
+        setIsLoading(false);
       } catch (error) {
         console.error("Failed to fetch locations:", error);
         setIsLoading(false);
@@ -130,9 +107,9 @@ export default function SearchForm() {
   const selectRecentSearch = (search: RecentSearch) => {
     // Find the location IDs based on names
     const departureId =
-      locations.find((loc) => loc.name === search.departure)?.id || "";
+      stations.find((loc) => loc.name === search.departure)?.id || "";
     const destinationId =
-      locations.find((loc) => loc.name === search.destination)?.id || "";
+      stations.find((loc) => loc.name === search.destination)?.id || "";
 
     form.setValue("departure", departureId);
     form.setValue("destination", destinationId);
@@ -152,8 +129,6 @@ export default function SearchForm() {
   };
 
   const onSubmit = (data: SearchTicketFormValues) => {
-    console.log(data);
-
     const existingSearchesJSON = localStorage.getItem("recentSearches");
     let existingSearches: RecentSearch[] = [];
 
@@ -169,9 +144,9 @@ export default function SearchForm() {
       {
         id: Date.now().toString(),
         departure:
-          locations.find((loc) => loc.id === data.departure)?.name || "",
+          stations.find((loc) => loc.id === data.departure)?.name || "",
         destination:
-          locations.find((loc) => loc.id === data.destination)?.name || "",
+          stations.find((loc) => loc.id === data.destination)?.name || "",
         departureDate: format(new Date(data.departureDate), "dd/MM/yyyy"),
         departureTime: data.departureTime,
         createdAt: Date.now(),
@@ -181,8 +156,16 @@ export default function SearchForm() {
     const limitedSearches = updatedSearches.slice(0, 5);
 
     localStorage.setItem("recentSearches", JSON.stringify(limitedSearches));
-
     setRecentSearches(limitedSearches.slice(0, 4));
+
+    // Format the date and time for the API
+    const dateObj = new Date(data.departureDate);
+    const [hours, minutes] = data.departureTime.split(":").map(Number);
+    dateObj.setHours(hours, minutes, 0);
+    const formattedDateTime = formatLocalISO(dateObj);
+
+    // Call the onSearch callback with the form data
+    onSearch(data.departure, data.destination, formattedDateTime);
   };
 
   return (
@@ -220,9 +203,9 @@ export default function SearchForm() {
                           </FormControl>
 
                           <SelectContent>
-                            {locations.map((location) => (
-                              <SelectItem key={location.id} value={location.id}>
-                                {location.name}
+                            {stations.map((station) => (
+                              <SelectItem key={station.id} value={station.id}>
+                                {station.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -262,9 +245,9 @@ export default function SearchForm() {
                           </FormControl>
 
                           <SelectContent>
-                            {locations.map((location) => (
-                              <SelectItem key={location.id} value={location.id}>
-                                {location.name}
+                            {stations.map((station) => (
+                              <SelectItem key={station.id} value={station.id}>
+                                {station.name}
                               </SelectItem>
                             ))}
                           </SelectContent>

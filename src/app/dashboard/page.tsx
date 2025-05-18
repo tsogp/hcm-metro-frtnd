@@ -1,13 +1,94 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { TicketList } from "@/components/ticket/ticket-list";
+import { TicketList } from "@/app/dashboard/_components/ticket/ticket-list";
 import SearchForm from "@/app/dashboard/_components/search-ticket-form";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import type { MetrolineStationSchedule } from "@/types/metroline";
+
+import { getAllTicketTypes, TicketType } from "@/action/ticket-type";
+import { getMetrolineStationsSchedule } from "@/action/schedule-trip";
+import ScheduleTripList from "@/app/dashboard/_components/schedule/schedule-trip-list";
+import { useUserStore } from "@/store/user-store";
 
 export default function Dashboard() {
+  const { currentUser, checkAuth } = useUserStore();
+  const [metrolineTripSchedule, setMetrolineTripSchedule] = useState<
+    MetrolineStationSchedule[]
+  >([]);
+  const [selectedTripIndex, setSelectedTripIndex] = useState<number | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  useEffect(() => {
+    const initializeUser = async () => {
+      await checkAuth();
+    };
+    initializeUser();
+  }, [checkAuth]);
+
+  const handleSearch = async (
+    startId: string,
+    endId: string,
+    dateTime: string
+  ) => {
+    setIsLoading(true);
+    setError(null);
+    setHasSearched(true);
+    setSelectedTripIndex(null);
+
+    try {
+      const onSearchingTripScheduleAction = getMetrolineStationsSchedule(
+        startId,
+        endId,
+        dateTime
+      );
+      toast.promise(onSearchingTripScheduleAction, {
+        loading: "Searching trip schedule...",
+        success: async (trips) => {
+          setMetrolineTripSchedule(trips);
+
+          if (
+            trips &&
+            trips.length > 0 &&
+            trips[0].schedules &&
+            trips[0].schedules.length > 0
+          ) {
+            return "Available trips found for next 60 minutes";
+          }
+
+          return "No available trips found for next 60 minutes";
+        },
+        error: (error) => {
+          console.error("Error fetching schedules:", error);
+          return "Failed to find trip schedule";
+        },
+      });
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred"
+      );
+      console.error("Error fetching schedules:", err);
+      setMetrolineTripSchedule([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSelectTrip = (index: number) => {
+    setSelectedTripIndex(index);
+    console.log(metrolineTripSchedule[index]);
+  };
+
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 p-4 mb-20">
+    <div className="w-full min-h-screen max-w-7xl mx-auto space-y-8 p-4 mb-20">
       {/* Hero Section */}
       <section className="relative rounded-xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-secondary/70 to-secondary/50 z-10" />
@@ -40,16 +121,27 @@ export default function Dashboard() {
 
       {/* Search Section */}
       <section>
-        <SearchForm />
+        <SearchForm onSearch={handleSearch} />
       </section>
 
+      {/* Schedule Results Section - Only shown when there are results */}
+      <ScheduleTripList
+        metrolineTripSchedule={metrolineTripSchedule}
+        handleSelectTrip={handleSelectTrip}
+        hasSearched={hasSearched}
+        isLoading={isLoading}
+        error={error}
+      />
+
       {/* Tickets Section */}
-      <section>
-        <h2 className="text-xl md:text-2xl font-bold text-secondary mb-4">
-          Your Tickets
-        </h2>
-        <TicketList />
-      </section>
+      {selectedTripIndex !== null && (
+        <section>
+          <h2 className="text-xl md:text-2xl font-bold text-secondary mb-4">
+            Your Tickets
+          </h2>
+          <TicketList selectedTrip={metrolineTripSchedule[selectedTripIndex]} />
+        </section>
+      )}
     </div>
   );
 }

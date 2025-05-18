@@ -27,6 +27,7 @@ import { useCartStore } from "@/store/cart-store";
 export function UserDropdownMenu() {
   const { currentUser, logout } = useUserStore();
   const { clearCart } = useCartStore();
+  const { clearCart: clearCartStore } = useCartStore();
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -35,6 +36,7 @@ export function UserDropdownMenu() {
   const handleLogoutClicked = () => {
     logout();
     clearCart();
+    clearCartStore();
     setOpen(false);
     router.push(ROUTES.LANDING);
   };
