@@ -50,10 +50,10 @@ export const useUserStore = create<UserStore>()(
         try {
           const profileData = await getCurrentUserProfile();
           const profileImg = await getProfileImage();
-          const balance = (await getUserBalance()).balance;
+          const userBalance = (await getUserBalance()).balance;
           const userData: UserData = {
             ...profileData,
-            balance,
+            balance: userBalance,
             profilePicture: profileImg?.profileImage?.base64 ?? null,
           };
           set({ currentUser: userData });
@@ -78,11 +78,11 @@ export const useUserStore = create<UserStore>()(
           await signIn({ email, password });
           const userData = await get().fetchUserProfile();
           const profileImg = await getProfileImage();
-          const balance = (await getUserBalance()).balance;
+          const userBalance = (await getUserBalance()).balance;
           set({
             currentUser: {
               ...userData,
-              balance,
+              balance: userBalance,
               profilePicture: profileImg?.profileImage?.base64 ?? null,
             },
           });
@@ -100,11 +100,11 @@ export const useUserStore = create<UserStore>()(
           if (response.status == 200) {
             const userData = await get().fetchUserProfile();
             const profileImg = await getProfileImage();
-            const balance = (await getUserBalance()).balance;
+            const userBalance = (await getUserBalance()).balance;
             set({
               currentUser: {
                 ...userData,
-                balance,
+                balance: userBalance,
                 profilePicture: profileImg?.profileImage?.base64 ?? null,
               },
             });
@@ -123,11 +123,11 @@ export const useUserStore = create<UserStore>()(
         try {
           const userData = await get().fetchUserProfile();
           const profileImg = await getProfileImage();
-          const balance = (await getUserBalance()).balance;
+          const userBalance = (await getUserBalance()).balance;
           set({
             currentUser: {
               ...userData,
-              balance,
+              balance: userBalance,
               profilePicture: profileImg?.profileImage?.base64 ?? null,
             },
           });
@@ -141,11 +141,6 @@ export const useUserStore = create<UserStore>()(
 
       checkAuth: async () => {
         try {
-          // If we already have a user and we're not loading, skip the check
-          if (get().currentUser && !get().isLoading) {
-            return true;
-          }
-
           // First check if we have an auth token
           const response = await fetch("/api/auth/auth-check", {
             method: "GET",
@@ -157,17 +152,17 @@ export const useUserStore = create<UserStore>()(
             return false;
           }
 
-          // Only fetch profile if we have a valid auth token
           const profileData = await getCurrentUserProfile();
           const profileImg = await getProfileImage();
-          const balance = (await getUserBalance()).balance;
+          const userBalance = (await getUserBalance()).balance;
           const userData: UserData = {
             ...profileData,
-            balance,
+            balance: userBalance,
             profilePicture: profileImg?.profileImage?.base64 ?? null,
           };
 
           set({ currentUser: userData, isLoading: false });
+
           return true;
         } catch (error) {
           console.error("Auth check error:", error);
