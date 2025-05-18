@@ -19,11 +19,13 @@ import { toast } from "sonner";
 import { useUserStore } from "@/store/user-store";
 import IdVerificationTab from "./_components/id/id-verification-tab";
 import { getCardImages } from "@/action/profile";
+import { getUserBalance } from "@/action/payment";
+import { useSearchParams } from "next/navigation";
 
 export default function ProfilePage() {
   const { setCurrentUser } = useUserStore();
 
-  const [user, setUser] = useState<UserProfileType>({
+  const [user, setUser] = useState<UserProfileType | { balance: number }>({
     email: "",
     firstName: "",
     middleName: "",
@@ -35,7 +37,7 @@ export default function ProfilePage() {
     studentId: "",
     disabilityStatus: false,
     revolutionaryContribution: false,
-    balance: 0.0,
+    balance: 0,
     profilePicture: null,
     idVerification: {
       national: { front: null, back: null, status: null },
@@ -68,6 +70,25 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("edit");
   const [refreshKey, setRefreshKey] = useState(0);
 
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const paymentResult = searchParams.get("payment");
+    
+    console.log(paymentResult)
+    
+    if (!paymentResult) {
+      return;
+    }
+    console.log("here")
+
+    if (paymentResult === "success") {
+      toast.success("Payment successful.");
+    } else if (paymentResult === "failure") {
+      toast.error("Payment failed, please try again.");
+    }
+  }, []);
+
   // Fetch user profile on update or on page load
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -75,6 +96,7 @@ export default function ProfilePage() {
       try {
         const userProfile = await getCurrentUserProfile();
         const profileImg = await getProfileImage();
+        const balance = (await getUserBalance()).balance;
 
         const userData = {
           email: userProfile.passengerEmail,
@@ -88,7 +110,7 @@ export default function ProfilePage() {
           studentId: userProfile.studentID,
           disabilityStatus: userProfile.hasDisability,
           revolutionaryContribution: userProfile.isRevolutionary,
-          balance: 1000,
+          balance: balance,
           profilePicture: profileImg?.profileImage?.base64 ?? null,
           idVerification: {
             national: { front: null, back: null, status: null },
@@ -223,10 +245,12 @@ export default function ProfilePage() {
       // Refresh user data
       const userProfile = await getCurrentUserProfile();
       const profileImg = await getProfileImage();
+      const balance = (await getUserBalance()).balance;
 
       setCurrentUser({
         ...userProfile,
         profilePicture: profileImg?.profileImage?.base64 ?? null,
+        balance
       });
 
       setUser({
@@ -241,7 +265,7 @@ export default function ProfilePage() {
         studentId: userProfile.studentID,
         disabilityStatus: userProfile.hasDisability,
         revolutionaryContribution: userProfile.isRevolutionary,
-        balance: 1000,
+        balance: balance,
         profilePicture: profileImg?.profileImage?.base64 ?? null,
         idVerification: user.idVerification, // Preserve existing verification data
       });

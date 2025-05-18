@@ -40,14 +40,12 @@ export default function CartTab() {
   const { cartItems, getCartTotalPrice } = useServerCart();
   const [mounted, setMounted] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [tax, setTax] = useState(0);
 
   useEffect(() => {
     setMounted(true);
     const fetchTotalPrice = async () => {
       const totalPrice = await getCartTotalPrice();
       setTotalPrice(totalPrice);
-      setTax(totalPrice * 0.08);
     };
     fetchTotalPrice();
   }, [getCartTotalPrice]);
@@ -98,8 +96,8 @@ export default function CartTab() {
           className="mt-6 border-t-2 pt-4"
         >
           <PriceItem label="Subtotal" amount={totalPrice} />
-          <PriceItem label="Tax (8%)" amount={tax} />
-          <PriceItem label="Total" amount={totalPrice + tax} isTotal />
+          <PriceItem label="Tax (0%)" amount={0} />
+          <PriceItem label="Total" amount={totalPrice} isTotal />
         </motion.div>
       </CardContent>
       <CardFooter>
@@ -111,8 +109,8 @@ export default function CartTab() {
         >
           <h4 className="font-medium mb-1">Fare Information</h4>
           <p className="text-muted-foreground text-xs">
-            This ticket is valid for 24 hours from the time of purchase. Refunds
-            are available up to 2 hours before departure.
+            One way tickets are valid for 24 hours from the time of purchase.
+            Other tickets are valid for th designated time after activation.
           </p>
         </motion.div>
       </CardFooter>
