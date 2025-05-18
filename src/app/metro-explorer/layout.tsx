@@ -1,26 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { UserNavbar } from "@/components/common/user-navbar";
+import Footer from "@/app/_components/common/footer";
 import { CartSheet } from "@/components/cart/cart-sheet";
-import { useCartStore } from "@/store/cart-store";
-import Footer from "../_components/common/footer";
 
 export default function MetroExplorerLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isOpen, openCart, closeCart } = useCartStore();
+  const [cartOpen, setCartOpen] = useState(false);
 
   return (
-    <div>
-      <UserNavbar onCartClick={openCart} />
-      <CartSheet
-        open={isOpen}
-        onOpenChange={(open) => (open ? openCart() : closeCart())}
-      />
+    <div className=" flex flex-col">
+      <UserNavbar onCartClick={() => setCartOpen(true)} />
 
-      <main className="min-h-screen">{children}</main>
+      <main className="min-h-screen flex-1 flex flex-col">{children}</main>
+      <CartSheet open={cartOpen} onOpenChange={setCartOpen} />
 
       <Footer />
     </div>
