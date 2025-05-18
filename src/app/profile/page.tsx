@@ -25,7 +25,7 @@ import { useSearchParams } from "next/navigation";
 export default function ProfilePage() {
   const { setCurrentUser } = useUserStore();
 
-  const [user, setUser] = useState<UserProfileType | { balance: number }>({
+  const [user, setUser] = useState<UserProfileType>({
     email: "",
     firstName: "",
     middleName: "",
@@ -74,13 +74,12 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const paymentResult = searchParams.get("payment");
-    
-    console.log(paymentResult)
-    
+
+    console.log(paymentResult);
+
     if (!paymentResult) {
       return;
     }
-    console.log("here")
 
     if (paymentResult === "success") {
       toast.success("Payment successful.");
@@ -250,7 +249,7 @@ export default function ProfilePage() {
       setCurrentUser({
         ...userProfile,
         profilePicture: profileImg?.profileImage?.base64 ?? null,
-        balance
+        balance,
       });
 
       setUser({
@@ -267,7 +266,7 @@ export default function ProfilePage() {
         revolutionaryContribution: userProfile.isRevolutionary,
         balance: balance,
         profilePicture: profileImg?.profileImage?.base64 ?? null,
-        idVerification: user.idVerification, // Preserve existing verification data
+        idVerification: user.idVerification,
       });
 
       // Update initial form data to match current form data
