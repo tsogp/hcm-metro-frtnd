@@ -15,6 +15,7 @@ import { getMetrolineStationsSchedule } from "@/action/schedule-trip";
 import ScheduleTripList from "@/app/dashboard/_components/schedule/schedule-trip-list";
 import { useUserStore } from "@/store/user-store";
 import { BookNowCarousel } from "./_components/BookNowCarousel";
+import { UserFeedback } from './_components/UserFeedback';
 
 export default function Dashboard() {
   const { currentUser, checkAuth } = useUserStore();
@@ -89,35 +90,38 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full min-h-screen max-w-7xl mx-auto space-y-8 p-4 mb-20">
-      {/* Book Now Carousel Section */}
-      <section className="rounded-xl overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Book Now Carousel Section */}
         <BookNowCarousel />
-      </section>
 
-      {/* Search Section */}
-      <section>
-        <SearchForm onSearch={handleSearch} />
-      </section>
-
-      {/* Schedule Results Section - Only shown when there are results */}
-      <ScheduleTripList
-        metrolineTripSchedule={metrolineTripSchedule}
-        handleSelectTrip={handleSelectTrip}
-        hasSearched={hasSearched}
-        isLoading={isLoading}
-        error={error}
-      />
-
-      {/* Tickets Section */}
-      {selectedTripIndex !== null && (
-        <section>
-          <h2 className="text-xl md:text-2xl font-bold text-secondary mb-4">
-            Your Tickets
-          </h2>
-          <TicketList selectedTrip={metrolineTripSchedule[selectedTripIndex]} />
+        {/* Search Section */}
+        <section className="mt-8">
+          <SearchForm onSearch={handleSearch} />
         </section>
-      )}
+
+        {/* User Feedback Section */}
+        <UserFeedback className="mt-8" />
+
+        {/* Schedule Results Section - Only shown when there are results */}
+        <ScheduleTripList
+          metrolineTripSchedule={metrolineTripSchedule}
+          handleSelectTrip={handleSelectTrip}
+          hasSearched={hasSearched}
+          isLoading={isLoading}
+          error={error}
+        />
+
+        {/* Tickets Section */}
+        {selectedTripIndex !== null && (
+          <section className="mt-8">
+            <h2 className="text-xl md:text-2xl font-bold text-secondary mb-4">
+              Your Tickets
+            </h2>
+            <TicketList selectedTrip={metrolineTripSchedule[selectedTripIndex]} />
+          </section>
+        )}
+      </div>
     </div>
   );
 }
