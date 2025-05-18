@@ -45,17 +45,13 @@ export interface GenericResponseDTO<T> {
 }
 
 export const getUserBalance = async (): Promise<BalanceResponse> => {
-  const response = await API.get<GenericResponseDTO<BalanceResponse>>("/payment/my-balance", {
-    withCredentials: true,
-  });
+  const response = await API.get<GenericResponseDTO<BalanceResponse>>("/payment/my-balance");
 
   return response.data.data;
 }
 
 export const topUpEWallet = async (payload: RequestTopUpBalanceDTO): Promise<ResponseCreateStripeSessionDTO> => {
-  const response = await API.post<GenericResponseDTO<ResponseCreateStripeSessionDTO>>("/payment/top-up-balance", payload, {
-    withCredentials: true,
-  });
+  const response = await API.post<GenericResponseDTO<ResponseCreateStripeSessionDTO>>("/payment/top-up-balance", payload);
 
   return response.data.data;
 }
@@ -65,9 +61,7 @@ export const payForCheckoutWithStripe = async (
 ): Promise<ResponseCreateStripeSessionDTO> => {
   const response = await API.post<
     GenericResponseDTO<ResponseCreateStripeSessionDTO>
-  >("/payment/checkout", payload, {
-    withCredentials: true,
-  });
+  >("/payment/checkout", payload);
 
   return response.data.data;
 };
@@ -76,7 +70,6 @@ export const payForCheckoutWithEWallet = async (): Promise<PurchaseWithEwalletRe
   const response = await API.post<GenericResponseDTO<PurchaseWithEwalletResult>>(
     "/payment/checkout/ewallet",
     {},
-    { withCredentials: true }
   );
 
   return response.data.data;
@@ -87,7 +80,7 @@ export const payForCheckoutWithStripeGuest = async (
 ): Promise<ResponseCreateStripeSessionDTO> => {
   const response = await API.post<GenericResponseDTO<ResponseCreateStripeSessionDTO>>(
     "/payment/checkout/guest",
-    payload,
+    payload
   );
 
   return response.data.data;

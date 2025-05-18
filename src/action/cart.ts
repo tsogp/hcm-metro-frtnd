@@ -54,9 +54,7 @@ export interface CartItemProcessed {
 }
 
 export const getCartItems = async (): Promise<CartPreprocessed> => {
-  const response = await API.get("/cart", {
-    withCredentials: true,
-  });
+  const response = await API.get("/cart");
 
   const cart = response.data.data;
 
@@ -116,9 +114,7 @@ export interface AddToCartItem {
 
 export const addItemToCart = async (item: AddToCartItem) => {
   try {
-    const response = await API.post(`/cart/item`, item, {
-      withCredentials: true,
-    });
+    const response = await API.post(`/cart/item`, item);
     return response.data.data;
   } catch (error) {
     console.error("Failed to add item to cart:", error);
@@ -128,9 +124,7 @@ export const addItemToCart = async (item: AddToCartItem) => {
 
 export const removeItemFromCart = async (cartItemId: string) => {
   try {
-    const response = await API.delete(`/cart/item/${cartItemId}`, {
-      withCredentials: true,
-    });
+    const response = await API.delete(`/cart/item/${cartItemId}`);
     return response.data;
   } catch (error) {
     console.error("Failed to remove item from cart:", error);
@@ -140,9 +134,7 @@ export const removeItemFromCart = async (cartItemId: string) => {
 
 export const clearAllCartItems = async () => {
   try {
-    const response = await API.delete("/cart", {
-      withCredentials: true,
-    });
+    const response = await API.delete("/cart");
     return response.data;
   } catch (error) {
     console.error("Failed to clear all cart items:", error);
@@ -158,14 +150,10 @@ export const updateCartItem = async ({
   newAmount: number;
 }) => {
   try {
-    const response = await API.put(
-      `/cart/item`,
-      {
-        cartItemId,
-        newAmount,
-      },
-      { withCredentials: true }
-    );
+    const response = await API.put(`/cart/item`, {
+      cartItemId,
+      newAmount,
+    });
     return response.data;
   } catch (error) {
     console.error("Failed to update cart item:", error);
@@ -175,9 +163,7 @@ export const updateCartItem = async ({
 
 export const getTotalPrice = async (): Promise<number> => {
   try {
-    const response = await API.get("/cart/price", {
-      withCredentials: true,
-    });
+    const response = await API.get("/cart/price");
     return response.data.data;
   } catch (error) {
     console.error("Failed to get total price:", error);

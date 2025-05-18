@@ -3,9 +3,7 @@ import { MetroLine } from "@/types/metroline";
 
 export const getAllMetrolines = async (): Promise<MetroLine[]> => {
   try {
-    const response = await API.get("/metro-lines", {
-      withCredentials: true,
-    });
+    const response = await API.get("/metro-lines");
     return response.data.data;
   } catch (error) {
     console.error("Failed to fetch metro lines:", error);
@@ -15,9 +13,7 @@ export const getAllMetrolines = async (): Promise<MetroLine[]> => {
 
 export const getMetrolineById = async (id: string): Promise<MetroLine> => {
   try {
-    const response = await API.get(`/metro-lines/${id}`, {
-      withCredentials: true,
-    });
+    const response = await API.get(`/metro-lines/${id}`);
     return response.data.data;
   } catch (error) {
     console.error("Failed to fetch metro line by id:", error);

@@ -11,9 +11,7 @@ type ProfileImageResponse = {
 
 export const getCurrentUserProfile = async (): Promise<ProfileData> => {
   try {
-    const response = await API.get("/profile/my-info", {
-      withCredentials: true,
-    });
+    const response = await API.get("/profile/my-info");
 
     return response.data.data;
   } catch (error: any) {
@@ -33,9 +31,7 @@ export const updateProfileInfo = async (data: {
   passengerPhone: string;
   passengerAddress: string;
 }) => {
-  const response = await API.put("/profile/edit-my-info", data, {
-    withCredentials: true,
-  });
+  const response = await API.put("/profile/edit-my-info", data);
 
   return response.data;
 };
@@ -44,17 +40,13 @@ export const updateProfileCredentials = async (data: {
   passengerEmail: string;
   password?: string;
 }) => {
-  const response = await API.put("/auth/update-my-info", data, {
-    withCredentials: true,
-  });
+  const response = await API.put("/auth/update-my-info", data);
 
   return response.data;
 };
 
 export const getProfileImage = async (): Promise<ProfileImageResponse> => {
-  const response = await API.get("/profile/profile-image", {
-    withCredentials: true,
-  });
+  const response = await API.get("/profile/profile-image");
 
   return response.data.data;
 };
@@ -64,7 +56,6 @@ export const updateProfileImage = async (file: File) => {
   formData.append("file", file);
 
   const response = await API.post("/profile/upload-profile-image", formData, {
-    withCredentials: true,
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -108,9 +99,7 @@ type CardImagesResponse = {
 };
 
 export const getCardImages = async (): Promise<CardImagesResponse> => {
-  const response = await API.get("/profile/card-images", {
-    withCredentials: true,
-  });
+  const response = await API.get("/profile/card-images");
 
   return response.data;
 };
@@ -125,7 +114,6 @@ export const updateCardImages = async (data: UploadStudentCardImagesParams) => {
       frontImageType: data.frontImageType,
       backImageType: data.backImageType,
     },
-    withCredentials: true,
     headers: {
       "Content-Type": "multipart/form-data",
     },

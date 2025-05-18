@@ -16,7 +16,7 @@ export interface AuthResponse {
 }
 
 export interface GoogleData {
-  data: { givenName: any; familyName: any; };
+  data: { givenName: any; familyName: any };
   givenName: string;
   familyName: string;
 }
@@ -25,20 +25,16 @@ export type GoogleAuthResponse = GenericResponse<GoogleData>;
 
 export const signIn = async (data: AuthData): Promise<AuthResponse> => {
   try {
-    const response = await API.post<AuthResponse>("/auth/login", data, {
-      withCredentials: true,
-    });
+    const response = await API.post<AuthResponse>("/auth/login", data);
     return response.data;
   } catch (error) {
     console.error("Login failed:", error);
     throw error;
   }
-}
+};
 
 export const logout = async () => {
-  await API.post("/auth/logout", {
-    withCredentials: true,
-  });
+  await API.post("/auth/logout");
 };
 
 export async function getGoogleAuthLink() {
@@ -53,4 +49,4 @@ export async function getGoogleAuthLink() {
 
 export function googleAuth(code: string) {
   return API.get(`/auth/google?code=${code}`);
-} 
+}
