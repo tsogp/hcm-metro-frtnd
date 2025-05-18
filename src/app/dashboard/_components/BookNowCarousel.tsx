@@ -50,25 +50,25 @@ export function BookNowCarousel({ className }: BookNowCarouselProps) {
     };
   }, [emblaApi, onSelect]);
 
-  // Placeholder images - replace these with your actual images
+  // Metro system themed slides
   const slides = [
     {
       id: 1,
-      title: 'Premium Service',
-      description: 'Experience luxury travel with our premium service',
-      image: '/images/carousel/slide1.jpg',
+      title: 'Modern Metro Network',
+      description: 'Experience seamless travel with our state-of-the-art metro system, connecting you to every corner of the city',
+      image: '/images/metro_system.jpg',
     },
     {
       id: 2,
-      title: 'Comfort & Safety',
-      description: 'Travel in comfort with our modern fleet',
-      image: '/images/carousel/slide2.jpg',
+      title: 'Smart Ticketing',
+      description: 'Quick and easy travel with our contactless smart cards and mobile ticketing solutions',
+      image: '/images/metro_payment.jpg',
     },
     {
       id: 3,
-      title: '24/7 Support',
-      description: 'Round the clock customer support',
-      image: '/images/carousel/slide3.jpg',
+      title: '24/7 Metro Service',
+      description: 'Round-the-clock service ensuring you reach your destination safely and on time, any time of day',
+      image: 'https://images.unsplash.com/photo-1573497620053-ea5300f94f21?q=80&w=2070&auto=format&fit=crop',
     },
   ];
 
@@ -106,8 +106,13 @@ export function BookNowCarousel({ className }: BookNowCarouselProps) {
                 >
                   <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40 z-10" />
                   <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out"
-                    style={{ backgroundImage: `url(${slide.image})` }}
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 ease-out"
+                    style={{ 
+                      backgroundImage: `url(${slide.image})`,
+                      imageRendering: 'crisp-edges',
+                      objectFit: 'cover',
+                      objectPosition: 'center'
+                    }}
                   />
                   <div className="relative z-20 h-full flex flex-col justify-center px-8 md:px-16 max-w-2xl mx-auto">
                     <div className="space-y-4">
