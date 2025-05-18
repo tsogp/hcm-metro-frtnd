@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { CreditCard, Wallet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import {
   Tooltip,
@@ -29,7 +29,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useUserStore } from "@/store/user-store";
 import { useCartStore } from "@/store/cart-store";
 import { useServerCart } from "@/components/provider/cart-provider";
-import { payForCheckoutWithEWallet, payForCheckoutWithStripe } from "@/action/payment";
+import {
+  payForCheckoutWithEWallet,
+  payForCheckoutWithStripe,
+} from "@/action/payment";
 import { FRONTEND_URL } from "@/utils/axiosClient";
 import { toast } from "sonner";
 import { ROUTES } from "@/config/routes";
@@ -42,23 +45,18 @@ const formSchema = z.object({
 
 export default function PaymentPage({
   handleBackToInfo,
-  handleProceedToPayment,
   email,
-  onSubmit,
 }: {
   handleBackToInfo: () => void;
-  handleProceedToPayment: () => void;
   email: string;
-  onSubmit: (values: z.infer<typeof formSchema>) => void;
 }) {
   const router = useRouter();
   const { currentUser } = useUserStore();
-  const { cartItems, getCartTotalPrice } = useServerCart();;
+  const { cartItems, getCartTotalPrice } = useServerCart();
   const [isLoading, setIsLoading] = useState(false);
-  const [cardType, setCardType] = useState<string>("");
-  const [hasError, setHasError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
   const [totalPrice, setTotalPrice] = useState(0);
+
+  const { refreshCart } = useServerCart();
 
   useEffect(() => {
     const fetchTotalPrice = async () => {
@@ -79,46 +77,41 @@ export default function PaymentPage({
 
   async function handleSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    setHasError(false);
-    setErrorMessage("");
 
     try {
       if (values.paymentMethod === "ewallet") {
         toast.promise(payForCheckoutWithEWallet, {
           loading: "Processing the payment",
-    
-          success: (res) => {
-            router.push(ROUTES.PROFILE.ROOT);
-            return `Payment successful. Remaining balance: ${res.remainingBalance} VNĐ`;
+          success: async (res) => {
+            await refreshCart();
+            router.push(ROUTES.INVOICES.ROOT);
+            return `Payment successful. Remaining balance: ${formatCurrency(
+              res.remainingBalance
+            )}`;
           },
-
-          error: (e) => {
-            return `Payment error. Please try again.`;
-          },
+          error: "Payment error. Please try again.",
         });
-      } else {
-        setIsLoading(true);
+      } else if (values.paymentMethod === "stripe") {
         const onStripeLinkReceived = await payForCheckoutWithStripe({
           successUrl: `${FRONTEND_URL}/profile?payment=success`,
-          cancelUrl: `${FRONTEND_URL}/profile?payment=failure`
+          cancelUrl: `${FRONTEND_URL}/profile?payment=failure`,
         });
 
         setIsLoading(false);
-        
-        console.log(onStripeLinkReceived.redirectUrl);
 
         window.location.replace(onStripeLinkReceived.redirectUrl);
+      } else {
+        toast.error("Invalid payment method");
       }
     } catch (error) {
-      setHasError(true);
-      setErrorMessage("Payment failed. Please try again.");
+      toast.error("Payment failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   }
 
-  const insufficientBalance = (currentUser?.balance || 0) < totalPrice
-  const amountNeeded = totalPrice - (currentUser?.balance || 0)
+  const insufficientBalance = (currentUser?.balance || 0) < totalPrice;
+  const amountNeeded = totalPrice - (currentUser?.balance || 0);
 
   return (
     <motion.div
@@ -216,7 +209,12 @@ export default function PaymentPage({
                                           }`}
                                         >
                                           E-Wallet (balance:{" "}
-                                          <span>{currentUser.balance} ₫</span>)
+                                          <span>
+                                            {formatCurrency(
+                                              currentUser.balance
+                                            )}
+                                          </span>
+                                          )
                                         </label>
                                       </div>
                                     </div>
@@ -224,7 +222,7 @@ export default function PaymentPage({
                                   {insufficientBalance && (
                                     <TooltipContent>
                                       Insufficient balance. You need{" "}
-                                      {amountNeeded} ₫ more.
+                                      {formatCurrency(amountNeeded)} more.
                                     </TooltipContent>
                                   )}
                                 </Tooltip>
@@ -239,7 +237,7 @@ export default function PaymentPage({
                                   htmlFor="stripe"
                                   className="cursor-pointer"
                                 >
-                                  Credit cart (operated via Stripe)
+                                  Credit cart (proceed via Stripe)
                                 </label>
                               </div>
                             </div>
@@ -292,7 +290,7 @@ export default function PaymentPage({
                         Processing Payment...
                       </motion.div>
                     ) : (
-                      "Purchase Metro Ticket"
+                      "Proceed Payment"
                     )}
                   </Button>
                 </motion.div>

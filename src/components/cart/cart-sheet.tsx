@@ -212,9 +212,9 @@ export function CartSheet({
               <Button
                 className="text-base min-h-10 font-bold bg-accent hover:bg-accent/80 text-white"
                 disabled={cartItems.length === 0}
-                asChild
+                onClick={() => router.push("/payment")}
               >
-                <Link href="/payment">Checkout</Link>
+                Checkout
               </Button>
 
               <Button

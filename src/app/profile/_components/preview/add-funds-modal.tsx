@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FRONTEND_URL } from "@/utils/axiosClient";
 import { topUpEWallet } from "@/action/payment";
+import { useUserStore } from "@/store/user-store";
 
 const addFundsSchema = z.object({
   amount: z
@@ -66,6 +67,9 @@ export function AddFundsModal({
         successUrl: `${FRONTEND_URL}/profile?payment=success`,
         cancelUrl: `${FRONTEND_URL}/profile?payment=failure`,
       });
+
+      await useUserStore.getState().checkAuth();
+
       setIsLoading(false);
       window.location.replace(onTopUp.redirectUrl);
     } catch (err) {
@@ -106,13 +110,14 @@ export function AddFundsModal({
                 max="10000000"
                 className="col-span-3"
               />
-                <div className="flex flex-col gap-2">
-
-              <p className="text-xs text-muted-foreground">
-                Min: 10,000 VNĐ | Max: 10,000,000 VNĐ
-              </p>
-              <p>{error && <p className="text-sm text-red-500">{error}</p>}</p>
-                </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-xs text-muted-foreground">
+                  Min: 10,000 VNĐ | Max: 10,000,000 VNĐ
+                </p>
+                <p>
+                  {error && <p className="text-sm text-red-500">{error}</p>}
+                </p>
+              </div>
             </div>
           </div>
           <DialogFooter>
