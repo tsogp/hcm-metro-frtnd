@@ -8,10 +8,11 @@ import Link from "next/link";
 import { Info, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { UserData } from "@/store/user-store";
+import { UserData, useUserStore } from "@/store/user-store";
+import { useCartStore } from "@/store/cart-store";
+import { useServerCart } from "@/components/provider/cart-provider";
 
 interface PassengerInfoFormProps {
-  user: UserData;
   email: string;
   setEmail: (email: string) => void;
   acceptedPolicies: boolean;
@@ -35,14 +36,15 @@ const itemVariants = {
 };
 
 export default function PassengerInfoForm({
-  user,
   email,
   setEmail,
   acceptedPolicies,
   setAcceptedPolicies,
   handleProceedToPayment,
 }: PassengerInfoFormProps) {
-  const fullName = `${user.passengerFirstName} ${user.passengerMiddleName || ""} ${user.passengerLastName}`;
+  const { currentUser: user } = useUserStore();
+  const { cartItems } = useServerCart();
+  const fullName = `${user?.passengerFirstName || "Guest"} ${user?.passengerMiddleName || ""} ${user?.passengerLastName || ""}`;
 
   return (
     <motion.div
@@ -91,7 +93,7 @@ export default function PassengerInfoForm({
           <div className="relative group">
             <Input
               id="phone"
-              value={user.passengerPhone}
+              value={user?.passengerPhone || "084"}
               disabled
               className={cn(
                 "bg-muted/50",
@@ -184,7 +186,7 @@ export default function PassengerInfoForm({
             "disabled:opacity-50 disabled:cursor-not-allowed"
           )}
           onClick={handleProceedToPayment}
-          disabled={!acceptedPolicies || !email}
+          disabled={!acceptedPolicies || !email || cartItems.length === 0}
         >
           <motion.span
             animate={

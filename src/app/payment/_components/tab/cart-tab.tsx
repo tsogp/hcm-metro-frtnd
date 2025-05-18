@@ -79,35 +79,44 @@ export default function CartTab() {
       </CardHeader>
       <CardContent className="space-y-2">
         <AnimatePresence>
-          {cartItems.map((item, index) => (
-            <motion.div
-              key={item.cartItemId}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <TicketCartItemDisplay
-                item={item}
-                handleDecrease={() => {}}
-                handleIncrease={() => {}}
-                handleQuantityChange={() => {}}
-                editable={false}
-              />
-            </motion.div>
-          ))}
+          {cartItems.length > 0 ? (
+            cartItems.map((item, index) => (
+              <motion.div
+                key={item.cartItemId}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <TicketCartItemDisplay
+                  item={item}
+                  handleDecrease={() => {}}
+                  handleIncrease={() => {}}
+                  handleQuantityChange={() => {}}
+                  editable={false}
+                />
+              </motion.div>
+            ))
+          ) : (
+            <div className="flex items-center h-full">
+              <p className="text-muted-foreground text-xl">No items in cart</p>
+            </div>
+          )}
         </AnimatePresence>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-6 border-t-2 pt-4"
-        >
-          <PriceItem label="Subtotal" amount={totalPrice} />
-          <PriceItem label="Tax (0%)" amount={0} />
-          <PriceItem label="Total" amount={totalPrice} isTotal />
-        </motion.div>
+        {cartItems.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-6 border-t-2 pt-4"
+          >
+            <PriceItem label="Subtotal" amount={totalPrice} />
+            <PriceItem label="Tax (0%)" amount={0} />
+
+            <PriceItem label="Total" amount={totalPrice} isTotal />
+          </motion.div>
+        )}
       </CardContent>
       <CardFooter>
         <motion.div

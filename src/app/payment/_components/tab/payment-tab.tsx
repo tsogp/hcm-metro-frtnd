@@ -4,11 +4,10 @@ import { Card } from "@/components/ui/card";
 import PaymentPage from "../form/payment-form";
 import { Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserData } from "@/store/user-store";
+import { UserData, useUserStore } from "@/store/user-store";
 
 function PaymentTab({
   currentStep,
-  user,
   email,
   setEmail,
   acceptedPolicies,
@@ -17,7 +16,6 @@ function PaymentTab({
   handleBackToInfo,
 }: {
   currentStep: number;
-  user: UserData;
   email: string;
   setEmail: (email: string) => void;
   acceptedPolicies: boolean;
@@ -106,7 +104,6 @@ function PaymentTab({
         >
           {currentStep === 1 ? (
             <PassengerInfoForm
-              user={user}
               email={email}
               setEmail={setEmail}
               acceptedPolicies={acceptedPolicies}
@@ -114,10 +111,7 @@ function PaymentTab({
               handleProceedToPayment={handleProceedToPayment}
             />
           ) : (
-            <PaymentPage
-              handleBackToInfo={handleBackToInfo}
-              email={email}
-            />
+            <PaymentPage handleBackToInfo={handleBackToInfo} email={email} />
           )}
         </motion.div>
       </AnimatePresence>

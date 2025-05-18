@@ -141,7 +141,6 @@ export const useUserStore = create<UserStore>()(
 
       checkAuth: async () => {
         try {
-          // First check if we have an auth token
           const response = await fetch("/api/auth/auth-check", {
             method: "GET",
             credentials: "include",

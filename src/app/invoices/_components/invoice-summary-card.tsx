@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { InvoiceItem } from "./invoice-list";
 import { Invoice } from "./invoice-list";
-import InvoiceItemDisplay from "./invoice-item-display";
+import InvoiceItemList from "./invoice-item-list";
 
 interface InvoiceSummaryCardProps {
   invoice: Invoice;
@@ -122,7 +122,7 @@ const InvoiceSummaryCard = ({
       </Card>
 
       {expandedInvoice === invoice.invoiceID && (
-        <InvoiceItemDisplay invoice={invoice} invoiceItems={invoiceItems} />
+        <InvoiceItemList invoice={invoice} invoiceItems={invoiceItems} />
       )}
     </>
   );

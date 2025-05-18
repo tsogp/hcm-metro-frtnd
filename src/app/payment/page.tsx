@@ -49,21 +49,6 @@ export default function PaymentPage() {
     );
   }
 
-  if (!currentUser) {
-    return (
-      <div className="container mx-auto py-8">
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
-            <p className="text-muted-foreground">
-              Please log in to continue with your payment.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto py-8">
       <div className="flex flex-col lg:flex-row gap-8 h-auto">
@@ -74,7 +59,6 @@ export default function PaymentPage() {
         <div className="w-full lg:w-2/3">
           <PaymentTab
             currentStep={currentStep}
-            user={currentUser}
             email={email}
             setEmail={setEmail}
             acceptedPolicies={acceptedPolicies}
