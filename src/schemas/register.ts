@@ -42,14 +42,10 @@ export const step1Schema = z
     path: ["confirmPassword"],
   });
 
-export const step2Schema = z.object({
+const baseStep2Schema = {
   firstName: z
     .string()
     .min(1, "First name is required")
-    .max(50, "Max 50 characters"),
-  middleName: z
-    .string()
-    .min(1, "Middle name is required")
     .max(50, "Max 50 characters"),
   lastName: z
     .string()
@@ -67,6 +63,19 @@ export const step2Schema = z.object({
       "Address contains invalid characters; only letters, numbers, spaces, commas (,), dots (.), slashes (/) and dashes (-) are allowed"
     ),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
+};
+
+export const step2Schema = z.object({
+  ...baseStep2Schema,
+  middleName: z
+    .string()
+    .min(1, "Middle name is required")
+    .max(50, "Max 50 characters"),
+});
+
+export const googleStep2Schema = z.object({
+  ...baseStep2Schema,
+  middleName: z.string().max(50, "Max 50 characters").optional(),
 });
 
 export const step3Schema = z.object({
@@ -87,5 +96,7 @@ export const step3Schema = z.object({
 });
 
 export type Step1Values = z.infer<typeof step1Schema>;
-export type Step2Values = z.infer<typeof step2Schema>;
+export type Step2Values =
+  | z.infer<typeof step2Schema>
+  | z.infer<typeof googleStep2Schema>;
 export type Step3Values = z.infer<typeof step3Schema>;

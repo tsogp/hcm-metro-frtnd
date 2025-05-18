@@ -26,8 +26,8 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { DatePicker } from "@/components/input/date-picker-input";
-import { TimePicker } from "@/components/input/timer-picker-input";
+import { DatePicker } from "@/components/input-picker/date-picker-input";
+import { TimePicker } from "@/components/input-picker/timer-picker-input";
 import type {
   RecentSearch,
   SearchTicketFormValues,

@@ -38,9 +38,9 @@ export function LoginForm({
 
   useEffect(() => {
     if (!code) return;
-  
+
     const onGoogleLoginAction = loginGoogle(code);
-  
+
     toast.promise(onGoogleLoginAction, {
       loading: "Signing in with Google…",
 
@@ -49,18 +49,17 @@ export function LoginForm({
           router.push(ROUTES.DASHBOARD);
           return "Logged in with Google!";
         }
-  
+
         const { givenName, familyName } = res.data;
         const queryParams = new URLSearchParams({
           givenName,
           familyName,
-          fromGoogle: "true"
         }).toString();
-  
+
         router.push(`${ROUTES.AUTH.REGISTER}?${queryParams}`);
         return "Continue registration with Google";
       },
-  
+
       error: (e) => {
         switch (e.response?.status) {
           case 401:
@@ -75,7 +74,6 @@ export function LoginForm({
       },
     });
   }, [code, loginGoogle, router]);
-  
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),

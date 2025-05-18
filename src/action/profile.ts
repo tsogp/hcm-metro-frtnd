@@ -17,10 +17,14 @@ export const getCurrentUserProfile = async (): Promise<ProfileData> => {
 
     return response.data.data;
   } catch (error: any) {
-    console.error("Failed to fetch user profile:", error);
-    if (error.response?.status === 403) {
-      throw new Error("Not authenticated. Please log in again.");
+    if (error.response.status === 403) {
+      console.error("-----------------------------------");
+      console.error("| NOT AUTHENTICATED. LOG IN AGAIN |");
+      console.error("-----------------------------------");
+    } else {
+      console.error("Failed to fetch user profile:", error);
     }
+
     throw error;
   }
 };

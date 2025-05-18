@@ -87,7 +87,7 @@ export const useUserStore = create<UserStore>()(
           throw error;
         }
       },
-      
+
       loginGoogle: async (code: string) => {
         try {
           const response = await googleAuth(code);
@@ -105,7 +105,7 @@ export const useUserStore = create<UserStore>()(
           } else if (response.status == 206) {
             return response.data;
           }
-        }  catch (error: any) {
+        } catch (error: any) {
           console.error("Google login error:", error);
           throw error;
         }
@@ -131,17 +131,23 @@ export const useUserStore = create<UserStore>()(
 
       checkAuth: async () => {
         try {
+          // If we already have a user and we're not loading, skip the check
+          if (get().currentUser && !get().isLoading) {
+            return true;
+          }
+
           // First check if we have an auth token
           const response = await fetch("/api/auth/auth-check", {
             method: "GET",
             credentials: "include",
           });
 
-          if (!response.ok) {
+          if (response.status !== 200) {
             set({ currentUser: undefined, isLoading: false });
             return false;
           }
 
+          // Only fetch profile if we have a valid auth token
           const profileData = await getCurrentUserProfile();
           const profileImg = await getProfileImage();
           const userData: UserData = {
@@ -149,7 +155,6 @@ export const useUserStore = create<UserStore>()(
             profilePicture: profileImg?.profileImage?.base64 ?? null,
           };
 
-          console.log("CHECK USER:", userData);
           set({ currentUser: userData, isLoading: false });
           return true;
         } catch (error) {

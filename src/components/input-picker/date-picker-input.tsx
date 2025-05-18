@@ -1,15 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  format,
-  formatDate,
-  getMonth,
-  getYear,
-  parseISO,
-  setMonth,
-  setYear,
-} from "date-fns";
+import { format, getMonth, getYear, setMonth, setYear } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -50,6 +42,7 @@ interface DatePickerProps {
   date?: Date;
   setDate?: (date: Date) => void;
   dateRestriction?: "past" | "future" | "none";
+  error?: boolean;
 }
 
 export function DatePicker({
@@ -59,6 +52,7 @@ export function DatePicker({
   date: externalDate,
   setDate: setExternalDate,
   dateRestriction = "none",
+  error = false,
 }: DatePickerProps) {
   const [internalDate, setInternalDate] = React.useState<Date | undefined>(
     undefined
@@ -107,21 +101,20 @@ export function DatePicker({
   };
 
   const handleMonthChange = (month: string) => {
-    const newDate = setMonth(date, months.indexOf(month));
+    const newDate = setMonth(date ?? new Date(), months.indexOf(month));
     if (!isPastDate(newDate)) {
       setDate(newDate);
     }
   };
 
   const handleYearChange = (year: string) => {
-    const newDate = setYear(date, parseInt(year));
+    const newDate = setYear(date ?? new Date(), parseInt(year));
     if (!isPastDate(newDate)) {
       setDate(newDate);
     }
   };
 
   const handleSelect = (selectedData: Date | undefined) => {
-    // console.log("selectedData", selectedData);
     if (selectedData && !isPastDate(selectedData)) {
       setDate(selectedData);
     }
@@ -135,10 +128,10 @@ export function DatePicker({
           className={cn(
             "w-full justify-start text-left font-normal",
             !date && "text-muted-foreground",
+            error && "border-destructive focus-visible:ring-destructive",
             className
           )}
         >
-          {/* {JSON.stringify(date)} */}
           {date ? format(date, "PPP") : <span>Pick a date</span>}
           <CalendarIcon className="ml-auto size-4" />
         </Button>

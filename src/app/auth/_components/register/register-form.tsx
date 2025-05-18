@@ -9,6 +9,7 @@ import {
   step1Schema,
   step2Schema,
   step3Schema,
+  googleStep2Schema,
 } from "@/schemas/register";
 import { Step1 } from "./register-step-1";
 import { Step2 } from "./register-step-2";
@@ -37,16 +38,20 @@ export function RegisterForm({
 
   const givenName = searchParams.get("givenName") || "";
   const familyName = searchParams.get("familyName") || "";
-  const fromGoogle = searchParams.get("code") !== undefined;
-  
-  const [currentStep, setCurrentStep] = useState(fromGoogle ? 2 : 1);
+
+  const isFromGoogle =
+    searchParams.get("givenName") || searchParams.get("familyName")
+      ? true
+      : false;
+  const [currentStep, setCurrentStep] = useState(isFromGoogle ? 2 : 1);
+
   const [formData, setFormData] = useState<RegisterData>({
     email: "",
     password: "",
     confirmPassword: "",
-    firstName: fromGoogle ? givenName : "",
+    firstName: isFromGoogle ? givenName : "",
     middleName: "",
-    lastName: fromGoogle ? familyName : "",
+    lastName: isFromGoogle ? familyName : "",
     nationalId: "",
     dateOfBirth: "",
     address: "",
@@ -66,10 +71,10 @@ export function RegisterForm({
   });
 
   const step2Form = useForm<Step2Values>({
-    resolver: zodResolver(step2Schema),
+    resolver: zodResolver(isFromGoogle ? googleStep2Schema : step2Schema),
     defaultValues: {
       firstName: formData.firstName,
-      middleName: formData.middleName,
+      middleName: formData.middleName || "",
       lastName: formData.lastName,
       phoneNumber: formData.phoneNumber,
       address: formData.address,
@@ -146,21 +151,23 @@ export function RegisterForm({
       studentID: formData.studentId || null,
       hasDisability: data.disabilityStatus === "yes",
       isRevolutionary: data.revolutionaryContribution === "yes",
-    }
+    };
 
     const userData = {
       email: formData.email,
       password: formData.password,
       role: "PASSENGER" as const,
-      passengerData
+      passengerData,
     };
 
-    const onRegisterAction = fromGoogle ? googleRegister(passengerData) : register(userData);
+    const onRegisterAction = isFromGoogle
+      ? googleRegister(passengerData)
+      : register(userData);
     toast.promise(onRegisterAction, {
       loading: "We're getting things ready for you...",
 
       success: async (res) => {
-        if (fromGoogle) {
+        if (isFromGoogle) {
           await fetchUserProfile();
         } else {
           await login(userData.email, userData.password);
@@ -224,6 +231,7 @@ export function RegisterForm({
                 formData={formData}
                 handleInputChange={handleInputChange}
                 step2Form={step2Form}
+                isFromGoogle={isFromGoogle}
               />
               <div className="flex gap-2 mt-6">
                 <Button
@@ -231,7 +239,7 @@ export function RegisterForm({
                   variant="outline"
                   onClick={handleBack}
                   className="flex-1"
-                  disabled={fromGoogle}
+                  disabled={isFromGoogle}
                 >
                   Back
                 </Button>

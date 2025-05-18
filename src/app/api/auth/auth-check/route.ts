@@ -28,11 +28,11 @@ export async function GET(request: NextRequest) {
   const token = request.cookies.get("user_auth")?.value;
 
   if (!token) {
-    return new NextResponse(null, { status: 401 });
+    return new NextResponse(null, { status: 403 });
   }
 
   if (isTokenExpired(token)) {
-    return new NextResponse(null, { status: 401 });
+    return new NextResponse(null, { status: 403 });
   }
 
   return new NextResponse(null, { status: 200 });

@@ -5,23 +5,29 @@ import { RegisterData } from "@/types/register";
 import { Step2Values } from "@/schemas/register";
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import { DatePicker } from "@/components/input/date-picker-input";
-import { format, formatDate, getYear, parseISO } from "date-fns";
+import { DatePicker } from "@/components/input-picker/date-picker-input";
+import { format, getYear } from "date-fns";
 
 interface Step2Props {
   formData: RegisterData;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   step2Form: UseFormReturn<Step2Values>;
+  isFromGoogle: boolean;
 }
 
-export function Step2({ formData, handleInputChange, step2Form }: Step2Props) {
-  // const dateOfBirth = step2Form.watch("dateOfBirth");
+export function Step2({
+  formData,
+  handleInputChange,
+  step2Form,
+  isFromGoogle,
+}: Step2Props) {
   return (
     <div className="grid gap-5">
       <FormField
@@ -52,7 +58,7 @@ export function Step2({ formData, handleInputChange, step2Form }: Step2Props) {
         name="middleName"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Middle Name</FormLabel>
+            <FormLabel>Middle Name {isFromGoogle && "(Optional)"}</FormLabel>
             <FormControl>
               <Input
                 {...field}
@@ -65,6 +71,11 @@ export function Step2({ formData, handleInputChange, step2Form }: Step2Props) {
                 placeholder="Enter your middle name"
               />
             </FormControl>
+            {isFromGoogle && (
+              <FormDescription className="text-xs">
+                Middle name not required with Google sign-up
+              </FormDescription>
+            )}
             <FormMessage />
           </FormItem>
         )}
@@ -147,7 +158,11 @@ export function Step2({ formData, handleInputChange, step2Form }: Step2Props) {
             <FormLabel>Date of Birth</FormLabel>
             <FormControl>
               <DatePicker
-                date={field.value && !isNaN(Date.parse(field.value)) ? new Date(field.value) : undefined}
+                date={
+                  field.value && !isNaN(Date.parse(field.value))
+                    ? new Date(field.value)
+                    : undefined
+                }
                 setDate={(date) => {
                   const isoDate = format(date, "yyyy-MM-dd");
                   field.onChange(isoDate);
@@ -160,6 +175,7 @@ export function Step2({ formData, handleInputChange, step2Form }: Step2Props) {
                 }}
                 endYear={getYear(new Date())}
                 dateRestriction="future"
+                error={!!step2Form.formState.errors.dateOfBirth}
               />
             </FormControl>
             <FormMessage />
