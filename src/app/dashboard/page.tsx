@@ -16,6 +16,7 @@ import ScheduleTripList from "@/app/dashboard/_components/schedule/schedule-trip
 import { useUserStore } from "@/store/user-store";
 import { BookNowCarousel } from "./_components/BookNowCarousel";
 import { UserFeedback } from './_components/UserFeedback';
+import { NearestStations } from './_components/NearestStations';
 
 export default function Dashboard() {
   const { currentUser, checkAuth } = useUserStore();
@@ -99,6 +100,9 @@ export default function Dashboard() {
         <section className="mt-8">
           <SearchForm onSearch={handleSearch} />
         </section>
+
+        {/* Nearest Stations Section */}
+        <NearestStations />
 
         {/* User Feedback Section */}
         <UserFeedback className="mt-8" />

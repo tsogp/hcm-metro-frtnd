@@ -37,7 +37,7 @@ export function UserFeedback({ className }: UserFeedbackProps) {
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="w-full">
+      <div className="w-full mt-12">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
             What Our Passengers Say
