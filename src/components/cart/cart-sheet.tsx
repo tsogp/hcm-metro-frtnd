@@ -16,7 +16,11 @@ import { useState } from "react";
 import { ConfirmDialog } from "@/components/dialog/confirm-dialog";
 import TicketCartItemDisplay from "./ticket-cart-display";
 import { useServerCart } from "../provider/cart-provider";
-import { CartItemFromServer, updateCartItem } from "@/action/cart";
+import {
+  CartItemFromServer,
+  CartItemProcessed,
+  updateCartItem,
+} from "@/action/cart";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -175,9 +179,8 @@ export function CartSheet({
           <div className="space-y-2 px-2">
             {cartItems.map((item, index) => (
               <TicketCartItemDisplay
-                // key={item.cartItemId}
-                key={index}
-                item={item}
+                key={item.cartItemId}
+                item={item as CartItemProcessed}
                 handleDecrease={handleDecrease}
                 handleIncrease={handleIncrease}
                 handleQuantityChange={handleQuantityChange}

@@ -1,12 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
-  User,
   LogOut,
-  Pen,
   Wallet,
-  SquareUserRound,
   UserPen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

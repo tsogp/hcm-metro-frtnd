@@ -5,11 +5,11 @@ import { Minus } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
-import { CartItemFromServer } from "@/action/cart";
+import { CartItemFromServer, CartItemProcessed } from "@/action/cart";
 import { Input } from "../ui/input";
 
 interface TicketCartItemDisplayProps {
-  item: CartItemFromServer;
+  item: CartItemProcessed;
   handleDecrease: (item: CartItemFromServer) => void;
   handleIncrease: (item: CartItemFromServer) => void;
   handleQuantityChange: (item: CartItemFromServer, value: string) => void;
