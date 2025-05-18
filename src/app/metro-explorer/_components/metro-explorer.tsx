@@ -18,7 +18,7 @@ import { getAllMetrolines } from "@/action/metroline";
 import { Station } from "@/types/station";
 import { MetroLine } from "@/types/metroline";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const LINE_COLORS: { [key: string]: string } = {
   "550e8400-e29b-41d4-a716-446655440000": "#E30613", // Red
@@ -32,6 +32,7 @@ export function MetroExplorer() {
   const [searchQuery, setSearchQuery] = useState("");
   const [stations, setStations] = useState<Station[]>([]);
   const [metroLines, setMetroLines] = useState<MetroLine[]>([]);
+  const [selectedLine, setSelectedLine] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,15 +64,34 @@ export function MetroExplorer() {
     );
   };
 
+  const toggleLine = (lineId: string) => {
+    setSelectedLine(prev => prev === lineId ? null : lineId);
+  };
+
   const getStationLines = (stationId: string) => {
     return metroLines.filter(line => 
       line.metroLine.stationOrder.includes(stationId)
     );
   };
 
-  const filteredStations = stations.filter(station => 
-    station.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const getFilteredStations = () => {
+    let filtered = stations.filter(station => 
+      station.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    if (selectedLine) {
+      const line = metroLines.find(l => l.metroLine.id === selectedLine);
+      if (line) {
+        filtered = filtered.filter(station => 
+          line.metroLine.stationOrder.includes(station.id)
+        );
+      }
+    }
+
+    return filtered;
+  };
+
+  const filteredStations = getFilteredStations();
 
   if (isLoading) {
     return (
@@ -117,116 +137,165 @@ export function MetroExplorer() {
         </div>
       </div>
 
-      <Card className="border-2 overflow-hidden">
-        <CardHeader className="border-b px-6 py-4">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <MapPin className="h-5 w-5 text-primary" />
-            Station Directory
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <ScrollArea className="h-[600px]">
-            <div className="divide-y">
-              {filteredStations.map((station, index) => {
-                const stationLines = getStationLines(station.id);
-                return (
-                  <Collapsible 
-                    key={station.id} 
-                    open={expandedStations.includes(station.id)}
-                    onOpenChange={() => toggleStation(station.id)}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-1 border-2">
+          <CardHeader className="border-b px-6 py-4">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Train className="h-5 w-5 text-primary" />
+              Metro Lines
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ScrollArea className="h-[600px]">
+              <div className="divide-y">
+                {metroLines.map(line => (
+                  <div 
+                    key={line.metroLine.id} 
+                    className={`p-4 hover:bg-muted/50 transition-colors cursor-pointer ${selectedLine === line.metroLine.id ? 'bg-muted/50' : ''}`}
+                    onClick={() => toggleLine(line.metroLine.id)}
                   >
-                    <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-4 flex-1 min-w-0 text-left">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold shrink-0">
-                          {index + 1}
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className={`w-4 h-4 rounded-full transition-colors ${selectedLine === line.metroLine.id ? 'ring-2 ring-primary' : ''}`}
+                        style={{ 
+                          backgroundColor: selectedLine === line.metroLine.id 
+                            ? 'var(--primary)' 
+                            : LINE_COLORS[line.metroLine.id] || '#666'
+                        }}
+                      />
+                      <div className="flex-1">
+                        <div className="font-semibold">{line.metroLine.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          First arrival: {line.metroLine.firstArrival ? 
+                            line.metroLine.firstArrival.split(':').slice(0, 2).join(':')
+                            : 'N/A'}
                         </div>
-                        <div className="flex-1 min-w-0 text-left">
-                          <div className="font-semibold text-lg truncate text-left">{station.name}</div>
-                          <div className="text-sm text-muted-foreground flex items-center gap-2 text-left">
-                            <MapPin className="h-3 w-3 shrink-0" />
-                            <span className="truncate text-left">{station.address}</span>
-                          </div>
-                          {stationLines.length > 0 && (
-                            <div className="flex gap-2 mt-2">
-                              {stationLines.map(line => (
-                                <Badge 
-                                  key={line.metroLine.id}
-                                  className="text-xs"
-                                  style={{ 
-                                    backgroundColor: LINE_COLORS[line.metroLine.id] || '#666',
-                                    color: 'white'
-                                  }}
-                                >
-                                  {line.metroLine.name}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
+                        <div className="text-sm text-muted-foreground">
+                          Frequency: {line.metroLine.trainFrequency || 'N/A'} minutes
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Duration: {line.metroLine.totalDuration || 'N/A'} minutes
                         </div>
                       </div>
-                      <ChevronRight className={`h-5 w-5 text-muted-foreground transition-transform shrink-0 ${expandedStations.includes(station.id) ? 'rotate-90' : ''}`} />
-                    </CollapsibleTrigger>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
 
-                    <CollapsibleContent>
-                      <div className="px-6 py-4 space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-3">
-                            <div className="flex items-start gap-3">
-                              <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                              <div className="flex-1 min-w-0 text-left">
-                                <div className="font-medium text-sm text-muted-foreground text-left">Address</div>
-                                <div className="mt-1 break-words text-left">{station.address}</div>
-                              </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                              <Navigation className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                              <div className="flex-1 min-w-0 text-left">
-                                <div className="font-medium text-sm text-muted-foreground text-left">Coordinates</div>
-                                <div className="mt-1 text-left">{station.latitude}, {station.longitude}</div>
-                              </div>
-                            </div>
+        <Card className="lg:col-span-2 border-2 overflow-hidden">
+          <CardHeader className="border-b px-6 py-4">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <MapPin className="h-5 w-5 text-primary" />
+              Station Directory
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ScrollArea className="h-[600px]">
+              <div className="divide-y">
+                {filteredStations.map((station, index) => {
+                  const stationLines = getStationLines(station.id);
+                  return (
+                    <Collapsible 
+                      key={station.id} 
+                      open={expandedStations.includes(station.id)}
+                      onOpenChange={() => toggleStation(station.id)}
+                    >
+                      <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center gap-4 flex-1 min-w-0 text-left">
+                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold shrink-0">
+                            {index + 1}
                           </div>
-                          <div className="space-y-3">
-                            <div className="flex items-start gap-3">
-                              <Train className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                              <div className="flex-1 min-w-0 text-left">
-                                <div className="font-medium text-sm text-muted-foreground text-left">Serving Lines</div>
-                                <div className="mt-1 flex flex-wrap gap-2">
-                                  {stationLines.map(line => (
-                                    <Badge 
-                                      key={line.metroLine.id}
-                                      className="text-xs"
-                                      style={{ 
-                                        backgroundColor: LINE_COLORS[line.metroLine.id] || '#666',
-                                        color: 'white'
-                                      }}
-                                    >
-                                      {line.metroLine.name}
-                                    </Badge>
-                                  ))}
+                          <div className="flex-1 min-w-0 text-left">
+                            <div className="font-semibold text-lg truncate text-left">{station.name}</div>
+                            <div className="text-sm text-muted-foreground flex items-center gap-2 text-left">
+                              <MapPin className="h-3 w-3 shrink-0" />
+                              <span className="truncate text-left">{station.address}</span>
+                            </div>
+                            {stationLines.length > 0 && (
+                              <div className="flex gap-2 mt-2">
+                                {stationLines.map(line => (
+                                  <Badge 
+                                    key={line.metroLine.id}
+                                    className="text-xs"
+                                    style={{ 
+                                      backgroundColor: LINE_COLORS[line.metroLine.id] || '#666',
+                                      color: 'white'
+                                    }}
+                                  >
+                                    {line.metroLine.name}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <ChevronRight className={`h-5 w-5 text-muted-foreground transition-transform shrink-0 ${expandedStations.includes(station.id) ? 'rotate-90' : ''}`} />
+                      </CollapsibleTrigger>
+
+                      <CollapsibleContent>
+                        <div className="px-6 py-4 space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-3">
+                              <div className="flex items-start gap-3">
+                                <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                                <div className="flex-1 min-w-0 text-left">
+                                  <div className="font-medium text-sm text-muted-foreground text-left">Address</div>
+                                  <div className="mt-1 break-words text-left">{station.address}</div>
+                                </div>
+                              </div>
+                              <div className="flex items-start gap-3">
+                                <Navigation className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                                <div className="flex-1 min-w-0 text-left">
+                                  <div className="font-medium text-sm text-muted-foreground text-left">Coordinates</div>
+                                  <div className="mt-1 text-left">{station.latitude}, {station.longitude}</div>
                                 </div>
                               </div>
                             </div>
-                            <div className="flex items-start gap-3">
-                              <Clock className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                              <div className="flex-1 min-w-0 text-left">
-                                <div className="font-medium text-sm text-muted-foreground text-left">Station ID</div>
-                                <div className="mt-1 text-left">
-                                  <Badge variant="secondary">{station.id}</Badge>
+                            <div className="space-y-3">
+                              <div className="flex items-start gap-3">
+                                <Train className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                                <div className="flex-1 min-w-0 text-left">
+                                  <div className="font-medium text-sm text-muted-foreground text-left">Serving Lines</div>
+                                  <div className="mt-1 flex flex-wrap gap-2">
+                                    {stationLines.map(line => (
+                                      <Badge 
+                                        key={line.metroLine.id}
+                                        className="text-xs"
+                                        style={{ 
+                                          backgroundColor: LINE_COLORS[line.metroLine.id] || '#666',
+                                          color: 'white'
+                                        }}
+                                      >
+                                        {line.metroLine.name}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-start gap-3">
+                                <Clock className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                                <div className="flex-1 min-w-0 text-left">
+                                  <div className="font-medium text-sm text-muted-foreground text-left">Station ID</div>
+                                  <div className="mt-1 text-left">
+                                    <Badge variant="secondary">{station.id}</Badge>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                );
-              })}
-            </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 } 
