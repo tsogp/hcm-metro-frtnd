@@ -1,30 +1,66 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TicketItemDisplay } from "./ticket-item-display";
 import { useCartStore } from "@/store/cart-store";
-import { TicketType } from "@/action/ticket-type";
+import {
+  getAllTicketTypes,
+  getBestTicketTypes,
+  TicketType,
+} from "@/action/ticket-type";
 import { MetrolineStationSchedule } from "@/types/metroline";
 import { useServerCart } from "@/components/provider/cart-provider";
+import { useUserStore } from "@/store/user-store";
 
 interface TicketListProps {
   selectedTrip: MetrolineStationSchedule;
-  ticketTypes: TicketType[];
 }
 
-export function TicketList({ selectedTrip, ticketTypes }: TicketListProps) {
+export function TicketList({ selectedTrip }: TicketListProps) {
   const { addCartItem, refreshCart } = useServerCart();
+  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]);
+  const { currentUser } = useUserStore();
 
-  const [quantities, setQuantities] = useState<Record<string, number>>(
-    ticketTypes.reduce(
-      (acc, ticket) => ({ ...acc, [ticket.ticketType]: 0 }),
-      {}
-    )
-  );
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const fetchTicketTypes = async () => {
+      try {
+        let types: TicketType[] = [];
+        let metroLineId = selectedTrip.schedules[0].metroLineId;
+        if (currentUser && currentUser.passengerEmail) {
+          types = await getBestTicketTypes(
+            currentUser.passengerEmail,
+            metroLineId
+          );
+        } else {
+          types = await getAllTicketTypes(metroLineId);
+        }
+
+        setTicketTypes(Array.isArray(types) ? types : []);
+
+        // Initialize quantities after ticket types are fetched
+        setQuantities(
+          types.reduce(
+            (acc, ticket) => ({ ...acc, [ticket.ticketType]: 0 }),
+            {}
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching ticket types:", error);
+        setTicketTypes([]);
+      }
+    };
+    fetchTicketTypes();
+  }, [currentUser?.passengerEmail]);
+
   const addItem = useCartStore((state) => state.addItem);
 
   const handleIncrement = (ticketType: string) => {
-    setQuantities((prev) => ({ ...prev, [ticketType]: prev[ticketType] + 1 }));
+    setQuantities((prev) => ({
+      ...prev,
+      [ticketType]: (prev[ticketType] || 0) + 1,
+    }));
   };
 
   const handleDecrement = (ticketType: string) => {

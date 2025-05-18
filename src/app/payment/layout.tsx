@@ -1,6 +1,6 @@
 "use client";
 
-import { AppHeader } from "@/components/common/user-navbar";
+import { UserNavbar } from "@/components/common/user-navbar";
 import Footer from "@/app/_components/common/footer";
 
 export default function PaymentLayout({
@@ -10,7 +10,7 @@ export default function PaymentLayout({
 }) {
   return (
     <div>
-      <AppHeader onCartClick={() => {}} />
+      <UserNavbar onCartClick={() => {}} />
 
       <main className="min-h-screen">{children}</main>
 

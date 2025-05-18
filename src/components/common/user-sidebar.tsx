@@ -12,7 +12,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 
-export function AppSidebar() {
+export function UserSidebar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -81,10 +81,11 @@ export function AppSidebar() {
                       <Button
                         key={item.href}
                         variant={isActive ? "secondary" : "ghost"}
-                        className={`w-full justify-start ${isActive
+                        className={`w-full justify-start ${
+                          isActive
                             ? "bg-secondary text-white"
                             : "text-secondary hover:bg-secondary/10"
-                          }`}
+                        }`}
                         asChild
                         onClick={() => setOpen(false)}
                       >

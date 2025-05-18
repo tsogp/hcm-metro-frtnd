@@ -25,7 +25,6 @@ export function formatCurrency(amount: number): string {
     .trim();
 }
 
-
 export function formatLocalISO(date: Date, withMicroSeconds = false) {
   const pad = (n: number) => n.toString().padStart(2, "0");
   const year = date.getFullYear();
@@ -37,6 +36,15 @@ export function formatLocalISO(date: Date, withMicroSeconds = false) {
   const micro = withMicroSeconds ? `.${pad(date.getMilliseconds())}` : "";
 
   return `${year}-${month}-${day}T${hour}:${minute}:${second}${micro}`;
+}
+
+export function formatDate(date: Date): string {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }
 
 export function formatTime(time: string) {
@@ -60,3 +68,13 @@ export function formatDuration(minutes: number | null) {
 
   return `${hours} hr ${remainingMinutes} min`;
 }
+
+export const truncateText = (text: string, maxLength = 20) => {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + "...";
+};
+
+export const truncateId = (id: string, maxLength = 8) => {
+  if (id.length <= maxLength) return id;
+  return id.substring(0, maxLength) + "...";
+};

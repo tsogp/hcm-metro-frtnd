@@ -6,26 +6,18 @@ export interface TicketType {
   price: number;
   expiryDescription: string;
   requirementDescription: string;
-  expiryInterval: {
-    seconds: number;
-    zero: boolean;
-    nano: number;
-    negative: boolean;
-    positive: boolean;
-    units: [
-      {
-        durationEstimated: boolean;
-        timeBased: boolean;
-        dateBased: boolean;
-      }
-    ];
-  };
+  expiryInterval: string;
   active: boolean;
-} 
+}
 
-export const getAllTicketTypes = async (): Promise<TicketType[]> => {
+export const getAllTicketTypes = async (
+  metroLineId: string
+): Promise<TicketType[]> => {
   try {
     const response = await API.get("/ticket/ticket-types", {
+      params: {
+        metroLineId,
+      },
       withCredentials: true,
     });
     return response.data.data;
@@ -35,11 +27,15 @@ export const getAllTicketTypes = async (): Promise<TicketType[]> => {
   }
 };
 
-export const getBestTicketTypes = async (email: string): Promise<TicketType[]> => {
+export const getBestTicketTypes = async (
+  email: string,
+  metroLineId: string
+): Promise<TicketType[]> => {
   try {
     const response = await API.get("/ticket/best-ticket", {
       params: {
         email,
+        metroLineId,
       },
       withCredentials: true,
     });

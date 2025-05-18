@@ -1,6 +1,6 @@
 "use client";
 
-import { AppHeader } from "@/components/common/user-navbar";
+import { UserNavbar } from "@/components/common/user-navbar";
 import { CartSheet } from "@/components/cart/cart-sheet";
 import { useCartStore } from "@/store/cart-store";
 import Footer from "../_components/common/footer";
@@ -14,7 +14,7 @@ export default function MetroExplorerLayout({
 
   return (
     <div>
-      <AppHeader onCartClick={openCart} />
+      <UserNavbar onCartClick={openCart} />
       <CartSheet
         open={isOpen}
         onOpenChange={(open) => (open ? openCart() : closeCart())}

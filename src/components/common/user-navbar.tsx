@@ -4,19 +4,19 @@ import Link from "next/link";
 import { ShoppingCart, TrainFront } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserDropdownMenu } from "@/components/common/user-dropdown-menu";
-import { AppSidebar } from "@/components/common/user-sidebar";
+import { UserSidebar } from "@/components/common/user-sidebar";
 import { useServerCart } from "../provider/cart-provider";
 
-interface AppHeaderProps {
+interface UserNavbarProps {
   onCartClick: () => void;
 }
 
-export function AppHeader({ onCartClick }: AppHeaderProps) {
+export function UserNavbar({ onCartClick }: UserNavbarProps) {
   const { cartItems } = useServerCart();
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-secondary text-white">
       <div className="flex h-16 items-center px-4 sm:px-6 lg:px-8 max-w-full mx-auto">
-        <AppSidebar />
+        <UserSidebar />
         <div className="flex items-center gap-2 mr-4">
           <TrainFront className="h-8 w-8 text-white" />
           <Link href="/" className="font-bold text-xl">

@@ -23,7 +23,6 @@ export default function Dashboard() {
   const [selectedTripIndex, setSelectedTripIndex] = useState<number | null>(
     null
   );
-  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
@@ -34,30 +33,6 @@ export default function Dashboard() {
     };
     initializeUser();
   }, [checkAuth]);
-
-  useEffect(() => {
-    const fetchTicketTypes = async () => {
-      try {
-        let types: TicketType[] = [];
-
-        // Only try to get best ticket types if we have a valid user with email
-        // if (currentUser && currentUser.passengerEmail) {
-        //   console.log(
-        //     "Fetching best ticket types for user:",
-        //     currentUser.passengerEmail
-        //   );
-        //   types = await getBestTicketTypes(currentUser.passengerEmail);
-        // }
-
-        types = await getAllTicketTypes();
-        setTicketTypes(Array.isArray(types) ? types : []);
-      } catch (error) {
-        console.error("Error fetching ticket types:", error);
-        setTicketTypes([]);
-      }
-    };
-    fetchTicketTypes();
-  }, [currentUser?.passengerEmail]);
 
   const handleSearch = async (
     startId: string,
@@ -164,10 +139,7 @@ export default function Dashboard() {
           <h2 className="text-xl md:text-2xl font-bold text-secondary mb-4">
             Your Tickets
           </h2>
-          <TicketList
-            selectedTrip={metrolineTripSchedule[selectedTripIndex]}
-            ticketTypes={ticketTypes}
-          />
+          <TicketList selectedTrip={metrolineTripSchedule[selectedTripIndex]} />
         </section>
       )}
     </div>

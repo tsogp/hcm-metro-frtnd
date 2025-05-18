@@ -99,7 +99,10 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
     fetchCardImages();
   }, []);
 
-  const getVerificationStatusBadge = (status: "verified" | null, type: "national" | "student") => {
+  const getVerificationStatusBadge = (
+    status: "verified" | null,
+    type: "national" | "student"
+  ) => {
     if (!status) return null;
     if (status === "verified") {
       return (
@@ -172,7 +175,8 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
             {/* Show verification status badges if available */}
             {hasNationalIdVerification &&
               getVerificationStatusBadge("verified", "national")}
-            {hasStudentIdVerification && getVerificationStatusBadge("verified", "student")}
+            {hasStudentIdVerification &&
+              getVerificationStatusBadge("verified", "student")}
           </div>
         </div>
 
