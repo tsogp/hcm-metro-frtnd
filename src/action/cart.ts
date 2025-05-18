@@ -54,59 +54,56 @@ export interface CartItemProcessed {
 }
 
 export const getCartItems = async (): Promise<CartPreprocessed> => {
-  try {
-    const response = await API.get<CartFromServer>("/cart", {
-      withCredentials: true,
-    });
+  const response = await API.get("/cart", {
+    withCredentials: true,
+  });
 
-    const cart = response.data.data;
+  const cart = response.data.data;
 
-    const lineIdSet = new Set<string>();
-    const startStationIdSet = new Set<string>();
-    const endStationIdSet = new Set<string>();
+  const lineIdSet = new Set<string>();
+  const startStationIdSet = new Set<string>();
+  const endStationIdSet = new Set<string>();
 
-    for (const item of cart.items) {
-      lineIdSet.add(item.lineId);
-      startStationIdSet.add(item.startStationId);
-      endStationIdSet.add(item.endStationId);
-    }
+  for (const item of cart.items) {
+    lineIdSet.add(item.lineId);
+    startStationIdSet.add(item.startStationId);
+    endStationIdSet.add(item.endStationId);
+  }
 
-    const lineIds = Array.from(lineIdSet);
-    const startStationIds = Array.from(startStationIdSet);
-    const endStationIds = Array.from(endStationIdSet);
+  const lineIds = Array.from(lineIdSet);
+  const startStationIds = Array.from(startStationIdSet);
+  const endStationIds = Array.from(endStationIdSet);
 
-    const [lines, starts, ends] = await Promise.all([
-      Promise.all(lineIds.map(id         => getMetrolineById(id))),
-      Promise.all(startStationIds.map(id => getStationById(id))),
-      Promise.all(endStationIds.map(id   => getStationById(id)))
-    ]);
+  const [lines, starts, ends] = await Promise.all([
+    Promise.all(lineIds.map((id) => getMetrolineById(id))),
+    Promise.all(startStationIds.map((id) => getStationById(id))),
+    Promise.all(endStationIds.map((id) => getStationById(id))),
+  ]);
 
-    const lineNameById = new Map<string, string>();
-    const stationNameById = new Map<string, string>();
+  const lineNameById = new Map<string, string>();
+  const stationNameById = new Map<string, string>();
 
-    for (const res of lines) {
-      lineNameById.set(res.metroLine.id, res.metroLine.name);
-    }
+  for (const res of lines) {
+    lineNameById.set(res.metroLine.id, res.metroLine.name);
+  }
 
-    for (const res of [...starts, ...ends]) {
-      stationNameById.set(res.id, res.name);
-    }
+  for (const res of [...starts, ...ends]) {
+    stationNameById.set(res.id, res.name);
+  }
 
-    const processedItems: CartItemProcessed[] = cart.items.map((item: CartItemFromServer) => ({
+  const processedItems: CartItemProcessed[] = cart.items.map(
+    (item: CartItemFromServer) => ({
       ...item,
       lineName: lineNameById.get(item.lineId) ?? "",
       startStationName: stationNameById.get(item.startStationId) ?? "",
       endStationName: stationNameById.get(item.endStationId) ?? "",
-    }));
+    })
+  );
 
-    return {
-      ...cart,
-      items: processedItems,
-    };
-  } catch (error) {
-    console.error("Failed to fetch cart data:", error);
-    throw error;
-  }
+  return {
+    ...cart,
+    items: processedItems,
+  };
 };
 
 export interface AddToCartItem {

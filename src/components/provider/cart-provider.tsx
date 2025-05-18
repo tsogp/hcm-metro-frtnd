@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   AddToCartItem,
   CartItemFromServer,
+  CartItemProcessed,
   addItemToCart,
   getCartItems,
   getTotalPrice,
@@ -14,11 +15,12 @@ import { useUserStore } from "@/store/user-store";
 
 type CartContextType = {
   refreshCart: () => Promise<void>;
-  cartItems: CartItemFromServer[];
+  cartItems: CartItemProcessed[];
   addCartItem: (item: AddToCartItem) => Promise<void>;
   removeCartItem: (cartItemId: string) => Promise<void>;
   clearAllCartItems: () => Promise<void>;
   getCartTotalPrice: () => Promise<number>;
+  isLoading: boolean;
 };
 
 const CartContext = createContext<CartContextType>({
@@ -28,55 +30,89 @@ const CartContext = createContext<CartContextType>({
   removeCartItem: async () => {},
   clearAllCartItems: async () => {},
   getCartTotalPrice: async () => 0,
+  isLoading: true,
 });
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItemFromServer[]>([]);
-  const { checkAuth, currentUser } = useUserStore();
+  const [cartItems, setCartItems] = useState<CartItemProcessed[]>([]);
+  const [isCartLoading, setIsCartLoading] = useState(true);
+  const { checkAuth, currentUser, isLoading } = useUserStore();
 
+  // Initialize auth state
   useEffect(() => {
-    const initializeUser = async () => {
+    const initializeAuth = async () => {
+      setIsCartLoading(true);
       await checkAuth();
     };
-    initializeUser();
+    initializeAuth();
   }, [checkAuth]);
 
+  // Handle cart updates based on auth state
   useEffect(() => {
-    if (currentUser) {
-      refreshCart();
-    } else {
-      setCartItems([]);
-    }
-  }, [currentUser]);
+    const initializeCart = async () => {
+      if (!isLoading) {
+        if (currentUser) {
+          try {
+            const response = await getCartItems();
+            setCartItems(response.items);
+          } catch (error) {
+            console.log("Failed to fetch cart:", error);
+            setCartItems([]);
+          }
+        } else {
+          setCartItems([]);
+        }
+        setIsCartLoading(false);
+      }
+    };
+    initializeCart();
+  }, [currentUser, isLoading]);
 
   const refreshCart = async () => {
-    if (!currentUser) return;
+    if (!currentUser || isLoading) return;
     const response = await getCartItems();
     setCartItems(response.items);
   };
 
   const addCartItem = async (item: AddToCartItem) => {
-    if (!currentUser) return;
-    await addItemToCart(item);
-    refreshCart();
+    if (!currentUser || isLoading) return;
+    try {
+      await addItemToCart(item);
+      await refreshCart();
+    } catch (error) {
+      console.error("Failed to add item to cart:", error);
+    }
   };
 
   const removeCartItem = async (cartItemId: string) => {
-    if (!currentUser) return;
-    await removeItemFromCart(cartItemId);
-    refreshCart();
+    if (!currentUser || isLoading) return;
+    try {
+      await removeItemFromCart(cartItemId);
+      await refreshCart();
+    } catch (error) {
+      console.error("Failed to remove item from cart:", error);
+    }
   };
 
   const handleClearAllCartItems = async () => {
-    if (!currentUser) return;
-    await clearAllCartItems();
-    refreshCart();
+    if (!currentUser || isLoading) return;
+    try {
+      await clearAllCartItems();
+      await refreshCart();
+    } catch (error) {
+      console.error("Failed to clear cart:", error);
+    }
   };
 
   const getCartTotalPrice = async () => {
-    if (!currentUser) return 0;
-    const response = await getTotalPrice();
-    return response;
+    if (!currentUser || isLoading) return 0;
+    try {
+      const response = await getTotalPrice();
+      return response;
+    } catch (error) {
+      console.error("Failed to get cart total price:", error);
+      return 0;
+    }
   };
 
   return (
@@ -88,6 +124,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeCartItem,
         clearAllCartItems: handleClearAllCartItems,
         getCartTotalPrice,
+        isLoading: isCartLoading,
       }}
     >
       {children}
