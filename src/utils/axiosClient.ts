@@ -1,6 +1,7 @@
 import axios from "axios";
 import https from "https";
 
+export const FRONTEND_URL = "http://localhost:3000"
 const backendURL = "https://localhost:8443";
 const isServer = typeof window === "undefined";
 

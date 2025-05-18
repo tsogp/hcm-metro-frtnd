@@ -16,12 +16,16 @@ import {
   FileText,
   Minus,
   Loader2,
+  Plus,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import type { UserProfileType } from "@/types/profile";
 import { useState, useEffect } from "react";
 import { getCardImages } from "@/action/profile";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { AddFundsModal } from "./_components/add-funds-modal";
 
 type ProfilePreviewCardProps = {
   user: UserProfileType;
@@ -32,6 +36,11 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
   const fullName = `${user.firstName} ${user.middleName} ${user.lastName}`;
   const [cardImages, setCardImages] = useState<any>(null);
   const [isLoadingImages, setIsLoadingImages] = useState(false);
+  const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false)
+
+  const handleOpenAddFundsModal = () => {
+    setIsTopUpModalOpen(true);
+  }
 
   // Fetch card images from backend
   useEffect(() => {
@@ -163,20 +172,24 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
           <h2 className="text-2xl font-bold mt-2">{fullName}</h2>
           <p className="text-muted-foreground">{user.email}</p>
 
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
-            <Badge
-              variant="outline"
-              className="px-3 py-1 bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 rounded-lg"
-            >
-              <Wallet className="h-4 w-4" />
-              <span className="font-semibold">${user.balance.toFixed(2)}</span>
-            </Badge>
-
-            {/* Show verification status badges if available */}
-            {hasNationalIdVerification &&
-              getVerificationStatusBadge("verified", "national")}
-            {hasStudentIdVerification &&
-              getVerificationStatusBadge("verified", "student")}
+          <div className="mt-2">
+            <div className="relative inline-flex">
+              <Badge
+                variant="outline"
+                className="px-3 py-1 bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 rounded-lg pr-4"
+              >
+                <Wallet className="h-4 w-4" />
+                <span className="font-semibold">{user.balance} VNĐ</span>
+              </Badge>
+              <button
+                className="absolute -right-2 -top-2 h-5 w-5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full flex items-center justify-center shadow-sm transition-colors"
+                aria-label="Add funds"
+                title="Add funds"
+                onClick={handleOpenAddFundsModal}
+              >
+                <Plus className="h-3 w-3" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -359,6 +372,8 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
           )}
         </div>
       </CardContent>
+
+      <AddFundsModal isModalOpen={isTopUpModalOpen} setIsModalOpen={setIsTopUpModalOpen}/>
     </Card>
   );
 }
