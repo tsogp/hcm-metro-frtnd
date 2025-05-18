@@ -18,7 +18,6 @@ export const getAllTicketTypes = async (
       params: {
         metroLineId,
       },
-      withCredentials: true,
     });
     return response.data.data;
   } catch (error) {
@@ -37,7 +36,6 @@ export const getBestTicketTypes = async (
         email,
         metroLineId,
       },
-      withCredentials: true,
     });
     return response.data.data;
   } catch (error) {

@@ -25,10 +25,6 @@ function PaymentTab({
   handleProceedToPayment: () => void;
   handleBackToInfo: () => void;
 }) {
-  const handlePaymentSubmit = async (cardDetails: any) => {
-    console.log("Payment details:", cardDetails);
-  };
-
   return (
     <Card className="p-6">
       <div className="mb-4">
@@ -120,9 +116,7 @@ function PaymentTab({
           ) : (
             <PaymentPage
               handleBackToInfo={handleBackToInfo}
-              handleProceedToPayment={handleProceedToPayment}
               email={email}
-              onSubmit={handlePaymentSubmit}
             />
           )}
         </motion.div>

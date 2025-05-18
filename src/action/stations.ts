@@ -5,9 +5,7 @@ import API from "@/utils/axiosClient";
 
 export const getAllStations = async (): Promise<Station[]> => {
   try {
-    const response = await API.get("/stations", {
-      withCredentials: true,
-    });
+    const response = await API.get("/stations");
     return response.data.data;
   } catch (error) {
     console.error("Failed to fetch stations:", error);
@@ -17,9 +15,7 @@ export const getAllStations = async (): Promise<Station[]> => {
 
 export const getStationById = async (stationId: string): Promise<Station> => {
   try {
-    const response = await API.get(`/stations/${stationId}`, {
-      withCredentials: true,
-    });
+    const response = await API.get(`/stations/${stationId}`);
     return response.data.data;
 
   } catch (error) {

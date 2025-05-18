@@ -13,7 +13,6 @@ export const getMetrolineStationsSchedule = async (
         end: destinationId,
         dateTime,
       },
-      withCredentials: true,
     });
     return response.data.data;
   } catch (error) {

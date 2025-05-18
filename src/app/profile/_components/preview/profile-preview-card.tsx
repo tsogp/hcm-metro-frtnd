@@ -25,7 +25,8 @@ import { useState, useEffect } from "react";
 import { getCardImages } from "@/action/profile";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { AddFundsModal } from "./_components/add-funds-modal";
+import { AddFundsModal } from "./add-funds-modal";
+import { formatCurrency } from "@/lib/utils";
 
 type ProfilePreviewCardProps = {
   user: UserProfileType;
@@ -36,11 +37,11 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
   const fullName = `${user.firstName} ${user.middleName} ${user.lastName}`;
   const [cardImages, setCardImages] = useState<any>(null);
   const [isLoadingImages, setIsLoadingImages] = useState(false);
-  const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false)
+  const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
 
   const handleOpenAddFundsModal = () => {
     setIsTopUpModalOpen(true);
-  }
+  };
 
   // Fetch card images from backend
   useEffect(() => {
@@ -117,10 +118,12 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
       return (
         <Badge
           variant="outline"
-          className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1"
+          className="px-3 py-1 bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 rounded-lg"
         >
-          <ShieldCheck className="h-3 w-3" />
-          {type === "student" ? "Student Verified" : "Verified"}
+          <ShieldCheck className="size-4" />
+          <span className="font-semibold">
+            {type === "student" ? "Student Verified" : "Verified"}
+          </span>
         </Badge>
       );
     }
@@ -172,22 +175,28 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
           <h2 className="text-2xl font-bold mt-2">{fullName}</h2>
           <p className="text-muted-foreground">{user.email}</p>
 
-          <div className="mt-2">
+          <div className="mt-2 flex items-center gap-2">
+            {hasNationalIdVerification &&
+              getVerificationStatusBadge("verified", "national")}
+            {hasStudentIdVerification &&
+              getVerificationStatusBadge("verified", "student")}
             <div className="relative inline-flex">
               <Badge
                 variant="outline"
-                className="px-3 py-1 bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 rounded-lg pr-4"
+                className="px-3 py-1 bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 rounded-lg"
               >
-                <Wallet className="h-4 w-4" />
-                <span className="font-semibold">{user.balance} VNĐ</span>
+                <Wallet className="size-4" />
+                <span className="font-semibold">
+                  {formatCurrency(user.balance)}
+                </span>
               </Badge>
               <button
-                className="absolute -right-2 -top-2 h-5 w-5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full flex items-center justify-center shadow-sm transition-colors"
+                className="absolute -right-1.5 -top-1.5 size-4 bg-primary/95 hover:bg-primary/70 text-primary-foreground rounded-full flex items-center justify-center shadow-sm transition-colors"
                 aria-label="Add funds"
                 title="Add funds"
                 onClick={handleOpenAddFundsModal}
               >
-                <Plus className="h-3 w-3" />
+                <Plus className="size-3" />
               </button>
             </div>
           </div>
@@ -235,19 +244,19 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
           {/* Additional Details Section */}
           <div>
             <h3 className="font-semibold text-lg mb-4">Additional Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">National ID</p>
-                <div className="flex items-center gap-2">
-                  <p className="font-medium">{user.nationalId}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-medium break-all">{user.nationalId}</p>
                   {hasNationalIdVerification &&
                     getVerificationStatusBadge("verified", "national")}
                 </div>
               </div>
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Student ID</p>
-                <div className="flex items-center gap-2">
-                  <p className="font-medium">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-medium break-all">
                     {user.studentId || <Minus className="size-4" />}
                   </p>
                   {hasStudentIdVerification &&
@@ -373,7 +382,10 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
         </div>
       </CardContent>
 
-      <AddFundsModal isModalOpen={isTopUpModalOpen} setIsModalOpen={setIsTopUpModalOpen}/>
+      <AddFundsModal
+        isModalOpen={isTopUpModalOpen}
+        setIsModalOpen={setIsTopUpModalOpen}
+      />
     </Card>
   );
 }

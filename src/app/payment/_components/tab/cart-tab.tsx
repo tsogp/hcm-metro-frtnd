@@ -7,29 +7,38 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ShoppingCart } from "lucide-react";
-import { useCartStore } from "@/store/cart-store";
 import { useEffect, useState } from "react";
 import { formatCurrency } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useServerCart } from "@/components/provider/cart-provider";
 
-const PriceItem = ({ label, amount, isTotal = false }: { 
+const PriceItem = ({
+  label,
+  amount,
+  isTotal = false,
+}: {
   label: string;
   amount: number;
   isTotal?: boolean;
 }) => (
-  <motion.div 
+  <motion.div
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
-    className={`flex justify-between items-center ${isTotal ? 'py-3 mt-2 border-t-2 border-dashed' : 'py-2'}`}
+    className={`flex justify-between items-center ${
+      isTotal ? "py-3 mt-2 border-t-2 border-dashed" : "py-2"
+    }`}
   >
-    <div className={`${isTotal ? 'text-2xl font-bold' : 'text-gray-600 font-medium'}`}>
+    <div
+      className={`${
+        isTotal ? "text-2xl font-bold" : "text-gray-600 font-medium"
+      }`}
+    >
       {label}
     </div>
     <motion.div
       initial={{ scale: 0.8 }}
       animate={{ scale: 1 }}
-      className={`${isTotal ? 'text-3xl font-bold' : 'text-lg'}`}
+      className={`${isTotal ? "text-3xl font-bold" : "text-lg"}`}
     >
       {formatCurrency(amount)}
     </motion.div>
@@ -58,7 +67,7 @@ export default function CartTab() {
     <Card className="backdrop-blur-sm bg-card/95">
       <CardHeader>
         <CardTitle>
-          <motion.div 
+          <motion.div
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             className="flex items-center gap-2 text-secondary text-lg font-bold"
@@ -89,7 +98,7 @@ export default function CartTab() {
           ))}
         </AnimatePresence>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}

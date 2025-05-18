@@ -2,13 +2,13 @@ import axios from "axios";
 import https from "https";
 
 export const FRONTEND_URL = "http://localhost:3000"
-const backendURL = "https://localhost:8443";
+const BACKEND_URL = "https://localhost:8443";
 const isServer = typeof window === "undefined";
 
 // Create axios instance
 const API = axios.create({
-  baseURL: backendURL,
-  withCredentials: true, // This is important for CORS with credentials
+  baseURL: BACKEND_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },

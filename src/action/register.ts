@@ -21,17 +21,13 @@ interface RegisterRequest {
 }
 
 export const register = async (data: RegisterRequest) => {
-  const response = await API.post("/auth/register", data, {
-    withCredentials: true,
-  });
+  const response = await API.post("/auth/register", data);
 
   return response.data;
 };
 
 export const googleRegister = async (data: PassengerData) => {
-  const response = await API.post("/auth/fill-google-profile", data, {
-    withCredentials: true,
-  });
+  const response = await API.post("/auth/fill-google-profile", data);
 
   return response.data;
 }
@@ -40,9 +36,6 @@ export const validateRegister = async (email: string) => {
   try {
     const response = await API.get(
       `/auth/validate-existing-email?email=${encodeURIComponent(email)}`,
-      {
-        withCredentials: true,
-      }
     );
     return response.data;
   } catch (error) {

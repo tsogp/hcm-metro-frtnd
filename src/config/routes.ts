@@ -9,8 +9,6 @@ export const ROUTES = {
 
   PROFILE: {
     ROOT: "/profile",
-    EDIT: "/profile/edit",
-    SETTINGS: "/profile/settings",
   },
 
   PAYMENT: {
@@ -19,6 +17,9 @@ export const ROUTES = {
     TOP_UP: "/payment/top-up",
   },
 
+  INVOICES: {
+    ROOT: "/invoices",
+  },
 } as const;
 
 // // Helper functions to check route types

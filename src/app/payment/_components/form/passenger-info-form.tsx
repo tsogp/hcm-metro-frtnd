@@ -42,7 +42,7 @@ export default function PassengerInfoForm({
   setAcceptedPolicies,
   handleProceedToPayment,
 }: PassengerInfoFormProps) {
-  const fullName = `${user.passengerFirstName} ${user.passengerMiddleName} ${user.passengerLastName}`;
+  const fullName = `${user.passengerFirstName} ${user.passengerMiddleName || ""} ${user.passengerLastName}`;
 
   return (
     <motion.div
