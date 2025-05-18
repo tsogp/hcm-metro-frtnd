@@ -100,7 +100,7 @@ export default function Dashboard() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search Section */}
-        <section className="mt-10">
+        <section className="mt-6">
           <SearchForm onSearch={handleSearch} />
         </section>
 

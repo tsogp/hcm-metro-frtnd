@@ -38,6 +38,19 @@ export function BookNowCarousel({ className }: BookNowCarouselProps) {
     setCanScrollNext(currentIndex < slides.length - 1);
   }, [emblaApi]);
 
+  // Auto-scroll functionality
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const autoplay = setInterval(() => {
+      emblaApi.scrollNext();
+    }, 5000); // Change slide every 5 seconds
+
+    return () => {
+      clearInterval(autoplay);
+    };
+  }, [emblaApi]);
+
   useEffect(() => {
     if (!emblaApi) return;
     onSelect();

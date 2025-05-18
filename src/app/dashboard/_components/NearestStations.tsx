@@ -6,12 +6,15 @@ import { MapPin, Train, Info, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { getAllStations } from "@/action/stations";
+import { getAllMetrolines } from "@/action/metroline";
 import type { Station } from "@/types/station";
+import type { MetroLine } from "@/types/metroline";
 import Link from "next/link";
 import { toast } from "sonner";
 
 interface StationWithDistance extends Station {
   distance: string;
+  metroLines: string[];
 }
 
 // Default location (Ben Thanh Station)
@@ -22,6 +25,7 @@ const DEFAULT_LOCATION = {
 
 export function NearestStations() {
   const [stations, setStations] = useState<Station[]>([]);
+  const [metroLines, setMetroLines] = useState<MetroLine[]>([]);
   const [loading, setLoading] = useState(true);
   const [locationLoading, setLocationLoading] = useState(true);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>(DEFAULT_LOCATION);
@@ -87,34 +91,46 @@ export function NearestStations() {
     getLocation();
   }, []);
 
-  // Fetch stations
+  // Fetch stations and metro lines
   useEffect(() => {
-    const fetchStations = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getAllStations();
-        setStations(data);
+        const [stationsData, metroLinesData] = await Promise.all([
+          getAllStations(),
+          getAllMetrolines(),
+        ]);
+        setStations(stationsData);
+        setMetroLines(metroLinesData);
       } catch (error) {
-        console.error("Failed to fetch stations:", error);
-        toast.error("Failed to fetch stations");
+        console.error("Failed to fetch data:", error);
+        toast.error("Failed to fetch stations and metro lines");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStations();
+    fetchData();
   }, []);
 
   // Calculate distances and sort stations
   const nearbyStations: StationWithDistance[] = stations
-    .map(station => ({
-      ...station,
-      distance: `${calculateDistance(
-        userLocation.lat,
-        userLocation.lng,
-        station.latitude,
-        station.longitude
-      ).toFixed(1)} km`
-    }))
+    .map(station => {
+      // Find metro lines that include this station
+      const stationMetroLines = metroLines
+        .filter(line => line.metroLine.stationOrder.includes(station.id))
+        .map(line => line.metroLine.name);
+
+      return {
+        ...station,
+        distance: `${calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          station.latitude,
+          station.longitude
+        ).toFixed(1)} km`,
+        metroLines: stationMetroLines
+      };
+    })
     .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
     .slice(0, 3);
 
@@ -175,6 +191,18 @@ export function NearestStations() {
                     <Info className="h-4 w-4" />
                     <span>{station.address}</span>
                   </div>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {station.metroLines.map((lineName) => (
+                    <Badge
+                      key={lineName}
+                      variant="secondary"
+                      className="bg-primary/10 text-primary hover:bg-primary/20"
+                    >
+                      <Train className="h-3 w-3 mr-1" />
+                      {lineName}
+                    </Badge>
+                  ))}
                 </div>
               </div>
               <Badge variant="secondary" className="text-base px-4 py-2">
