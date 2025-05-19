@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Train, AlertCircle } from "lucide-react";
-import { getAllStations } from "@/action/stations";
+import { getAllStations } from "@/action/station";
 import { getAllMetrolines } from "@/action/metroline";
 import type { Station } from "@/types/station";
 import type { MetroLine } from "@/types/metroline";

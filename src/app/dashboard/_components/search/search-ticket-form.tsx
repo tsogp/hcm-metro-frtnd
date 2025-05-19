@@ -36,7 +36,7 @@ import type {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { searchFormSchema } from "@/schemas/search-ticket-form";
 import type { Station } from "@/types/station";
-import { getAllStations } from "@/action/stations";
+import { getAllStations } from "@/action/station";
 import { formatLocalISO } from "@/lib/utils";
 import RecentSearchList from "./recent-search-list";
 

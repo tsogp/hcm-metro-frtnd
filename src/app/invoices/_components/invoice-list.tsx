@@ -1,5 +1,7 @@
-import { Invoice, InvoiceItem } from "@/types/invoice";
 import InvoiceSummaryCard from "./invoice-summary-card";
+
+import { Invoice, InvoiceItem } from "@/types/invoice";
+
 import { Station } from "@/types/station";
 
 interface InvoiceCardListProps {
@@ -8,6 +10,7 @@ interface InvoiceCardListProps {
   toggleInvoice: (invoiceID: string) => void;
   invoiceItems: Record<string, InvoiceItem[]>;
   stations: Station[];
+  searchTerm?: string;
 }
 
 const InvoiceCardList = ({
@@ -16,6 +19,7 @@ const InvoiceCardList = ({
   toggleInvoice,
   invoiceItems,
   stations,
+  searchTerm = "",
 }: InvoiceCardListProps) => {
   return (
     <div className="grid grid-cols-1 gap-4">
@@ -27,6 +31,7 @@ const InvoiceCardList = ({
             toggleInvoice={toggleInvoice}
             invoiceItems={invoiceItems}
             stations={stations}
+            searchTerm={searchTerm}
           />
         </div>
       ))}

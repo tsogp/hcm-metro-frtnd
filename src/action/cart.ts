@@ -1,5 +1,5 @@
 import API from "@/utils/axiosClient";
-import { getStationById } from "./stations";
+import { getStationById } from "./station";
 import { getMetrolineById } from "./metroline";
 
 export interface CartFromServer {

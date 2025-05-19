@@ -107,7 +107,7 @@ export function MetrolineMap({
     if (coordinates.length > 1) {
       const polyline = L.polyline(coordinates, {
         color: "var(--primary, #0070f3)",
-        weight: 2,
+        weight: 4,
         opacity: 1,
         lineJoin: "round",
       }).addTo(map);

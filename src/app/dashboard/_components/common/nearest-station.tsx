@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Train, Info, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
-import { getAllStations } from "@/action/stations";
+import { getAllStations } from "@/action/station";
 import { getAllMetrolines } from "@/action/metroline";
 import type { Station } from "@/types/station";
 import type { MetroLine } from "@/types/metroline";
@@ -20,7 +20,7 @@ interface StationWithDistance extends Station {
 // Default location (Ben Thanh Station)
 const DEFAULT_LOCATION = {
   lat: 10.7797,
-  lng: 106.6989
+  lng: 106.6989,
 };
 
 export function NearestStations() {
@@ -28,19 +28,29 @@ export function NearestStations() {
   const [metroLines, setMetroLines] = useState<MetroLine[]>([]);
   const [loading, setLoading] = useState(true);
   const [locationLoading, setLocationLoading] = useState(true);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>(DEFAULT_LOCATION);
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+  }>(DEFAULT_LOCATION);
   const [locationError, setLocationError] = useState<string | null>(null);
 
   // Function to calculate distance between two points using Haversine formula
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const calculateDistance = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number => {
     const R = 6371; // Earth's radius in kilometers
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   };
 
@@ -58,17 +68,19 @@ export function NearestStations() {
       }
 
       try {
-        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-          });
-        });
+        const position = await new Promise<GeolocationPosition>(
+          (resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0,
+            });
+          }
+        );
 
         const newLocation = {
           lat: position.coords.latitude,
-          lng: position.coords.longitude
+          lng: position.coords.longitude,
         };
 
         // Validate coordinates
@@ -80,7 +92,9 @@ export function NearestStations() {
         toast.success("Location updated successfully");
       } catch (error) {
         console.error("Error getting location:", error);
-        setLocationError("Unable to get your location. Using default location.");
+        setLocationError(
+          "Unable to get your location. Using default location."
+        );
         setUserLocation(DEFAULT_LOCATION);
         toast.error("Using default location (Ben Thanh Station)");
       } finally {
@@ -114,11 +128,11 @@ export function NearestStations() {
 
   // Calculate distances and sort stations
   const nearbyStations: StationWithDistance[] = stations
-    .map(station => {
+    .map((station) => {
       // Find metro lines that include this station
       const stationMetroLines = metroLines
-        .filter(line => line.metroLine.stationOrder.includes(station.id))
-        .map(line => line.metroLine.name);
+        .filter((line) => line.metroLine.stationOrder.includes(station.id))
+        .map((line) => line.metroLine.name);
 
       return {
         ...station,
@@ -128,7 +142,7 @@ export function NearestStations() {
           station.latitude,
           station.longitude
         ).toFixed(1)} km`,
-        metroLines: stationMetroLines
+        metroLines: stationMetroLines,
       };
     })
     .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
@@ -165,9 +179,7 @@ export function NearestStations() {
     <Card className="border-2 rounded-xl shadow-sm mt-12">
       <CardContent>
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-primary">
-            Nearest Stations
-          </h2>
+          <h2 className="text-2xl font-bold text-primary">Nearest Stations</h2>
           {locationError && (
             <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
               <AlertCircle className="h-4 w-4" />
@@ -184,7 +196,9 @@ export function NearestStations() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-gray-900 dark:text-white">{station.name}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {station.name}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 mt-2 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center gap-1">
@@ -214,4 +228,4 @@ export function NearestStations() {
       </CardContent>
     </Card>
   );
-} 
+}

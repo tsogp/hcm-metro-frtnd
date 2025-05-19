@@ -2,65 +2,40 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Ticket, Train, MapPin, Clock, Info, TicketCheck } from "lucide-react";
-import type { InvoiceItem } from "../invoices/_components/invoice-list";
+import { Ticket, MapPin, Clock, Info, TicketCheck } from "lucide-react";
+import type { InvoiceItem } from "@/types/invoice";
 import InvoiceItemDisplay from "../invoices/_components/invoice-item-display";
 import { toast } from "sonner";
-
-// Fake activation function
-const activateTicket = async (
-  code: string
-): Promise<{
-  success: boolean;
-  message: string;
-  data?: InvoiceItem;
-}> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-
-  // Simulate validation
-  if (code.length < 8) {
-    return {
-      success: false,
-      message: "Invalid ticket code format",
-    };
-  }
-
-  // Simulate successful activation with different data based on input
-  return {
-    success: true,
-    message: "Ticket activated successfully!",
-    data: {
-      invoiceItemId: code + "-" + Date.now(),
-      invoiceId: "1",
-      status: "ACTIVATED",
-      ticketType: code.startsWith("A") ? "Round-trip" : "One-way",
-      price: code.length * 5000,
-      activatedAt: new Date(),
-      expiredAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
-      lineId: "L" + code.length,
-      lineName: code.startsWith("B")
-        ? "Blue Line"
-        : code.startsWith("R")
-        ? "Red Line"
-        : "Green Line",
-      startStation: code.startsWith("A") ? "Central Station" : "Downtown",
-      endStation: code.startsWith("B") ? "Airport Terminal" : "City Mall",
-      duration: 20 + code.length,
-    },
-  };
-};
+import { activateTicket } from "@/action/invoice";
+import { Station } from "@/types/station";
+import { getAllStations } from "@/action/station";
 
 export default function TicketActivationPage() {
+  const searchParams = useSearchParams();
   const [ticketCode, setTicketCode] = useState("");
   const [isActivating, setIsActivating] = useState(false);
-  const [activatedTicket, setActivatedTicket] = useState<InvoiceItem | null>(
-    null
-  );
+  const [activatedTicket, setActivatedTicket] = useState<InvoiceItem>();
+
+  const [stations, setStations] = useState<Station[]>([]);
+  useEffect(() => {
+    const fetchStations = async () => {
+      const stations = await getAllStations();
+      setStations(stations);
+    };
+    fetchStations();
+  }, []);
+
+  useEffect(() => {
+    const invoiceItemId = searchParams.get("invoiceItemId");
+    if (invoiceItemId) {
+      setTicketCode(invoiceItemId);
+    }
+  }, [searchParams]);
 
   const handleActivation = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,27 +46,21 @@ export default function TicketActivationPage() {
     }
 
     setIsActivating(true);
-
-    try {
-      const response = await activateTicket(ticketCode);
-
-      if (response.success) {
-        toast.success(response.message);
-
-        if (response.data) {
-          // Replace the previous ticket with the new one
-          setActivatedTicket(response.data);
-        }
-
-        setTicketCode("");
-      } else {
-        toast.error(response.message);
-      }
-    } catch (error) {
-      toast.error("Failed to activate ticket. Please try again.");
-    } finally {
-      setIsActivating(false);
-    }
+    const onActivateAction = activateTicket(ticketCode);
+    toast.promise(onActivateAction, {
+      loading: "Activating ticket...",
+      success: (data) => {
+        setActivatedTicket(data);
+        setIsActivating(false);
+        return data && data.activatedAt
+          ? "Ticket is already activated"
+          : "Ticket activated successfully";
+      },
+      error: () => {
+        setIsActivating(false);
+        return "Failed to activate ticket. Please try again.";
+      },
+    });
   };
 
   return (
@@ -180,16 +149,18 @@ export default function TicketActivationPage() {
         </CardContent>
       </Card>
 
-      {/* Display activated ticket */}
       {activatedTicket && (
         <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex items-center gap-2 mb-4">
             <Info className="size-5 text-primary" />
             <h2 className="text-xl font-semibold">Activated Ticket</h2>
           </div>
-          <InvoiceItemDisplay item={activatedTicket} />
+          <InvoiceItemDisplay
+            item={activatedTicket}
+            stations={stations}
+            expanded={false}
+          />
 
-          {/* Additional information */}
           <Card className="mt-6 bg-slate-50 border-slate-200">
             <CardContent className="px-6">
               <h3 className="font-medium mb-2">Important Information</h3>

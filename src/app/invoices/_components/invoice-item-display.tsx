@@ -4,18 +4,23 @@ import { Badge } from "@/components/ui/badge";
 import { Tag, Ticket, Clock, CircleX, MapPin } from "lucide-react";
 import { formatCurrency, formatDate, truncateText } from "@/lib/utils";
 import { Station } from "@/types/station";
+
 interface InvoiceItemDisplayProps {
-  invoice: Invoice;
-  invoiceItems: Record<string, InvoiceItem[]>;
+  item?: InvoiceItem;
+  invoice?: Invoice;
+  invoiceItems?: Record<string, InvoiceItem[]>;
   stations: Station[];
+  expanded?: boolean;
 }
 
 function InvoiceItemDisplay({
+  item,
   invoice,
   invoiceItems,
   stations,
+  expanded = true,
 }: InvoiceItemDisplayProps) {
-  const items = invoiceItems[invoice.invoiceId] || [];
+  const items = item ? [item] : invoiceItems?.[invoice?.invoiceId || ""] || [];
 
   const startStationName =
     items.length > 0
@@ -27,7 +32,7 @@ function InvoiceItemDisplay({
       : "";
 
   return (
-    <div className="space-y-4 border-3 border-t-0 border-blue-600 rounded-t-none rounded-b-xl p-4">
+    <div className={`space-y-4 border-3 ${expanded ? "border-t-0 border-blue-600 rounded-t-none rounded-b-xl" : "border-blue-600 rounded-xl"} p-4`}>
       {items.map((item) => (
         <Card
           key={item.invoiceItemId}
@@ -95,8 +100,8 @@ function InvoiceItemDisplay({
                         </p>
                         <p className="font-medium">
                           {item.activatedAt
-                            ? formatDate(item.activatedAt)
-                            : "Inactive"}
+                            ? formatDate(new Date(item.activatedAt))
+                            : "In-active"}
                         </p>
                       </div>
                     </div>
@@ -109,8 +114,8 @@ function InvoiceItemDisplay({
                         </p>
                         <p className="font-medium">
                           {item.expiredAt
-                            ? formatDate(item.expiredAt)
-                            : "Inactive"}
+                            ? formatDate(new Date(item.expiredAt))
+                            : "In-active"}
                         </p>
                       </div>
                     </div>

@@ -27,6 +27,7 @@ interface InvoiceSummaryCardProps {
   toggleInvoice: (invoiceID: string) => void;
   invoiceItems: Record<string, InvoiceItem[]>;
   stations: Station[];
+  searchTerm?: string;
 }
 
 const InvoiceSummaryCard = ({
@@ -35,7 +36,31 @@ const InvoiceSummaryCard = ({
   toggleInvoice,
   invoiceItems,
   stations,
+  searchTerm,
 }: InvoiceSummaryCardProps) => {
+  const highlightMatch = (text: string, highlight: string | undefined) => {
+    if (!highlight?.trim()) {
+      return <span>{text}</span>;
+    }
+
+    const regex = new RegExp(`(${highlight})`, "gi");
+    const parts = text.split(regex);
+
+    return (
+      <>
+        {parts.map((part, i) =>
+          regex.test(part) ? (
+            <span key={i} className="bg-yellow-200 font-bold rounded-sm">
+              {part}
+            </span>
+          ) : (
+            <span key={i}>{part}</span>
+          )
+        )}
+      </>
+    );
+  };
+
   return (
     <>
       <Card
@@ -71,16 +96,14 @@ const InvoiceSummaryCard = ({
               <h3 className="text-md font-bold text-muted-foreground">
                 Passenger Information
               </h3>
-              {/* <p className="flex items-center">
-                <User className="mr-2 size-4" />
-                {invoice.passengerName}
-              </p> */}
               <p className="flex items-center">
-                <IdCardIcon className="mr-2 size-4" />
+                <IdCardIcon className="mr-1 size-5" />
+                <span className="font-bold mr-1">Passenger ID:</span>
                 {invoice.passengerId}
               </p>
               <p className="flex items-center">
-                <Mail className="mr-2 size-4" />
+                <Mail className="mr-1 size-5" />
+                <span className="font-bold mr-1">Email:</span>
                 {invoice.email}
               </p>
             </div>
@@ -89,8 +112,9 @@ const InvoiceSummaryCard = ({
                 Invoice Details
               </h3>
               <p className="flex items-center font-mono text-md">
-                <TicketIcon className="mr-2 size-4" />
-                {invoice.invoiceId}
+                <TicketIcon className="mr-1 size-5" />
+                <span className="font-bold mr-1">Ticket ID:</span>
+                {highlightMatch(invoice.invoiceId, searchTerm)}
               </p>
             </div>
           </div>

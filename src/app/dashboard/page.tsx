@@ -12,7 +12,7 @@ import type { MetrolineStationSchedule } from "@/types/metroline";
 
 import { getAllTicketTypes, TicketType } from "@/action/ticket-type";
 import { getMetrolineStationsSchedule } from "@/action/schedule-trip";
-import ScheduleTripList from "@/app/dashboard/_components/common/schedule/schedule-trip-list";
+import ScheduleTripList from "@/app/dashboard/_components/schedule/schedule-trip-list";
 import { useUserStore } from "@/store/user-store";
 import { BookNowCarousel } from "./_components/common/book-now-carousel";
 import { UserFeedback } from "./_components/common/user-feedback";
