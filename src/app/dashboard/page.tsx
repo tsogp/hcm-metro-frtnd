@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { TicketList } from "@/app/dashboard/_components/ticket/ticket-list";
-import SearchForm from "@/app/dashboard/_components/search-ticket-form";
+import SearchForm from "@/app/dashboard/_components/search/search-ticket-form";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { MetrolineStationSchedule } from "@/types/metroline";
@@ -14,10 +14,10 @@ import { getAllTicketTypes, TicketType } from "@/action/ticket-type";
 import { getMetrolineStationsSchedule } from "@/action/schedule-trip";
 import ScheduleTripList from "@/app/dashboard/_components/schedule/schedule-trip-list";
 import { useUserStore } from "@/store/user-store";
-import { BookNowCarousel } from "./_components/BookNowCarousel";
-import { UserFeedback } from './_components/UserFeedback';
-import { NearestStations } from './_components/NearestStations';
-import { ActiveMetrolines } from './_components/ActiveMetrolines';
+import { BookNowCarousel } from "./_components/common/book-now-carousel";
+import { UserFeedback } from "./_components/common/user-feedback";
+import { NearestStations } from "./_components/common/nearest-station";
+import { ActiveMetrolines } from "./_components/common/active-metro-list";
 
 export default function Dashboard() {
   const { currentUser, checkAuth } = useUserStore();
@@ -106,13 +106,13 @@ export default function Dashboard() {
 
         {/* Nearest Stations Section */}
         <div className="mt-8">
-        <NearestStations />
-      </div>
+          <NearestStations />
+        </div>
 
         {/* Active Metro Lines Section */}
         <div className="mt-8">
-        <ActiveMetrolines />
-      </div>
+          <ActiveMetrolines />
+        </div>
         {/* User Feedback Section */}
         <UserFeedback className="mt-26 mb-10" />
 
@@ -131,7 +131,9 @@ export default function Dashboard() {
             <h2 className="text-xl md:text-2xl font-bold text-secondary mb-4">
               Your Tickets
             </h2>
-            <TicketList selectedTrip={metrolineTripSchedule[selectedTripIndex]} />
+            <TicketList
+              selectedTrip={metrolineTripSchedule[selectedTripIndex]}
+            />
           </section>
         )}
       </div>

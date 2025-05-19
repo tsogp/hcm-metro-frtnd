@@ -9,6 +9,7 @@ import { getAllMetrolines } from "@/action/metroline";
 import type { MetroLine } from "@/types/metroline";
 import Link from "next/link";
 import { toast } from "sonner";
+import { formatTime } from "@/lib/utils";
 
 export function ActiveMetrolines() {
   const [metrolines, setMetrolines] = useState<MetroLine[]>([]);
@@ -30,12 +31,6 @@ export function ActiveMetrolines() {
 
     fetchMetrolines();
   }, []);
-
-  // Format time from hour, minute, second
-  const formatTime = (time: { hour: number; minute: number; second: number }) => {
-    const pad = (num: number) => num.toString().padStart(2, '0');
-    return `${pad(time.hour)}:${pad(time.minute)}:${pad(time.second)}`;
-  };
 
   if (loading) {
     return (
@@ -90,7 +85,7 @@ export function ActiveMetrolines() {
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
-                    <span>First train: {line.metroLine.firstArrival}</span>
+                    <span>First train: {formatTime(line.metroLine.firstArrival)}</span>
                   </div>
                 </div>
               </div>
