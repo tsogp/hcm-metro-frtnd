@@ -84,7 +84,7 @@ export default function PaymentPage({
           loading: "Processing the payment",
           success: async (res) => {
             await refreshCart();
-            router.push(ROUTES.INVOICES.ROOT);
+            router.push(ROUTES.INVOICE.ROOT);
             return `Payment successful. Remaining balance: ${formatCurrency(
               res.remainingBalance
             )}`;
@@ -112,6 +112,9 @@ export default function PaymentPage({
 
   const insufficientBalance = (currentUser?.balance || 0) < totalPrice;
   const amountNeeded = totalPrice - (currentUser?.balance || 0);
+
+  // // Temporarily disable e-wallet if balance is 0
+  // const isEWalletDisabled = insufficientBalance || (currentUser?.balance || 0) === 0;
 
   return (
     <motion.div
@@ -192,32 +195,41 @@ export default function PaymentPage({
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <div className="flex items-center space-x-2 relative">
+                                    <label
+                                      htmlFor="ewallet"
+                                      className={cn(
+                                        "relative flex items-center p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer",
+                                        field.value === "ewallet" 
+                                          ? "border-primary bg-primary/5" 
+                                          : "border-border hover:border-primary/50",
+                                        // isEWalletDisabled && "opacity-70 cursor-not-allowed"
+                                      )}
+                                    >
                                       <RadioGroupItem
                                         value="ewallet"
                                         id="ewallet"
-                                        disabled={insufficientBalance}
+                                        // disabled={isEWalletDisabled}
+                                        className="absolute right-4 top-4"
                                       />
-                                      <div className="flex flex-row gap-2 items-center">
-                                        <Wallet className="size-4" />
-                                        <label
-                                          htmlFor="ewallet"
-                                          className={`${
-                                            insufficientBalance
-                                              ? "cursor-not-allowed opacity-70"
-                                              : "cursor-pointer"
-                                          }`}
-                                        >
-                                          E-Wallet (balance:{" "}
-                                          <span>
-                                            {formatCurrency(
-                                              currentUser.balance
-                                            )}
+                                      <div className="flex flex-row gap-4 items-center w-full">
+                                        <div className={cn(
+                                          "p-3 rounded-lg",
+                                          field.value === "ewallet" 
+                                            ? "bg-primary/10" 
+                                            : "bg-muted"
+                                        )}>
+                                          <Wallet className="size-6 text-primary" />
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                          <span className="text-lg font-semibold">
+                                            E-Wallet Payment
                                           </span>
-                                          )
-                                        </label>
+                                          <p className="text-sm text-muted-foreground">
+                                            Current Balance: {formatCurrency(currentUser.balance)}
+                                          </p>
+                                        </div>
                                       </div>
-                                    </div>
+                                    </label>
                                   </TooltipTrigger>
                                   {insufficientBalance && (
                                     <TooltipContent>
@@ -229,18 +241,39 @@ export default function PaymentPage({
                               </TooltipProvider>
                             )}
 
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="stripe" id="stripe" />
-                              <div className="flex flex-row gap-2 items-center">
-                                <CreditCard className="size-4" />
-                                <label
-                                  htmlFor="stripe"
-                                  className="cursor-pointer"
-                                >
-                                  Credit cart (proceed via Stripe)
-                                </label>
+                            <label
+                              htmlFor="stripe"
+                              className={cn(
+                                "relative flex items-center p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer",
+                                field.value === "stripe" 
+                                  ? "border-primary bg-primary/5" 
+                                  : "border-border hover:border-primary/50"
+                              )}
+                            >
+                              <RadioGroupItem 
+                                value="stripe" 
+                                id="stripe"
+                                className="absolute right-4 top-4"
+                              />
+                              <div className="flex flex-row gap-4 items-center w-full">
+                                <div className={cn(
+                                  "p-3 rounded-lg",
+                                  field.value === "stripe" 
+                                    ? "bg-primary/10" 
+                                    : "bg-muted"
+                                )}>
+                                  <CreditCard className="size-6 text-primary" />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <span className="text-lg font-semibold">
+                                    Credit Card Payment
+                                  </span>
+                                  <p className="text-sm text-muted-foreground">
+                                    Pay securely via Stripe
+                                  </p>
+                                </div>
                               </div>
-                            </div>
+                            </label>
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
