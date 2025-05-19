@@ -30,6 +30,7 @@ export const getCurrentUserProfile = async (): Promise<ProfileData> => {
 export const updateProfileInfo = async (data: {
   passengerPhone: string;
   passengerAddress: string;
+  studentID: string;
 }) => {
   const response = await API.put("/profile/edit-my-info", data);
 
@@ -40,7 +41,10 @@ export const updateProfileCredentials = async (data: {
   passengerEmail: string;
   password?: string;
 }) => {
-  const response = await API.put("/auth/update-my-info", data);
+  const response = await API.put("/auth/update-my-info", {
+    email: data.passengerEmail,
+    password: data.password,
+  });
 
   return response.data;
 };

@@ -21,6 +21,7 @@ import IdVerificationTab from "./_components/id/id-verification-tab";
 import { getCardImages } from "@/action/profile";
 import { getUserBalance } from "@/action/payment";
 import { useSearchParams } from "next/navigation";
+import { validateRegister } from "@/action/register";
 
 export default function ProfilePage() {
   const { setCurrentUser } = useUserStore();
@@ -140,7 +141,6 @@ export default function ProfilePage() {
     fetchUserProfile();
   }, [refreshKey]);
 
-  // Create a preview URL for the selected image
   useEffect(() => {
     if (selectedImage) {
       const objectUrl = URL.createObjectURL(selectedImage);
@@ -167,7 +167,6 @@ export default function ProfilePage() {
     setIsSubmitting(true);
 
     try {
-      // Check what has changed
       const hasCredentialsChanged =
         formData.email !== initialFormData.email ||
         formData.password !== initialFormData.password;
@@ -179,12 +178,20 @@ export default function ProfilePage() {
 
       const hasImageChanged = selectedImage !== null;
 
-      // Create an array to store all promises
       const promises = [];
       const toastPromises = [];
 
-      // Only update credentials if they've changed
       if (hasCredentialsChanged) {
+        try {
+          await validateRegister(formData.email);
+        } catch (error: any) {
+          if (error?.response?.status === 409) {
+            toast.error("This email is already in use");
+            setIsSubmitting(false);
+            return;
+          }
+        }
+
         const credentialsPromise = updateProfileCredentials({
           passengerEmail: formData.email,
           password: formData.password || undefined,
@@ -204,7 +211,7 @@ export default function ProfilePage() {
         const infoPromise = updateProfileInfo({
           passengerPhone: formData.phoneNumber,
           passengerAddress: formData.address,
-          // studentID: formData.studentId,
+          studentID: formData.studentId || "",
         });
 
         const infoToast = toast.promise(infoPromise, {

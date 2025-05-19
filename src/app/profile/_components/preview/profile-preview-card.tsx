@@ -365,7 +365,7 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
           ) : (
             <>
               <Separator className="my-4" />
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="rounded-lg p-4 text-center">
                 <FileText className="mx-auto h-8 w-8 text-gray-400 mb-2" />
                 <h3 className="font-medium mb-1">ID Verification Required</h3>
                 <p className="text-sm text-muted-foreground mb-3">

@@ -17,7 +17,7 @@ interface RegisterRequest {
   email: string;
   password: string;
   role: "PASSENGER";
-  passengerData: PassengerData
+  passengerData: PassengerData;
 }
 
 export const register = async (data: RegisterRequest) => {
@@ -30,15 +30,15 @@ export const googleRegister = async (data: PassengerData) => {
   const response = await API.post("/auth/fill-google-profile", data);
 
   return response.data;
-}
+};
 
 export const validateRegister = async (email: string) => {
   try {
     const response = await API.get(
-      `/auth/validate-existing-email?email=${encodeURIComponent(email)}`,
+      `/auth/validate-existing-email?email=${encodeURIComponent(email)}`
     );
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Validation failed:", error);
     throw error;
   }

@@ -103,7 +103,7 @@ function EditProfileForm({
             <div className="flex gap-2">
               <input
                 type="file"
-                ref={fileInputRef}
+                ref={fileInputRef as React.RefObject<HTMLInputElement>}
                 onChange={handleImageChange}
                 accept="image/*"
                 className="hidden"
@@ -191,7 +191,6 @@ function EditProfileForm({
 
         <Separator className="my-2" />
 
-        {/* Personal Details */}
         <div>
           <h3 className="font-semibold text-lg mb-4">Personal Details</h3>
           <div className="space-y-4">
@@ -233,6 +232,7 @@ function EditProfileForm({
                     <Input
                       type="text"
                       placeholder="Enter your student ID"
+                      disabled
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
@@ -241,7 +241,7 @@ function EditProfileForm({
                     />
                   </FormControl>
                   <FormDescription className="text-xs text-muted-foreground">
-                    This field is optional
+                    This field is locked
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
