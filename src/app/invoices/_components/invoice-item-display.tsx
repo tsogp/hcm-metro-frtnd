@@ -3,8 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tag, Ticket, Clock, CircleX, MapPin } from "lucide-react";
 import { formatCurrency, formatDate, truncateText } from "@/lib/utils";
-
-import { formatCurrency, formatDate, truncateText } from "@/lib/utils";
 import { Station } from "@/types/station";
 interface InvoiceItemDisplayProps {
   invoice: Invoice;

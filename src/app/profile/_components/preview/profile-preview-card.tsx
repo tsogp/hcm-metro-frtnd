@@ -23,7 +23,7 @@ import Image from "next/image";
 import type { UserProfileType } from "@/types/profile";
 import { useState, useEffect } from "react";
 import { getCardImages } from "@/action/profile";
-import { AddFundsModal } from "./_components/add-funds-modal";
+import { AddFundsModal } from "./add-funds-modal";
 import { formatCurrency } from "@/lib/utils";
 
 type ProfilePreviewCardProps = {
