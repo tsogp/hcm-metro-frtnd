@@ -22,7 +22,7 @@ export default function InvoicesPage() {
         invoices.reduce(
           (acc, invoice) => ({
             ...acc,
-            [invoice.invoiceID]: invoice.items,
+            [invoice.invoiceId]: invoice.items,
           }),
           {} as Record<string, InvoiceItem[]>
         )

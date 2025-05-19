@@ -15,7 +15,7 @@ function InvoiceItemDisplay({
   invoiceItems,
   stations,
 }: InvoiceItemDisplayProps) {
-  const items = invoiceItems[invoice.invoiceID] || [];
+  const items = invoiceItems[invoice.invoiceId] || [];
 
   const startStationName =
     items.length > 0

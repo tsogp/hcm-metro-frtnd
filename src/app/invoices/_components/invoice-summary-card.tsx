@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate, formatLocalISO } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,8 +15,7 @@ import {
   ChevronUp,
   IdCardIcon,
   Mail,
-  TicketIcon as Tickets,
-  User,
+  TicketIcon,
 } from "lucide-react";
 import { InvoiceItem, Invoice } from "@/types/invoice";
 import InvoiceItemDisplay from "./invoice-item-display";
@@ -41,7 +40,7 @@ const InvoiceSummaryCard = ({
     <>
       <Card
         className={`gap-2 py-6 border-2 ${
-          expandedInvoice === invoice.invoiceID
+          expandedInvoice === invoice.invoiceId
             ? "border-blue-600 border-3 border-b-0 rounded-bl-none rounded-br-none"
             : "border-blue-200 rounded-xl"
         }`}
@@ -78,7 +77,7 @@ const InvoiceSummaryCard = ({
               </p> */}
               <p className="flex items-center">
                 <IdCardIcon className="mr-2 size-4" />
-                {invoice.passengerID}
+                {invoice.passengerId}
               </p>
               <p className="flex items-center">
                 <Mail className="mr-2 size-4" />
@@ -90,8 +89,8 @@ const InvoiceSummaryCard = ({
                 Invoice Details
               </h3>
               <p className="flex items-center font-mono text-md">
-                <Tickets className="mr-2 size-4" />
-                {invoice.invoiceID}
+                <TicketIcon className="mr-2 size-4" />
+                {invoice.invoiceId}
               </p>
             </div>
           </div>
@@ -100,15 +99,15 @@ const InvoiceSummaryCard = ({
         <CardFooter className="pt-1">
           <Button
             className={`w-full ${
-              expandedInvoice === invoice.invoiceID
+              expandedInvoice === invoice.invoiceId
                 ? "bg-primary text-white hover:bg-primary/70"
                 : ""
             }`}
             variant="outline"
             size="sm"
-            onClick={() => toggleInvoice(invoice.invoiceID)}
+            onClick={() => toggleInvoice(invoice.invoiceId)}
           >
-            {expandedInvoice === invoice.invoiceID ? (
+            {expandedInvoice === invoice.invoiceId ? (
               <>
                 <ChevronUp className="h-4 w-4 mr-1" />
                 Hide purchased tickets
@@ -123,7 +122,7 @@ const InvoiceSummaryCard = ({
         </CardFooter>
       </Card>
 
-      {expandedInvoice === invoice.invoiceID && (
+      {expandedInvoice === invoice.invoiceId && (
         <InvoiceItemDisplay
           invoice={invoice}
           invoiceItems={invoiceItems}

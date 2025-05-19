@@ -1,6 +1,6 @@
 export interface Invoice {
-  invoiceID: string;
-  passengerID: string;
+  invoiceId: string;
+  passengerId: string;
   email: string;
   totalPrice: number;
   purchasedAt: Date;
