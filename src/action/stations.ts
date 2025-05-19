@@ -1,8 +1,6 @@
 import { Station } from "@/types/station";
 import API from "@/utils/axiosClient";
 
-
-
 export const getAllStations = async (): Promise<Station[]> => {
   try {
     const response = await API.get("/stations", {

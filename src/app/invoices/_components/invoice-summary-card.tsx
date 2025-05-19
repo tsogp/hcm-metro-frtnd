@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, formatLocalISO } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,15 +18,16 @@ import {
   TicketIcon as Tickets,
   User,
 } from "lucide-react";
-import { InvoiceItem } from "./invoice-list";
-import { Invoice } from "./invoice-list";
+import { InvoiceItem, Invoice } from "@/types/invoice";
 import InvoiceItemDisplay from "./invoice-item-display";
+import { Station } from "@/types/station";
 
 interface InvoiceSummaryCardProps {
   invoice: Invoice;
   expandedInvoice: string;
   toggleInvoice: (invoiceID: string) => void;
   invoiceItems: Record<string, InvoiceItem[]>;
+  stations: Station[];
 }
 
 const InvoiceSummaryCard = ({
@@ -34,6 +35,7 @@ const InvoiceSummaryCard = ({
   expandedInvoice,
   toggleInvoice,
   invoiceItems,
+  stations,
 }: InvoiceSummaryCardProps) => {
   return (
     <>
@@ -52,7 +54,7 @@ const InvoiceSummaryCard = ({
               </CardTitle>
               <CardDescription className="flex items-center mt-1">
                 <Calendar className="mr-2 size-4" />
-                Purchased on {formatDate(invoice.purchasedAt)}
+                Purchased on {formatDate(new Date(invoice.purchasedAt))}
               </CardDescription>
             </div>
             <div className="flex items-center space-x-4">
@@ -70,10 +72,10 @@ const InvoiceSummaryCard = ({
               <h3 className="text-md font-bold text-muted-foreground">
                 Passenger Information
               </h3>
-              <p className="flex items-center">
+              {/* <p className="flex items-center">
                 <User className="mr-2 size-4" />
-                {invoice.passenger}
-              </p>
+                {invoice.passengerName}
+              </p> */}
               <p className="flex items-center">
                 <IdCardIcon className="mr-2 size-4" />
                 {invoice.passengerID}
@@ -122,7 +124,11 @@ const InvoiceSummaryCard = ({
       </Card>
 
       {expandedInvoice === invoice.invoiceID && (
-        <InvoiceItemDisplay invoice={invoice} invoiceItems={invoiceItems} />
+        <InvoiceItemDisplay
+          invoice={invoice}
+          invoiceItems={invoiceItems}
+          stations={stations}
+        />
       )}
     </>
   );

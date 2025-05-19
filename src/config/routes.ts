@@ -19,6 +19,13 @@ export const ROUTES = {
     TOP_UP: "/payment/top-up",
   },
 
+  INVOICE: {
+    ROOT: "/invoices",
+  },
+
+  ACTIVATION: {
+    ROOT: "/activation",
+  },
 } as const;
 
 // // Helper functions to check route types

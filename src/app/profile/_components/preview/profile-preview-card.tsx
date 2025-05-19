@@ -26,6 +26,7 @@ import { getCardImages } from "@/action/profile";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { AddFundsModal } from "./_components/add-funds-modal";
+import { formatCurrency } from "@/lib/utils";
 
 type ProfilePreviewCardProps = {
   user: UserProfileType;
@@ -179,7 +180,7 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
                 className="px-3 py-1 bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 rounded-lg pr-4"
               >
                 <Wallet className="h-4 w-4" />
-                <span className="font-semibold">{user.balance} VNĐ</span>
+                <span className="font-semibold">{formatCurrency(user.balance)}</span>
               </Badge>
               <button
                 className="absolute -right-2 -top-2 h-5 w-5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full flex items-center justify-center shadow-sm transition-colors"

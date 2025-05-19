@@ -12,7 +12,7 @@ import type { MetrolineStationSchedule } from "@/types/metroline";
 
 import { getAllTicketTypes, TicketType } from "@/action/ticket-type";
 import { getMetrolineStationsSchedule } from "@/action/schedule-trip";
-import ScheduleTripList from "@/app/dashboard/_components/schedule/schedule-trip-list";
+import ScheduleTripList from "@/app/dashboard/_components/common/schedule/schedule-trip-list";
 import { useUserStore } from "@/store/user-store";
 import { BookNowCarousel } from "./_components/common/book-now-carousel";
 import { UserFeedback } from "./_components/common/user-feedback";
@@ -93,39 +93,25 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Book Now Carousel Section - Full Width */}
-      <div className="w-full">
+      <section className="w-full">
         <BookNowCarousel />
-      </div>
+      </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search Section */}
-        <section className="mt-6">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mt-6">
           <SearchForm onSearch={handleSearch} />
+        </div>
+
+        <section className="mt-6">
+          <ScheduleTripList
+            metrolineTripSchedule={metrolineTripSchedule}
+            handleSelectTrip={handleSelectTrip}
+            hasSearched={hasSearched}
+            isLoading={isLoading}
+            error={error}
+          />
         </section>
 
-        {/* Nearest Stations Section */}
-        <div className="mt-8">
-          <NearestStations />
-        </div>
-
-        {/* Active Metro Lines Section */}
-        <div className="mt-8">
-          <ActiveMetrolines />
-        </div>
-        {/* User Feedback Section */}
-        <UserFeedback className="mt-26 mb-10" />
-
-        {/* Schedule Results Section - Only shown when there are results */}
-        <ScheduleTripList
-          metrolineTripSchedule={metrolineTripSchedule}
-          handleSelectTrip={handleSelectTrip}
-          hasSearched={hasSearched}
-          isLoading={isLoading}
-          error={error}
-        />
-
-        {/* Tickets Section */}
         {selectedTripIndex !== null && (
           <section className="mt-8">
             <h2 className="text-xl md:text-2xl font-bold text-secondary mb-4">
@@ -136,7 +122,19 @@ export default function Dashboard() {
             />
           </section>
         )}
-      </div>
+
+        <section className="mt-8">
+          <NearestStations />
+        </section>
+
+        <section className="mt-8">
+          <ActiveMetrolines />
+        </section>
+
+        <section className="mt-8">
+          <UserFeedback className="mt-26 mb-10" />
+        </section>
+      </section>
     </div>
   );
 }
