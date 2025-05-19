@@ -8,7 +8,7 @@ interface JwtToken {
   exp: number;
 }
 
-const passengerOnlyRoutes = ["/profile"];
+const passengerOnlyRoutes = ["/profile", "/invoices"];
 
 const landingToDashboardRoutes = ["/dashboard"];
 

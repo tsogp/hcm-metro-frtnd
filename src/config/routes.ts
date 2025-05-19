@@ -17,8 +17,12 @@ export const ROUTES = {
     TOP_UP: "/payment/top-up",
   },
 
-  INVOICES: {
+  INVOICE: {
     ROOT: "/invoices",
+  },
+
+  ACTIVATION: {
+    ROOT: "/activation",
   },
 } as const;
 
