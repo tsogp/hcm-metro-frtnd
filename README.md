@@ -99,7 +99,7 @@ pawa-fe/
 
 ### UI Components
 
-- Radix UI
+- Shadcn UI
 - Lucide React (Icons)
 - Framer Motion
 - Tailwind CSS Animate
