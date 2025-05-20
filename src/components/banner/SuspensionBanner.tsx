@@ -4,35 +4,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useWebSocketStore } from '@/action/websocket';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
-
-interface MetroLine {
-    id: string;
-    name: string;
-}
-
-interface Station {
-    id: string;
-    name: string;
-}
+import { getMetrolineById } from '@/action/metroline';
+import type { MetroLine } from '@/types/metroline';
 
 export const SuspensionBanner = () => {
     const { suspension } = useWebSocketStore();
     const [metroLine, setMetroLine] = useState<MetroLine | null>(null);
-    const [stations, setStations] = useState<Station[]>([]);
 
+    // Fetch metro line data
     useEffect(() => {
         if (suspension?.metroLineID) {
-            // Fetch metro line details
-            fetch(`http://localhost:8081/api/metro_line/${suspension.metroLineID}`)
-                .then(res => res.json())
+            getMetrolineById(suspension.metroLineID)
                 .then(data => {
                     setMetroLine(data);
-                    // Fetch stations for this metro line
-                    return fetch(`http://localhost:8081/api/station?byMetroLine=${suspension.metroLineID}`);
                 })
-                .then(res => res.json())
-                .then(data => setStations(data))
-                .catch(error => console.error('Error fetching metro line or station data:', error));
+                .catch(error => console.error('Error fetching metro line data:', error));
         }
     }, [suspension?.metroLineID]);
 
@@ -45,8 +31,7 @@ export const SuspensionBanner = () => {
         <>
             <h3 className="text-xl font-bold mb-2">{suspension.title}</h3>
             <p className="text-base mb-2">
-                <span className="font-bold">Metro Line:</span> {metroLine?.name || 'Loading...'} |
-                <span className="font-bold ml-2">Stations:</span> {stations.map(s => s.name).join(', ') || 'Loading...'}
+                <span className="font-bold">Metro Line:</span> {metroLine?.metroLine.name || 'Loading...'}
             </p>
             <p className="text-base">
                 <span className="font-bold">Expected Restore Time:</span> {expectedTime}
