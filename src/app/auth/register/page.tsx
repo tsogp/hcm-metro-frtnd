@@ -1,6 +1,8 @@
 import { TrainFront } from "lucide-react";
 import Image from "next/image";
 import { RegisterForm } from "../_components/register/register-form";
+import Link from "next/link";
+import { ROUTES } from "@/config/routes";
 
 export default function RegisterPage() {
   return (
@@ -17,12 +19,17 @@ export default function RegisterPage() {
       </div>
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md text-primary-foreground">
+          <Link
+            href={ROUTES.LANDING}
+            className="flex items-center gap-2 font-medium"
+          >
+            <div
+              className="flex h-6 w-6 items-center justify-center rounded-md text-primary-foreground"
+            >
               <TrainFront className="w-8 h-8 text-primary" />
             </div>
             HCMC Metro Line - PAWA
-          </a>
+          </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-sm">

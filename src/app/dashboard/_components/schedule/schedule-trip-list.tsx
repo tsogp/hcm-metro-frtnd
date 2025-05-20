@@ -36,7 +36,7 @@ function ScheduleTripList({
               <h2 className="text-xl md:text-2xl font-bold text-secondary mb-4">
                 Available Trips
               </h2>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 {metrolineTripSchedule.map((trip, index) => (
                   <ScheduleTripItem
                     key={index}

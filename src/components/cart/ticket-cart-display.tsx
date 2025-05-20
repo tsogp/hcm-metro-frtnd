@@ -33,20 +33,20 @@ function TicketCartItemDisplay({
     "duration" in item ? item.duration : item.expiryInterval;
 
   const getTicketTypeParts = () => {
-    const ticketTypeName = item.ticketTypeName;
-    if (!ticketTypeName) {
+    const ticketType = item.ticketType;
+    if (!ticketType) {
       return { period: "_", userType: "_" };
     }
 
     let period = "";
-    if (ticketTypeName.includes("ONE_WAY")) period = "One Way";
-    else if (ticketTypeName.includes("DAILY")) period = "Daily";
-    else if (ticketTypeName.includes("THREE_DAY")) period = "Three Day";
-    else if (ticketTypeName.includes("MONTHLY")) period = "Monthly";
+    if (ticketType.includes("ONE_WAY")) period = "One Way";
+    else if (ticketType.includes("DAILY")) period = "Daily";
+    else if (ticketType.includes("THREE_DAY")) period = "Three Day";
+    else if (ticketType.includes("MONTHLY")) period = "Monthly";
 
     let userType = "";
-    if (ticketTypeName.includes("STUDENT")) userType = "Student";
-    else if (ticketTypeName.includes("ADULT")) userType = "Adult";
+    if (ticketType.includes("STUDENT")) userType = "Student";
+    else if (ticketType.includes("ADULT")) userType = "Adult";
 
     return { period, userType };
   };

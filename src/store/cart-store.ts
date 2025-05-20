@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 export interface TicketCartItem {
   ticketTypeName: string;
+  ticketType: string;
   lineId: string;
   lineName: string;
   startStationId: string;
@@ -21,6 +22,7 @@ interface CartStore {
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
+  clearCartForSignIn: () => void;
   openCart: () => void;
   closeCart: () => void;
   getTotalPrice: () => number;
@@ -66,6 +68,10 @@ export const useCartStore = create<CartStore>()(
           ),
         })),
       clearCart: () => set({ items: [] }),
+      clearCartForSignIn: () => {
+        localStorage.removeItem("user-cart");
+        set({ items: [], isOpen: false });
+      },
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
       getTotalPrice: () => {

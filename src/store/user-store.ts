@@ -3,6 +3,7 @@ import { googleAuth, GoogleData, logout, signIn } from "@/action/auth";
 import { getCurrentUserProfile, getProfileImage } from "@/action/profile";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { getUserBalance } from "@/action/payment";
+import { useCartStore } from "./cart-store";
 
 export interface UserData {
   passengerEmail: string;
@@ -87,6 +88,9 @@ export const useUserStore = create<UserStore>()(
             },
           });
 
+          // Clear the cart when signing in
+          useCartStore.getState().clearCartForSignIn();
+
           return userData;
         } catch (error: any) {
           console.error("Login error:", error);
@@ -108,6 +112,9 @@ export const useUserStore = create<UserStore>()(
                 profilePicture: profileImg?.profileImage?.base64 ?? null,
               },
             });
+
+            // Clear the cart when signing in with Google
+            useCartStore.getState().clearCartForSignIn();
 
             return userData;
           } else if (response.status == 206) {

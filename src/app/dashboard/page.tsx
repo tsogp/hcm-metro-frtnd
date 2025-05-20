@@ -1,16 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
 import { TicketList } from "@/app/dashboard/_components/ticket/ticket-list";
 import SearchForm from "@/app/dashboard/_components/search/search-ticket-form";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { MetrolineStationSchedule } from "@/types/metroline";
-
-import { getAllTicketTypes, TicketType } from "@/action/ticket-type";
 import { getMetrolineStationsSchedule } from "@/action/schedule-trip";
 import ScheduleTripList from "@/app/dashboard/_components/schedule/schedule-trip-list";
 import { useUserStore } from "@/store/user-store";
@@ -18,9 +12,14 @@ import { BookNowCarousel } from "./_components/common/book-now-carousel";
 import { UserFeedback } from "./_components/common/user-feedback";
 import { NearestStations } from "./_components/common/nearest-station";
 import { ActiveMetrolines } from "./_components/common/active-metro-list";
+import {
+  getSuspensionMetroline,
+  getMetrolineById,
+  SuspensionMetrolineWithDetails,
+} from "@/action/metroline";
 
 export default function Dashboard() {
-  const { currentUser, checkAuth } = useUserStore();
+  const { checkAuth } = useUserStore();
   const [metrolineTripSchedule, setMetrolineTripSchedule] = useState<
     MetrolineStationSchedule[]
   >([]);
@@ -30,12 +29,38 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [suspensionMetrolineList, setSuspensionMetrolineList] = useState<
+    SuspensionMetrolineWithDetails[]
+  >([]);
 
   useEffect(() => {
     const initializeUser = async () => {
       await checkAuth();
     };
     initializeUser();
+
+    const fetchSuspensionMetroline = async () => {
+      try {
+        const suspensionMetroline = await getSuspensionMetroline();
+        // Fetch metroline details for each suspension
+        const suspensionsWithDetails = await Promise.all(
+          suspensionMetroline.map(async (suspension) => {
+            const metrolineDetails = await getMetrolineById(
+              suspension.metroLineID
+            );
+            return {
+              ...suspension,
+              metroLineName: metrolineDetails.metroLine.name,
+            } as SuspensionMetrolineWithDetails;
+          })
+        );
+        setSuspensionMetrolineList(suspensionsWithDetails);
+      } catch (error) {
+        console.error("Error fetching suspension details:", error);
+        setSuspensionMetrolineList([]);
+      }
+    };
+    fetchSuspensionMetroline();
   }, [checkAuth]);
 
   const handleSearch = async (
@@ -102,7 +127,7 @@ export default function Dashboard() {
           <SearchForm onSearch={handleSearch} />
         </div>
 
-        <section className="mt-6">
+        <section className="mt-10">
           <ScheduleTripList
             metrolineTripSchedule={metrolineTripSchedule}
             handleSelectTrip={handleSelectTrip}
@@ -119,6 +144,7 @@ export default function Dashboard() {
             </h2>
             <TicketList
               selectedTrip={metrolineTripSchedule[selectedTripIndex]}
+              suspensionMetrolineList={suspensionMetrolineList}
             />
           </section>
         )}

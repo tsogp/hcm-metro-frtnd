@@ -20,3 +20,30 @@ export const getMetrolineById = async (id: string): Promise<MetroLine> => {
     throw error;
   }
 };
+
+export interface SuspensionMetroline {
+  id: string;
+  metroLineID: string;
+  title: string;
+  description: string;
+  suspensionType: string;
+  expectedRestoreTime: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SuspensionMetrolineWithDetails extends SuspensionMetroline {
+  metroLineName: string;
+}
+
+export const getSuspensionMetroline = async (): Promise<
+  SuspensionMetroline[]
+> => {
+  try {
+    const response = await API.get("/suspensions");
+    return response.data.data;
+  } catch (error) {
+    console.error("Failed to fetch suspension metro lines:", error);
+    throw error;
+  }
+};

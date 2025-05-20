@@ -11,12 +11,17 @@ import {
 import { MetrolineStationSchedule } from "@/types/metroline";
 import { useServerCart } from "@/components/provider/cart-provider";
 import { useUserStore } from "@/store/user-store";
+import { SuspensionMetrolineWithDetails } from "@/action/metroline";
 
 interface TicketListProps {
   selectedTrip: MetrolineStationSchedule;
+  suspensionMetrolineList: SuspensionMetrolineWithDetails[];
 }
 
-export function TicketList({ selectedTrip }: TicketListProps) {
+export function TicketList({
+  selectedTrip,
+  suspensionMetrolineList,
+}: TicketListProps) {
   const { addCartItem, refreshCart } = useServerCart();
   const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]);
   const { currentUser } = useUserStore();
@@ -89,6 +94,7 @@ export function TicketList({ selectedTrip }: TicketListProps) {
       endStationName:
         selectedTrip.schedules[selectedTrip.schedules.length - 1].stationName,
       ticketTypeName: ticketInTypes.ticketType,
+      ticketType: ticketInTypes.ticketType,
       price: ticketInTypes.price,
       quantity: quantity,
       expiryInterval: ticketInTypes.expiryDescription,
@@ -129,13 +135,13 @@ export function TicketList({ selectedTrip }: TicketListProps) {
             ticketTypeName: ticket.ticketType,
             price: ticket.price,
             expiryInterval: ticket.expiryDescription,
-            // suspended: !ticket.active,
           }}
           quantity={quantities[ticket.ticketType]}
           onIncrement={() => handleIncrement(ticket.ticketType)}
           onDecrement={() => handleDecrement(ticket.ticketType)}
           onAddToCart={() => handleAddToCart(ticket.ticketType)}
           index={index}
+          suspensionMetrolineList={suspensionMetrolineList}
         />
       ))}
     </div>

@@ -17,8 +17,7 @@ export const step1Schema = z
       )
       .refine((email) => !/[\s<>()[\]\\,;:{}|^~`]/.test(email), {
         message: "Email cannot contain spaces or special characters",
-      })
-      .transform((val) => val.toLowerCase()),
+      }),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")

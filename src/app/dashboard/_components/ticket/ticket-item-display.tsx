@@ -1,11 +1,18 @@
 "use client";
 
-import { Minus, Plus } from "lucide-react";
+import { AlertTriangle, Minus, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/lib/utils";
+import { SuspensionMetrolineWithDetails } from "@/action/metroline";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface TicketForDisplayingSelectedTrip {
   lineName: string;
@@ -24,6 +31,7 @@ interface TicketItemProps {
   onDecrement: () => void;
   onAddToCart: () => void;
   index: number;
+  suspensionMetrolineList: SuspensionMetrolineWithDetails[];
 }
 
 export function TicketItemDisplay({
@@ -33,6 +41,7 @@ export function TicketItemDisplay({
   onDecrement,
   onAddToCart,
   index,
+  suspensionMetrolineList,
 }: TicketItemProps) {
   const tiltDirection = index % 2 === 0 ? "right" : "left";
   const tiltClass =
@@ -64,6 +73,12 @@ export function TicketItemDisplay({
   };
 
   const { period, userType } = getTicketTypeParts();
+
+  const isStationSuspended = () => {
+    return suspensionMetrolineList.some(
+      (suspension) => suspension.metroLineName === ticket.lineName
+    );
+  };
 
   return (
     <Card
@@ -99,7 +114,21 @@ export function TicketItemDisplay({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <h3 className="font-semibold text-lg">{ticket.lineName}</h3>
+              <div className="flex items-center">
+                <h3 className="font-semibold text-lg">{ticket.lineName}</h3>
+                {isStationSuspended() && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <AlertTriangle className="size-4 text-red-500 ml-1" />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-accent-foreground border-2 border-red-500 text-xs text-red-500 font-bold mb-1">
+                        <p>Service suspended at this line</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
               <p className="text-sm text-muted-foreground line-clamp-2 min-h-[36px]">
                 Expires: {ticket.expiryInterval}
               </p>
@@ -119,18 +148,6 @@ export function TicketItemDisplay({
                 <span className="font-medium">From:</span>
                 <div className="flex items-center ml-2">
                   <span>{ticket.startStationName}</span>
-                  {/* {ticket.suspended && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <AlertTriangle className="size-4 text-red-500 ml-1" />
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-accent-foreground border-2 border-red-500 text-xs text-red-500 font-bold mb-1">
-                          <p>Service suspended at this station</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )} */}
                 </div>
               </div>
               <div className="flex items-center">

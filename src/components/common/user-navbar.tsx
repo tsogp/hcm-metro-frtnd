@@ -8,6 +8,7 @@ import { UserSidebar } from "@/components/common/user-sidebar";
 import { useServerCart } from "../provider/cart-provider";
 import { useCartStore } from "@/store/cart-store";
 import { useUserStore } from "@/store/user-store";
+import { ROUTES } from "@/config/routes";
 interface UserNavbarProps {
   onCartClick: () => void;
 }
@@ -23,12 +24,10 @@ export function UserNavbar({ onCartClick }: UserNavbarProps) {
     <header className="sticky top-0 z-50 w-full border-b bg-secondary text-white">
       <div className="flex h-16 items-center px-4 sm:px-6 lg:px-8 max-w-full mx-auto">
         <UserSidebar />
-        <div className="flex items-center gap-2 mr-4">
+        <Link href={ROUTES.DASHBOARD} className="flex items-center gap-2 mr-4">
           <TrainFront className="h-8 w-8 text-white" />
-          <Link href="/" className="font-bold text-xl">
-            Ho Chi Minh Metro
-          </Link>
-        </div>
+          <span className="font-bold text-xl">Ho Chi Minh Metro</span>
+        </Link>
 
         {/* Cart Sheet Section */}
         <div className="ml-auto flex items-center gap-4">
