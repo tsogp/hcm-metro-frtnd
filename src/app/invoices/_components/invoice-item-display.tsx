@@ -78,7 +78,7 @@ function InvoiceItemDisplay({
 
                   <div className="bg-slate-100 p-3 rounded-md">
                     <p className="text-xs text-slate-500">Duration</p>
-                    <p className="font-bold">{item.duration} min</p>
+                    <p className="font-bold">{item.duration > 1 ? `${item.duration} days` : `1 day`}</p>
                   </div>
 
                   <div className="col-span-2 md:col-span-3 bg-slate-100 p-3 rounded-md flex items-center">

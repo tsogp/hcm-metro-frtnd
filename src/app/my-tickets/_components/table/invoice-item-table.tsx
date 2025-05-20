@@ -78,7 +78,7 @@ function InvoiceItemTable({
     }
 
     const filteredTickets = tickets.filter((ticket) => {
-      return ticket.invoiceItemId.includes(searchTerm);
+      return ticket.invoiceItemId.includes(searchTerm.trim());
     });
     setCurrentTickets(filteredTickets);
   };

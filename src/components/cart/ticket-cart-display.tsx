@@ -7,12 +7,16 @@ import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
 import { CartItemFromServer, CartItemProcessed } from "@/action/cart";
 import { Input } from "../ui/input";
+import { TicketCartItem } from "@/store/cart-store";
 
 interface TicketCartItemDisplayProps {
-  item: CartItemProcessed;
-  handleDecrease: (item: CartItemFromServer) => void;
-  handleIncrease: (item: CartItemFromServer) => void;
-  handleQuantityChange: (item: CartItemFromServer, value: string) => void;
+  item: CartItemProcessed | TicketCartItem;
+  handleDecrease: (item: CartItemProcessed | TicketCartItem) => void;
+  handleIncrease: (item: CartItemProcessed | TicketCartItem) => void;
+  handleQuantityChange: (
+    item: CartItemProcessed | TicketCartItem,
+    value: string
+  ) => void;
   editable?: boolean;
 }
 
@@ -23,10 +27,15 @@ function TicketCartItemDisplay({
   handleQuantityChange,
   editable = true,
 }: TicketCartItemDisplayProps) {
+  const quantity = "amount" in item ? item.amount : item.quantity;
+  const itemId = "cartItemId" in item ? item.cartItemId : item.ticketTypeName;
+  const expiryInterval =
+    "duration" in item ? item.duration : item.expiryInterval;
+
   const getTicketTypeParts = () => {
-    const ticketTypeName = item.ticketType;
+    const ticketTypeName = item.ticketTypeName;
     if (!ticketTypeName) {
-      return { period: "Unknown", userType: "Unknown" };
+      return { period: "_", userType: "_" };
     }
 
     let period = "";
@@ -71,7 +80,7 @@ function TicketCartItemDisplay({
         </div>
         <p className="text-sm text-muted-foreground group-hover:text-muted-foreground/80">
           <span className="font-bold">Expiry: </span>
-          {item.duration}
+          {expiryInterval}
         </p>
       </div>
 
@@ -84,19 +93,18 @@ function TicketCartItemDisplay({
               className="size-8 text-secondary hover:bg-secondary/10 hover:text-secondary/80"
               onClick={() => handleDecrease(item)}
             >
-              {item.amount === 1 ? (
+              {quantity === 1 ? (
                 <Trash2 className="h-4 w-4" />
               ) : (
                 <Minus className="h-4 w-4" />
               )}
             </Button>
             <Input
-              type="number"
-              min="1"
-              value={item.amount}
+              type="text"
               disabled={true}
+              value={quantity}
               onChange={(e) => handleQuantityChange(item, e.target.value)}
-              className="w-16 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="h-8 w-16 text-center"
             />
             <Button
               variant="ghost"
@@ -106,18 +114,26 @@ function TicketCartItemDisplay({
             >
               <Plus className="h-4 w-4" />
             </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-destructive"
+              onClick={() => handleQuantityChange(item, "0")}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
           <p className="font-bold text-xl group-hover:text-secondary/80">
-            {formatCurrency(item.price * item.amount)}
+            {formatCurrency(item.price * quantity)}
           </p>
         </div>
       ) : (
         <div className="flex justify-between items-end">
           <p className="text-base text-muted-foreground group-hover:text-muted-foreground/80 font-bold">
-            Quantity: {item.amount}
+            Quantity: {quantity}
           </p>
           <p className="font-bold text-xl group-hover:text-secondary/80">
-            {formatCurrency(item.price * item.amount)}
+            {formatCurrency(item.price * quantity)}
           </p>
         </div>
       )}

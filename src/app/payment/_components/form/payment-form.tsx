@@ -32,6 +32,7 @@ import { useServerCart } from "@/components/provider/cart-provider";
 import {
   payForCheckoutWithEWallet,
   payForCheckoutWithStripe,
+  payForCheckoutWithStripeGuest,
 } from "@/action/payment";
 import { FRONTEND_URL } from "@/utils/axiosClient";
 import { toast } from "sonner";
@@ -53,20 +54,32 @@ export default function PaymentPage({
   const router = useRouter();
   const { currentUser } = useUserStore();
   const { cartItems, getCartTotalPrice } = useServerCart();
-  const [isLoading, setIsLoading] = useState(false);
+  const { getTotalPrice, items: guestCartItems } = useCartStore();
+  const [isLoading, setIsLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(0);
 
   const { refreshCart } = useServerCart();
 
   useEffect(() => {
     const fetchTotalPrice = async () => {
-      const totalPrice = await getCartTotalPrice();
-      setTotalPrice(totalPrice);
+      if (currentUser) {
+        try {
+          const totalPrice = await getCartTotalPrice();
+          setTotalPrice(totalPrice);
+        } catch (error) {
+          console.error("Failed to get total price:", error);
+          setTotalPrice(0);
+        }
+      } else {
+        // Use cart store's getTotalPrice for guest users
+        const total = getTotalPrice();
+        setTotalPrice(total);
+      }
     };
     setIsLoading(true);
     fetchTotalPrice();
     setIsLoading(false);
-  }, [getCartTotalPrice]);
+  }, [getCartTotalPrice, getTotalPrice, currentUser]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,11 +93,18 @@ export default function PaymentPage({
 
     try {
       if (values.paymentMethod === "ewallet") {
+        if (!currentUser) {
+          toast.error(
+            "E-Wallet payment is only available for registered users"
+          );
+          setIsLoading(false);
+          return;
+        }
         toast.promise(payForCheckoutWithEWallet, {
           loading: "Processing the payment",
           success: async (res) => {
             await refreshCart();
-            router.push(ROUTES.INVOICES.ROOT);
+            router.push(ROUTES.INVOICE.ROOT);
             return `Payment successful. Remaining balance: ${formatCurrency(
               res.remainingBalance
             )}`;
@@ -92,13 +112,25 @@ export default function PaymentPage({
           error: "Payment error. Please try again.",
         });
       } else if (values.paymentMethod === "stripe") {
-        const onStripeLinkReceived = await payForCheckoutWithStripe({
-          successUrl: `${FRONTEND_URL}/profile?payment=success`,
-          cancelUrl: `${FRONTEND_URL}/profile?payment=failure`,
-        });
+        const onStripeLinkReceived = currentUser
+          ? await payForCheckoutWithStripe({
+              successUrl: `${FRONTEND_URL}/invoice?payment=success`,
+              cancelUrl: `${FRONTEND_URL}/invoice?payment=failure`,
+            })
+          : await payForCheckoutWithStripeGuest({
+              email,
+              tickets: guestCartItems.map((item) => ({
+                lineID: item.lineId,
+                startStation: item.startStationId,
+                endStation: item.endStationId,
+                ticketType: item.ticketTypeName,
+                amount: item.quantity,
+              })),
+              successUrl: `${FRONTEND_URL}/dashboard?payment=success`,
+              cancelUrl: `${FRONTEND_URL}/dashboard?payment=failure`,
+            });
 
         setIsLoading(false);
-
         window.location.replace(onStripeLinkReceived.redirectUrl);
       } else {
         toast.error("Invalid payment method");

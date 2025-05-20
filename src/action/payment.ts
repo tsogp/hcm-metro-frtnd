@@ -79,7 +79,7 @@ export const payForCheckoutWithStripeGuest = async (
   payload: RequestPurchaseTicketForGuestDTO
 ): Promise<ResponseCreateStripeSessionDTO> => {
   const response = await API.post<GenericResponseDTO<ResponseCreateStripeSessionDTO>>(
-    "/payment/checkout/guest",
+    "/payment/direct-ticket/guest",
     payload
   );
 

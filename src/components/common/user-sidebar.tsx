@@ -3,7 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CreditCard, Home, Map, Menu, Ticket, X, Info } from "lucide-react";
+import {
+  CreditCard,
+  Home,
+  Map,
+  Menu,
+  Info,
+  TicketCheck,
+  DollarSign,
+  User,
+  UserPlus,
+  LogIn,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -11,47 +22,92 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { ROUTES } from "@/config/routes";
+import { useUserStore } from "@/store/user-store";
+
+type RouteItem = {
+  title: string;
+  href: string;
+  icon: React.ElementType;
+};
+
+type RouteGroup = {
+  title: string;
+  items: RouteItem[];
+};
 
 export function UserSidebar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { currentUser } = useUserStore();
+
+  const mainFeatures: RouteGroup = {
+    title: "MAIN FEATURES",
+    items: [
+      {
+        title: "Dashboard",
+        href: ROUTES.DASHBOARD,
+        icon: Home,
+      },
+      {
+        title: "Metro Explorer",
+        href: ROUTES.METRO_EXPLORER.ROOT,
+        icon: Map,
+      },
+      {
+        title: "Ticket Activation",
+        href: ROUTES.ACTIVATION.ROOT,
+        icon: TicketCheck,
+      },
+      {
+        title: "Payment Process",
+        href: ROUTES.PAYMENT.ROOT,
+        icon: DollarSign,
+      },
+      {
+        title: "About Us",
+        href: ROUTES.ABOUT,
+        icon: Info,
+      },
+    ],
+  };
+
+  const passengerOnly: RouteGroup = {
+    title: "PASSENGER-ONLY",
+    items: [
+      {
+        title: "My Tickets",
+        href: ROUTES.INVOICE.ROOT,
+        icon: CreditCard,
+      },
+      {
+        title: "Edit Profile",
+        href: ROUTES.PROFILE.ROOT,
+        icon: User,
+      },
+    ],
+  };
+
+  const joinUs: RouteGroup = {
+    title: "JOIN US",
+    items: [
+      {
+        title: "Register",
+        href: ROUTES.AUTH.REGISTER,
+        icon: UserPlus,
+      },
+      {
+        title: "Login",
+        href: ROUTES.AUTH.LOGIN,
+        icon: LogIn,
+      },
+    ],
+  };
 
   const routes = [
-    {
-      title: "Main",
-      items: [
-        {
-          title: "Dashboard",
-          href: "/dashboard",
-          icon: Home,
-        },
-        {
-          title: "Metro Explorer",
-          href: "/metro-explorer",
-          icon: Map,
-        },
-        {
-          title: "About Us",
-          href: "/about",
-          icon: Info,
-        },
-      ],
-    },
-    {
-      title: "Tickets",
-      items: [
-        {
-          title: "Ticket History",
-          href: "/tickets/history",
-          icon: CreditCard,
-        },
-        {
-          title: "Ticket Activation",
-          href: "/tickets/activate",
-          icon: Ticket,
-        },
-      ],
-    },
+    mainFeatures,
+    passengerOnly,
+    ...(currentUser ? [] : [joinUs]),
   ];
 
   return (
@@ -76,7 +132,7 @@ export function UserSidebar() {
           <div className="py-4">
             {routes.map((route) => (
               <div key={route.title} className="px-3 py-2">
-                <h3 className="mb-2 px-4 text-sm font-semibold text-secondary">
+                <h3 className="mb-2 px-4 text-md font-bold text-secondary">
                   {route.title}
                 </h3>
                 <div className="space-y-1">

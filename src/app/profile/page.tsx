@@ -183,28 +183,50 @@ export default function ProfilePage() {
 
       if (hasCredentialsChanged) {
         try {
-          await validateRegister(formData.email);
-        } catch (error: any) {
-          if (error?.response?.status === 409) {
-            toast.error("This email is already in use");
-            setIsSubmitting(false);
-            return;
+          if (formData.email !== initialFormData.email) {
+            await toast.promise(validateRegister(formData.email), {
+              error: (e) => {
+                if (e?.response?.status) {
+                  switch (e.response.status) {
+                    case 400:
+                      return e.response.data?.message || "Invalid request";
+                    case 409:
+                      return (
+                        e.response.data?.message ||
+                        "This email is already in use"
+                      );
+                    case 500:
+                      return (
+                        e.response.data?.message || "Internal Server Error"
+                      );
+                    default:
+                      return (
+                        e.response.data?.message || "Internal Server Error"
+                      );
+                  }
+                }
+                return "Internal Server Error";
+              },
+            });
           }
+
+          const credentialsPromise = updateProfileCredentials({
+            passengerEmail: formData.email,
+            password: formData.password || undefined,
+          });
+
+          const credentialsToast = toast.promise(credentialsPromise, {
+            loading: "Updating credentials...",
+            success: "Credentials updated successfully!",
+            error: "Failed to update credentials. Please try again.",
+          });
+
+          promises.push(credentialsPromise);
+          toastPromises.push(credentialsToast);
+        } catch (e) {
+          setIsSubmitting(false);
+          return;
         }
-
-        const credentialsPromise = updateProfileCredentials({
-          passengerEmail: formData.email,
-          password: formData.password || undefined,
-        });
-
-        const credentialsToast = toast.promise(credentialsPromise, {
-          loading: "Updating credentials...",
-          success: "Credentials updated successfully!",
-          error: "Failed to update credentials. Please try again.",
-        });
-
-        promises.push(credentialsPromise);
-        toastPromises.push(credentialsToast);
       }
 
       if (hasInfoChanged) {

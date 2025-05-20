@@ -24,6 +24,8 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useCartStore, TicketCartItem } from "@/store/cart-store";
+import { useUserStore } from "@/store/user-store";
 
 interface CartSheetProps {
   open: boolean;
@@ -40,105 +42,165 @@ export function CartSheet({
   staticPanel = false,
   hideActions = false,
 }: CartSheetProps) {
-  const { cartItems, refreshCart, removeCartItem, clearAllCartItems } =
-    useServerCart();
+  const {
+    cartItems: serverCartItems,
+    refreshCart,
+    removeCartItem,
+    clearAllCartItems,
+  } = useServerCart();
+  const {
+    items: guestCartItems,
+    removeItem: removeGuestItem,
+    clearCart: clearGuestCart,
+  } = useCartStore();
+  const { currentUser } = useUserStore();
   const router = useRouter();
   const [showClearDialog, setShowClearDialog] = useState(false);
 
-  const handleDecrease = async (item: CartItemFromServer) => {
-    const onDecreaseAction =
-      item.amount > 1
-        ? updateCartItem({
-            cartItemId: item.cartItemId,
-            newAmount: item.amount - 1,
-          })
-        : removeCartItem(item.cartItemId);
+  // Use server cart for authenticated users, guest cart for guests
+  const cartItems = currentUser ? serverCartItems : guestCartItems;
 
-    toast.promise(onDecreaseAction, {
-      loading: "Decreasing item quantity...",
-      success: "Item quantity decreased successfully",
-      error: "Failed to decrease item quantity. Please try again.",
-    });
+  const handleDecrease = async (item: CartItemFromServer | TicketCartItem) => {
+    if (currentUser) {
+      const serverItem = item as CartItemFromServer;
+      const onDecreaseAction =
+        serverItem.amount > 1
+          ? updateCartItem({
+              cartItemId: serverItem.cartItemId,
+              newAmount: serverItem.amount - 1,
+            })
+          : removeCartItem(serverItem.cartItemId);
 
-    await onDecreaseAction;
-    refreshCart();
+      toast.promise(onDecreaseAction, {
+        loading: "Decreasing item quantity...",
+        success: "Item quantity decreased successfully",
+        error: "Failed to decrease item quantity. Please try again.",
+      });
+
+      await onDecreaseAction;
+      refreshCart();
+    } else {
+      // Handle guest cart decrease
+      const ticketItem = item as TicketCartItem;
+      if (ticketItem.quantity > 1) {
+        useCartStore
+          .getState()
+          .updateQuantity(ticketItem.ticketTypeName, ticketItem.quantity - 1);
+      } else {
+        removeGuestItem(ticketItem.ticketTypeName);
+      }
+    }
   };
 
-  const handleIncrease = async (item: CartItemFromServer) => {
-    const onIncreaseAction = updateCartItem({
-      cartItemId: item.cartItemId,
-      newAmount: item.amount + 1,
-    });
+  const handleIncrease = async (item: CartItemFromServer | TicketCartItem) => {
+    if (currentUser) {
+      const serverItem = item as CartItemFromServer;
+      const onIncreaseAction = updateCartItem({
+        cartItemId: serverItem.cartItemId,
+        newAmount: serverItem.amount + 1,
+      });
 
-    toast.promise(onIncreaseAction, {
-      loading: "Increasing item quantity...",
-      success: "Item quantity increased successfully",
-      error: "Failed to increase item quantity. Please try again.",
-    });
+      toast.promise(onIncreaseAction, {
+        loading: "Increasing item quantity...",
+        success: "Item quantity increased successfully",
+        error: "Failed to increase item quantity. Please try again.",
+      });
 
-    await onIncreaseAction;
-    refreshCart();
+      await onIncreaseAction;
+      refreshCart();
+    } else {
+      // Handle guest cart increase
+      const ticketItem = item as TicketCartItem;
+      useCartStore
+        .getState()
+        .updateQuantity(ticketItem.ticketTypeName, ticketItem.quantity + 1);
+    }
   };
 
   const handleQuantityChange = async (
-    item: CartItemFromServer,
+    item: CartItemFromServer | TicketCartItem,
     value: string
   ) => {
-    let onUpdateAction: Promise<any>;
+    if (currentUser) {
+      const serverItem = item as CartItemFromServer;
+      let onUpdateAction: Promise<any>;
 
-    // If the value is empty, set it to 0 (which will trigger removal)
-    if (value === "") {
-      onUpdateAction = removeCartItem(item.cartItemId);
+      if (value === "") {
+        onUpdateAction = removeCartItem(serverItem.cartItemId);
+      } else {
+        const newQuantity = parseInt(value);
+
+        if (isNaN(newQuantity) || newQuantity < 0) {
+          toast.error("Please enter a valid quantity");
+          refreshCart();
+          return;
+        }
+
+        if (newQuantity === 0) {
+          onUpdateAction = removeCartItem(serverItem.cartItemId);
+        } else {
+          onUpdateAction = updateCartItem({
+            cartItemId: serverItem.cartItemId,
+            newAmount: newQuantity,
+          });
+        }
+      }
+
+      toast.promise(onUpdateAction, {
+        loading: "Updating item quantity...",
+        success: "Item quantity updated successfully",
+        error: "Failed to update item quantity. Please try again.",
+      });
+
+      await onUpdateAction;
+      refreshCart();
     } else {
+      // Handle guest cart quantity change
+      const ticketItem = item as TicketCartItem;
       const newQuantity = parseInt(value);
 
-      // If parsing fails or quantity is invalid, show error and refresh
       if (isNaN(newQuantity) || newQuantity < 0) {
         toast.error("Please enter a valid quantity");
-        refreshCart();
         return;
       }
 
-      // If quantity is 0, remove the item
       if (newQuantity === 0) {
-        onUpdateAction = removeCartItem(item.cartItemId);
+        removeGuestItem(ticketItem.ticketTypeName);
       } else {
-        // Otherwise update with the new quantity
-        onUpdateAction = updateCartItem({
-          cartItemId: item.cartItemId,
-          newAmount: newQuantity,
-        });
+        useCartStore
+          .getState()
+          .updateQuantity(ticketItem.ticketTypeName, newQuantity);
       }
     }
-
-    toast.promise(onUpdateAction, {
-      loading: "Updating item quantity...",
-      success: "Item quantity updated successfully",
-      error: "Failed to update item quantity. Please try again.",
-    });
-
-    await onUpdateAction;
-    refreshCart();
   };
 
   const handleClearCart = async () => {
-    const onClearAction = clearAllCartItems();
+    if (currentUser) {
+      const onClearAction = clearAllCartItems();
 
-    toast.promise(onClearAction, {
-      loading: "Clearing cart...",
-      success: "Cart cleared successfully",
-      error: "Failed to clear cart. Please try again.",
-    });
+      toast.promise(onClearAction, {
+        loading: "Clearing cart...",
+        success: "Cart cleared successfully",
+        error: "Failed to clear cart. Please try again.",
+      });
 
-    await onClearAction;
-    refreshCart();
+      await onClearAction;
+      refreshCart();
+    } else {
+      clearGuestCart();
+    }
   };
 
   const getTotalPrice = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.price * item.amount,
-      0
-    );
+    return cartItems.reduce((total, item) => {
+      if (currentUser) {
+        const serverItem = item as CartItemFromServer;
+        return total + serverItem.price * serverItem.amount;
+      } else {
+        const ticketItem = item as TicketCartItem;
+        return total + ticketItem.price * ticketItem.quantity;
+      }
+    }, 0);
   };
 
   const cartContent = (
@@ -179,8 +241,12 @@ export function CartSheet({
           <div className="space-y-2 px-2">
             {cartItems.map((item, index) => (
               <TicketCartItemDisplay
-                key={item.cartItemId}
-                item={item as CartItemProcessed}
+                key={
+                  currentUser
+                    ? (item as CartItemFromServer).cartItemId
+                    : (item as TicketCartItem).ticketTypeName
+                }
+                item={item}
                 handleDecrease={handleDecrease}
                 handleIncrease={handleIncrease}
                 handleQuantityChange={handleQuantityChange}

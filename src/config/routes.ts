@@ -1,10 +1,15 @@
 export const ROUTES = {
   LANDING: "/",
   DASHBOARD: "/dashboard",
+  ABOUT: "/about",
 
   AUTH: {
     LOGIN: "/auth/login",
     REGISTER: "/auth/register",
+  },
+
+  METRO_EXPLORER: {
+    ROOT: "/metro-explorer",
   },
 
   PROFILE: {
@@ -13,8 +18,6 @@ export const ROUTES = {
 
   PAYMENT: {
     ROOT: "/payment",
-    HISTORY: "/payment/history",
-    TOP_UP: "/payment/top-up",
   },
 
   INVOICE: {
@@ -23,6 +26,10 @@ export const ROUTES = {
 
   ACTIVATION: {
     ROOT: "/activation",
+  },
+
+  GUEST: {
+    ROOT: "/guest",
   },
 } as const;
 

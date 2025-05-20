@@ -1,11 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  LogOut,
-  Wallet,
-  UserPen,
-} from "lucide-react";
+import { LogOut, Wallet, UserPen, Ticket, LogIn, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,7 +24,7 @@ export function UserDropdownMenu() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const fullName = `${currentUser?.passengerFirstName} ${currentUser?.passengerMiddleName} ${currentUser?.passengerLastName}`;
+  const fullName = `${currentUser?.passengerFirstName || "GUEST"} ${currentUser?.passengerMiddleName || ""} ${currentUser?.passengerLastName || ""}`;
 
   const handleLogoutClicked = () => {
     logout();
@@ -66,10 +62,10 @@ export function UserDropdownMenu() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {fullName ?? "GUEST"}
+              {fullName}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {currentUser?.passengerEmail ?? ""}
+              {currentUser?.passengerEmail ?? "guest@example.com"}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -83,25 +79,48 @@ export function UserDropdownMenu() {
           <UserPen className="mr-2 h-4 w-4" />
           <span>My Profile</span>
         </DropdownMenuItem>
+
         <DropdownMenuItem
           className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
           onClick={() => {
-            window.location.href = "/wallet";
+            router.push(ROUTES.INVOICE.ROOT);
           }}
         >
-          <Wallet className="mr-2 h-4 w-4" />
-          <span>Wallet</span>
+          <Ticket className="mr-2 h-4 w-4" />
+          <span>My Tickets</span>
         </DropdownMenuItem>
+
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
-          onClick={() => {
-            handleLogoutClicked();
-          }}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
-        </DropdownMenuItem>
+        {currentUser ? (
+          <DropdownMenuItem
+            className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
+            onClick={handleLogoutClicked}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Log out</span>
+          </DropdownMenuItem>
+        ) : (
+          <>
+            <DropdownMenuItem
+              className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
+              onClick={() => {
+                router.push(ROUTES.AUTH.LOGIN);
+              }}
+            >
+              <LogIn className="mr-2 h-4 w-4" />
+              <span>Log in</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
+              onClick={() => {
+                router.push(ROUTES.AUTH.REGISTER);
+              }}
+            >
+              <UserPlus className="mr-2 h-4 w-4" />
+              <span>Register</span>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

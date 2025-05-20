@@ -8,25 +8,14 @@ interface JwtToken {
   exp: number;
 }
 
-const passengerOnlyRoutes = ["/profile", "/invoices"];
+const passengerOnlyRoutes = [ROUTES.PROFILE.ROOT, ROUTES.INVOICE.ROOT];
 
-const landingToDashboardRoutes = ["/dashboard"];
+const landingToDashboardRoutes: string[] = [];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const referer = request.headers.get("referer");
   const token = request.cookies.get("user_auth")?.value;
-
-  if (
-    isLandingToDashboardRoute(pathname) &&
-    referer?.includes(ROUTES.LANDING)
-  ) {
-    if (!token) {
-      const url = new URL(ROUTES.AUTH.LOGIN, request.url);
-      url.searchParams.set("from", pathname);
-      return NextResponse.redirect(url);
-    }
-  }
 
   if (isPassengerOnlyRoute(pathname)) {
     if (!token) {

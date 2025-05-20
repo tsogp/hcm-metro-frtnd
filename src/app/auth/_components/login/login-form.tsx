@@ -217,11 +217,16 @@ export function LoginForm({
           </div>
 
           <div className="flex w-full justify-between gap-4">
-            <Button variant="outline" className="flex-1" asChild>
-              <Link href="/auth/guest">
+            <Button
+              variant="outline"
+              className="flex-1"
+              asChild
+              onClick={() => router.push(ROUTES.DASHBOARD)}
+            >
+              <div>
                 <User className="mr-2 h-4 w-4" />
                 Login as Guest
-              </Link>
+              </div>
             </Button>
 
             <Button

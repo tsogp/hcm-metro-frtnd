@@ -11,6 +11,9 @@ import { useEffect, useState } from "react";
 import { formatCurrency } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useServerCart } from "@/components/provider/cart-provider";
+import { useCartStore } from "@/store/cart-store";
+import { useUserStore } from "@/store/user-store";
+import { CartItemFromServer } from "@/action/cart";
 
 const PriceItem = ({
   label,
@@ -46,18 +49,53 @@ const PriceItem = ({
 );
 
 export default function CartTab() {
-  const { cartItems, getCartTotalPrice } = useServerCart();
+  const { cartItems: serverCartItems, getCartTotalPrice } = useServerCart();
+  const { items: guestCartItems } = useCartStore();
+  const { currentUser } = useUserStore();
   const [mounted, setMounted] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
+
+  // Use server cart for authenticated users, guest cart for guests
+  const cartItems = currentUser ? serverCartItems : guestCartItems;
 
   useEffect(() => {
     setMounted(true);
     const fetchTotalPrice = async () => {
-      const totalPrice = await getCartTotalPrice();
-      setTotalPrice(totalPrice);
+      if (currentUser) {
+        try {
+          const totalPrice = await getCartTotalPrice();
+          setTotalPrice(totalPrice);
+        } catch (error) {
+          console.error("Failed to get total price:", error);
+          // Calculate total from server cart items as fallback
+          const total = serverCartItems.reduce(
+            (sum, item) => sum + item.price * item.amount,
+            0
+          );
+          setTotalPrice(total);
+        }
+      } else {
+        // Calculate total price for guest cart
+        const total = guestCartItems.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        );
+        setTotalPrice(total);
+      }
     };
     fetchTotalPrice();
-  }, [getCartTotalPrice]);
+  }, [getCartTotalPrice, currentUser, guestCartItems, serverCartItems]);
+
+  // Update total price when cart items change for guest users
+  useEffect(() => {
+    if (!currentUser) {
+      const total = guestCartItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      setTotalPrice(total);
+    }
+  }, [guestCartItems, currentUser]);
 
   if (!mounted) {
     return null;
@@ -82,7 +120,11 @@ export default function CartTab() {
           {cartItems.length > 0 ? (
             cartItems.map((item, index) => (
               <motion.div
-                key={item.cartItemId}
+                key={
+                  currentUser
+                    ? (item as CartItemFromServer).cartItemId
+                    : item.ticketTypeName
+                }
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}

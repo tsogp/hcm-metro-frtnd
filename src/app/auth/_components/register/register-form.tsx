@@ -104,6 +104,8 @@ export function RegisterForm({
   };
 
   const handleStep1Submit = (data: Step1Values) => {
+    console.log(data);
+
     const onValidateAction = validateRegister(data.email);
 
     toast.promise(onValidateAction, {

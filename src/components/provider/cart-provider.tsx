@@ -75,7 +75,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addCartItem = async (item: AddToCartItem) => {
-    if (!currentUser || isLoading) return;
+    // if (!currentUser || isLoading) return;
     try {
       await addItemToCart(item);
       await refreshCart();
@@ -85,7 +85,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeCartItem = async (cartItemId: string) => {
-    if (!currentUser || isLoading) return;
+    // if (!currentUser || isLoading) return;
     try {
       await removeItemFromCart(cartItemId);
       await refreshCart();
@@ -95,7 +95,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleClearAllCartItems = async () => {
-    if (!currentUser || isLoading) return;
+    // if (!currentUser || isLoading) return;
     try {
       await clearAllCartItems();
       await refreshCart();
@@ -105,7 +105,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getCartTotalPrice = async () => {
-    if (!currentUser || isLoading) return 0;
+    // if (!currentUser || isLoading) return 0;
     try {
       const response = await getTotalPrice();
       return response;

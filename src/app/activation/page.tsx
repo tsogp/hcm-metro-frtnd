@@ -9,11 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Ticket, MapPin, Clock, Info, TicketCheck } from "lucide-react";
 import type { InvoiceItem } from "@/types/invoice";
-import InvoiceItemDisplay from "../invoices/_components/invoice-item-display";
 import { toast } from "sonner";
 import { activateTicket } from "@/action/invoice";
 import { Station } from "@/types/station";
 import { getAllStations } from "@/action/station";
+import InvoiceItemDisplay from "../invoices/_components/invoice-item-display";
 
 export default function TicketActivationPage() {
   const searchParams = useSearchParams();

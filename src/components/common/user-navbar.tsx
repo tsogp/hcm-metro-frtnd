@@ -6,13 +6,19 @@ import { Button } from "@/components/ui/button";
 import { UserDropdownMenu } from "@/components/common/user-dropdown-menu";
 import { UserSidebar } from "@/components/common/user-sidebar";
 import { useServerCart } from "../provider/cart-provider";
-
+import { useCartStore } from "@/store/cart-store";
+import { useUserStore } from "@/store/user-store";
 interface UserNavbarProps {
   onCartClick: () => void;
 }
 
 export function UserNavbar({ onCartClick }: UserNavbarProps) {
+  const { currentUser } = useUserStore();
   const { cartItems } = useServerCart();
+  const { items } = useCartStore();
+
+  const cartItemQuantity = currentUser ? cartItems.length : items.length;
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-secondary text-white">
       <div className="flex h-16 items-center px-4 sm:px-6 lg:px-8 max-w-full mx-auto">
@@ -33,9 +39,9 @@ export function UserNavbar({ onCartClick }: UserNavbarProps) {
             onClick={onCartClick}
           >
             <ShoppingCart className="size-6" />
-            {cartItems.length > 0 && (
+            {cartItemQuantity > 0 && (
               <span className="absolute -top-1 -right-1 rounded-full size-5 bg-red-500 border-blue-100 border-1 text-xs text-blue-100font-bold flex items-center justify-center">
-                {cartItems.length}
+                {cartItemQuantity}
               </span>
             )}
           </Button>

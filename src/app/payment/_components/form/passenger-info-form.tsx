@@ -42,9 +42,12 @@ export default function PassengerInfoForm({
   setAcceptedPolicies,
   handleProceedToPayment,
 }: PassengerInfoFormProps) {
-  const { currentUser: user } = useUserStore();
+  const { currentUser } = useUserStore();
   const { cartItems } = useServerCart();
-  const fullName = `${user?.passengerFirstName || "Guest"} ${user?.passengerMiddleName || ""} ${user?.passengerLastName || ""}`;
+  const { items } = useCartStore();
+  const fullName = `${currentUser?.passengerFirstName || "Guest"} ${
+    currentUser?.passengerMiddleName || ""
+  } ${currentUser?.passengerLastName || ""}`;
 
   return (
     <motion.div
@@ -93,7 +96,7 @@ export default function PassengerInfoForm({
           <div className="relative group">
             <Input
               id="phone"
-              value={user?.passengerPhone || "084"}
+              value={currentUser?.passengerPhone || "084"}
               disabled
               className={cn(
                 "bg-muted/50",
@@ -186,7 +189,11 @@ export default function PassengerInfoForm({
             "disabled:opacity-50 disabled:cursor-not-allowed"
           )}
           onClick={handleProceedToPayment}
-          disabled={!acceptedPolicies || !email || cartItems.length === 0}
+          disabled={
+            !acceptedPolicies ||
+            !email ||
+            (currentUser ? cartItems.length === 0 : items.length === 0)
+          }
         >
           <motion.span
             animate={

@@ -39,7 +39,6 @@ export function TicketList({ selectedTrip }: TicketListProps) {
 
         setTicketTypes(Array.isArray(types) ? types : []);
 
-        // Initialize quantities after ticket types are fetched
         setQuantities(
           types.reduce(
             (acc, ticket) => ({ ...acc, [ticket.ticketType]: 0 }),
@@ -72,50 +71,48 @@ export function TicketList({ selectedTrip }: TicketListProps) {
     }
   };
 
-  const handleAddToCartStore = (ticketType: string) => {
-    const ticketInTypes = ticketTypes.find((t) => t.ticketType === ticketType);
-    if (!ticketInTypes) {
-      return;
-    }
-
-    const isFreeTicket = ticketInTypes.ticketType === "FREE";
-    const ticketQuantity = isFreeTicket ? 1 : quantities[ticketType];
-
-    if (ticketQuantity > 0) {
-      if (isFreeTicket) {
-        handleIncrement("FREE");
-      }
-
-      addItem({
-        lineId: selectedTrip.schedules[0].metroLineId,
-        lineName: selectedTrip.schedules[0].metroLineName,
-        startStationId: selectedTrip.schedules[0].stationId,
-        startStationName: selectedTrip.schedules[0].stationName,
-        endStationId:
-          selectedTrip.schedules[selectedTrip.schedules.length - 1].stationId,
-        endStationName:
-          selectedTrip.schedules[selectedTrip.schedules.length - 1].stationName,
-        ticketTypeName: ticketInTypes.ticketType,
-        price: ticketInTypes.price,
-        quantity: quantities[ticketType],
-        expiryInterval: ticketInTypes.expiryDescription,
-      });
-    }
-  };
-
   const handleAddToCart = (ticketType: string) => {
-    const cartItemData = {
+    const ticketInTypes = ticketTypes.find((t) => t.ticketType === ticketType);
+    if (!ticketInTypes) return;
+
+    const quantity = quantities[ticketType];
+    if (quantity === 0) return;
+
+    // Add to cart store
+    addItem({
       lineId: selectedTrip.schedules[0].metroLineId,
+      lineName: selectedTrip.schedules[0].metroLineName,
       startStationId: selectedTrip.schedules[0].stationId,
+      startStationName: selectedTrip.schedules[0].stationName,
       endStationId:
         selectedTrip.schedules[selectedTrip.schedules.length - 1].stationId,
-      ticketType: ticketType,
-      amount: quantities[ticketType],
-    };
+      endStationName:
+        selectedTrip.schedules[selectedTrip.schedules.length - 1].stationName,
+      ticketTypeName: ticketInTypes.ticketType,
+      price: ticketInTypes.price,
+      quantity: quantity,
+      expiryInterval: ticketInTypes.expiryDescription,
+    });
 
-    handleAddToCartStore(ticketType);
-    addCartItem(cartItemData);
-    refreshCart();
+    // Only use server cart if user is authenticated
+    if (currentUser) {
+      const cartItemData = {
+        lineId: selectedTrip.schedules[0].metroLineId,
+        startStationId: selectedTrip.schedules[0].stationId,
+        endStationId:
+          selectedTrip.schedules[selectedTrip.schedules.length - 1].stationId,
+        ticketType: ticketType,
+        amount: quantity,
+      };
+      addCartItem(cartItemData);
+      refreshCart();
+    }
+
+    // Reset quantity after adding to cart
+    setQuantities((prev) => ({
+      ...prev,
+      [ticketType]: 0,
+    }));
   };
 
   return (
