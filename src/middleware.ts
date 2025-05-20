@@ -8,13 +8,16 @@ interface JwtToken {
   exp: number;
 }
 
-const passengerOnlyRoutes = [ROUTES.PROFILE.ROOT, ROUTES.INVOICE.ROOT];
+const passengerOnlyRoutes = [
+  ROUTES.PROFILE.ROOT,
+  ROUTES.INVOICE.ROOT,
+  ROUTES.TICKET.ROOT,
+];
 
 const landingToDashboardRoutes: string[] = [];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const referer = request.headers.get("referer");
   const token = request.cookies.get("user_auth")?.value;
 
   if (isPassengerOnlyRoute(pathname)) {

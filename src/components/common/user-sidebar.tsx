@@ -14,6 +14,9 @@ import {
   User,
   UserPlus,
   LogIn,
+  Ticket,
+  Barcode,
+  Receipt,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,7 +60,7 @@ export function UserSidebar() {
       {
         title: "Ticket Activation",
         href: ROUTES.ACTIVATION.ROOT,
-        icon: TicketCheck,
+        icon: Barcode,
       },
       {
         title: "Payment Process",
@@ -76,9 +79,14 @@ export function UserSidebar() {
     title: "PASSENGER-ONLY",
     items: [
       {
-        title: "My Tickets",
+        title: "Purchased Tickets",
+        href: ROUTES.TICKET.ROOT,
+        icon: Ticket,
+      },
+      {
+        title: "Invoice History",
         href: ROUTES.INVOICE.ROOT,
-        icon: CreditCard,
+        icon: Receipt,
       },
       {
         title: "Edit Profile",

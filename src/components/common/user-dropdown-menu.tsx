@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LogOut, Wallet, UserPen, Ticket, LogIn, UserPlus } from "lucide-react";
+import { LogOut, Wallet, UserPen, Ticket, LogIn, UserPlus, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -61,9 +61,7 @@ export function UserDropdownMenu() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {fullName}
-            </p>
+            <p className="text-sm font-medium leading-none">{fullName}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {currentUser?.passengerEmail ?? "guest@example.com"}
             </p>
@@ -83,11 +81,21 @@ export function UserDropdownMenu() {
         <DropdownMenuItem
           className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
           onClick={() => {
-            router.push(ROUTES.INVOICE.ROOT);
+            router.push(ROUTES.TICKET.ROOT);
           }}
         >
           <Ticket className="mr-2 h-4 w-4" />
-          <span>My Tickets</span>
+          <span>Purchased Tickets</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          className="cursor-pointer hover:text-white [&_svg]:!text-black hover:[&_svg]:!text-white"
+          onClick={() => {
+            router.push(ROUTES.INVOICE.ROOT);
+          }}
+        >
+          <Receipt className="mr-2 h-4 w-4" />
+          <span>Invoice History</span>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />

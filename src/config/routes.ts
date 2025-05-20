@@ -24,6 +24,10 @@ export const ROUTES = {
     ROOT: "/invoices",
   },
 
+  TICKET: {
+    ROOT: "/my-tickets",
+  },
+
   ACTIVATION: {
     ROOT: "/activation",
   },
