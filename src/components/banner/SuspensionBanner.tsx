@@ -48,7 +48,6 @@ export const SuspensionBanner = () => {
                 <span className="font-bold">Metro Line:</span> {metroLine?.name || 'Loading...'} |
                 <span className="font-bold ml-2">Stations:</span> {stations.map(s => s.name).join(', ') || 'Loading...'}
             </p>
-            <p className="text-base mb-2">{suspension.description}</p>
             <p className="text-base">
                 <span className="font-bold">Expected Restore Time:</span> {expectedTime}
             </p>
