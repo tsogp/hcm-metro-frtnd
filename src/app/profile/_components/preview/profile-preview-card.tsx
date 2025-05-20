@@ -25,6 +25,12 @@ import { useState, useEffect } from "react";
 import { getCardImages } from "@/action/profile";
 import { AddFundsModal } from "./add-funds-modal";
 import { formatCurrency } from "@/lib/utils";
+import { getGoogleAuthLink, googleAuth, isGoogleLinked } from "@/action/auth";
+import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
+import { useUserStore } from "@/store/user-store";
+import router from "next/router";
+import { ROUTES } from "@/config/routes";
 
 type ProfilePreviewCardProps = {
   user: UserProfileType;
@@ -36,9 +42,75 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
   const [cardImages, setCardImages] = useState<any>(null);
   const [isLoadingImages, setIsLoadingImages] = useState(false);
   const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
+  const [googleLinked, setGoogleLinked] = useState(false);
+  const { login, loginGoogle } = useUserStore();
 
   const handleOpenAddFundsModal = () => {
     setIsTopUpModalOpen(true);
+  };
+
+  const searchParams = useSearchParams();
+
+  const code = searchParams.get("code");
+  const state = searchParams.get("state");
+
+  useEffect(() => {
+    if (!code || !state) return;
+
+    const onGoogleLoginAction = loginGoogle(code, state);
+
+    toast.promise(onGoogleLoginAction, {
+      loading: "Linking Google Account…",
+
+      success: (res) => {
+        window.history.replaceState(null, "", window.location.pathname);
+        router.push(ROUTES.PROFILE.ROOT);
+        return "Google account link success";
+      },
+
+      error: (e) => {
+        switch (e.response?.status) {
+          case 401:
+            return e.response.data?.message || "Invalid Google credentials";
+          case 403:
+            return e.response.data?.message || "Google access denied";
+          case 500:
+            return e.response.data?.message || "Google auth server error";
+          default:
+            return e.response?.data?.message || "Google authentication failed";
+        }
+      },
+    });
+  }, [code, loginGoogle, router]);
+
+  const handleLinkGoogle = async () => {
+    try {
+      const onGotLinkAction = getGoogleAuthLink();
+
+      toast.promise(onGotLinkAction, {
+        loading: "Redirecting to Google...",
+        success: (url: string) => {
+          window.location.replace(url);
+          return "Redirecting...";
+        },
+        error: (e) => {
+          switch (e.response.status) {
+            case 401:
+              return e.response.data?.message || "Invalid credentials";
+            case 403:
+              return e.response.data?.message || "Access denied";
+            case 500:
+              return e.response.data?.message || "Internal server error";
+            default:
+              return (
+                e.response.data?.message || "Getting link from Google failed"
+              );
+          }
+        },
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   // Fetch card images from backend
@@ -105,6 +177,15 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
     };
 
     fetchCardImages();
+  }, []);
+
+  useEffect(() => {
+    const checkGoogleLinked = async () => {
+      const resp = await isGoogleLinked();
+      setGoogleLinked(resp.data.data.linked);
+    };
+
+    checkGoogleLinked();
   }, []);
 
   const getVerificationStatusBadge = (
@@ -197,6 +278,41 @@ function ProfilePreviewCard({ user, setActiveTab }: ProfilePreviewCardProps) {
                 <Plus className="size-3" />
               </button>
             </div>
+            <button
+              onClick={handleLinkGoogle}
+              disabled={googleLinked}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg border text-sm font-medium transition-colors ${
+                !googleLinked
+                  ? "bg-white hover:bg-gray-50 text-gray-700 border-gray-200"
+                  : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="size-4"
+                aria-hidden="true"
+              >
+                <path
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  fill="#34A853"
+                />
+                <path
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  fill="#EA4335"
+                />
+                <path d="M1 1h22v22H1z" fill="none" />
+              </svg>
+              {!googleLinked ? `Link Google account` : `Google account linked`}
+            </button>
           </div>
         </div>
 

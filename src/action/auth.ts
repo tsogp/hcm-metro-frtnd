@@ -47,6 +47,10 @@ export async function getGoogleAuthLink() {
   }
 }
 
-export function googleAuth(code: string) {
-  return API.get(`/auth/google?code=${code}`);
+export function googleAuth(code: string, state: string) {
+  return API.get(`/auth/google?code=${code}&state=${state}`);
+}
+
+export function isGoogleLinked() {
+  return API.get(`/auth/is-google-linked`)
 }

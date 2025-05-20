@@ -29,7 +29,7 @@ type UserState = {
 type UserAction = {
   setCurrentUser: (user: UserData | undefined) => void;
   logout: () => void;
-  loginGoogle: (code: string) => Promise<UserData | GoogleData>;
+  loginGoogle: (code: string, state?: string) => Promise<UserData | GoogleData>;
   fetchProfileAfterGoogle: () => Promise<UserData>;
   login: (email: string, password: string) => Promise<UserData>;
   checkAuth: () => Promise<boolean>;
@@ -98,9 +98,9 @@ export const useUserStore = create<UserStore>()(
         }
       },
 
-      loginGoogle: async (code: string) => {
+      loginGoogle: async (code: string, state?: string) => {
         try {
-          const response = await googleAuth(code);
+          const response = await googleAuth(code, state);
           if (response.status == 200) {
             const userData = await get().fetchUserProfile();
             const profileImg = await getProfileImage();
