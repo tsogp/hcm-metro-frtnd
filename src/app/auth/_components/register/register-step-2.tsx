@@ -58,7 +58,7 @@ export function Step2({
         name="middleName"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Middle Name {isFromGoogle && "(Optional)"}</FormLabel>
+            <FormLabel>Middle Name</FormLabel>
             <FormControl>
               <Input
                 {...field}
@@ -73,7 +73,7 @@ export function Step2({
             </FormControl>
             {isFromGoogle && (
               <FormDescription className="text-xs">
-                Middle name not required with Google sign-up
+                This field is required, also for Google sign-up.
               </FormDescription>
             )}
             <FormMessage />

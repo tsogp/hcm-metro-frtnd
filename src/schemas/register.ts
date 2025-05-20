@@ -45,11 +45,30 @@ const baseStep2Schema = {
   firstName: z
     .string()
     .min(1, "First name is required")
-    .max(50, "Max 50 characters"),
+    .max(50, "Max 50 characters")
+    .refine((value) => !/^\s|\s$/.test(value), {
+      message: "First name cannot contain leading or trailing spaces",
+    })
+    .transform((value) => value.trim()),
   lastName: z
     .string()
     .min(1, "Last name is required")
-    .max(50, "Max 50 characters"),
+    .max(50, "Max 50 characters")
+    .refine((value) => !/^\s|\s$/.test(value), {
+      message: "Last name cannot contain leading or trailing spaces",
+    })
+    .transform((value) => value.trim()),
+  middleName: z
+    .string()
+    .min(1, "Middle name is required")
+    .max(50, "Max 50 characters")
+    .refine((value) => !/^\s|\s$/.test(value), {
+      message: "Middle name cannot contain leading or trailing spaces",
+    })
+    .refine((value) => !/^\s+$/.test(value), {
+      message: "Middle name cannot be only spaces",
+    })
+    .transform((value) => value.trim()),
   phoneNumber: z
     .string()
     .min(1, "Phone number is required")
@@ -66,15 +85,10 @@ const baseStep2Schema = {
 
 export const step2Schema = z.object({
   ...baseStep2Schema,
-  middleName: z
-    .string()
-    .min(1, "Middle name is required")
-    .max(50, "Max 50 characters"),
 });
 
 export const googleStep2Schema = z.object({
   ...baseStep2Schema,
-  middleName: z.string().max(50, "Max 50 characters").optional(),
 });
 
 export const step3Schema = z.object({
