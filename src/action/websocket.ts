@@ -7,7 +7,7 @@ export interface Suspension {
     metroLineID: string;
     title: string;
     description: string;
-    suspensionType: 'EMERGENCY' | 'SCHEDULED';
+    suspensionType: 'EMERGENCY' | 'MAINTENANCE';
     expectedRestoreTime: string;
 }
 
