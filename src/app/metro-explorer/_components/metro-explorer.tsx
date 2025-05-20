@@ -116,6 +116,7 @@ export function MetroExplorer({ searchQuery = "" }: MetroExplorerProps) {
         filteredMetroLines={filteredMetroLines}
         selectedLine={selectedLine || ""}
         setSelectedLine={setSelectedLine}
+        searchQuery={localSearch}
       />
 
       <MetrolineDetailTab
