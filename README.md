@@ -1,4 +1,4 @@
-# PAWA Frontend
+# HCMC Metro Frontend
 
 A modern, feature-rich web application built with Next.js 15, React 19, and TypeScript. This project implements a robust frontend solution with a focus on user experience, performance, and maintainability.
 
@@ -40,8 +40,8 @@ A modern, feature-rich web application built with Next.js 15, React 19, and Type
 1. Clone the repository:
 
 ```bash
-git clone [your-repository-url]
-cd pawa-fe
+git clone https://github.com/tsogp/hcm-metro-frtnd
+cd hcm-metro-frtnd
 ```
 
 2. Install dependencies:
@@ -70,7 +70,7 @@ The application will be available at [http://localhost:3000](http://localhost:30
 ## 🏗️ Project Structure
 
 ```
-pawa-fe/
+hcm-metro-frtnd/
 ├── app/                   # Next.js app directory
 │   ├── about/             # About page
 │   ├── activation/        # Account activation
@@ -132,17 +132,6 @@ pawa-fe/
 - [React Documentation](https://react.dev)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [Shadcn Documentation](https://ui.shadcn.com/docs)
-
-## 👥 Developers
-
-This project is developed by a team of students from RMIT University, Saigon Campus.
-
-| Student Name      | ID       | School             | Roles       |
-| ----------------- | -------- | ------------------ | ----------- |
-| Nguyen Son Tung   | s3979348 | RMIT Saigon Campus | Team Leader |
-| Pavel Potemkin    | s3963284 | RMIT Saigon Campus |             |
-| Nguyen Tuan Dung  | s3927511 | RMIT Saigon Campus |             |
-| Phan Trong Nguyen | s3927189 | RMIT Saigon Campus |             |
 
 ## 🙏 Acknowledgments
 

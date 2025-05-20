@@ -75,13 +75,7 @@ export function BookNowCarousel({ className }: BookNowCarouselProps) {
       title: 'Smart Ticketing',
       description: 'Quick and easy travel with our contactless smart cards and mobile ticketing solutions',
       image: '/images/carousel/metro_payment.jpg',
-    },
-    {
-      id: 3,
-      title: '24/7 Metro Service',
-      description: 'Round-the-clock service ensuring you reach your destination safely and on time, any time of day',
-      image: 'https://images.unsplash.com/photo-1573497620053-ea5300f94f21?q=80&w=2070&auto=format&fit=crop',
-    },
+    }
   ];
 
   return (

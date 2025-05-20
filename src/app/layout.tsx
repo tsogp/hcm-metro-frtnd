@@ -6,8 +6,6 @@ import { AuthProvider } from "@/components/auth/auth-provider";
 import { ThemeProvider } from "@/components/provider/theme-provider";
 import React from "react";
 import { CartProvider } from "@/components/provider/cart-provider";
-import { WebSocketProvider } from "@/components/provider/websocket-provider";
-import { SuspensionBanner } from "@/components/banner/SuspensionBanner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -35,11 +33,8 @@ export default function RootLayout({
         >
           <AuthProvider>
             <CartProvider>
-              <WebSocketProvider>
-                <SuspensionBanner />
-                {children}
-                <Toaster position="bottom-right" duration={1500} />
-              </WebSocketProvider>
+              {children}
+              <Toaster position="bottom-right" duration={1500} />
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>

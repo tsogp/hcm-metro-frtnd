@@ -114,7 +114,7 @@ export function UserSidebar() {
 
   const routes = [
     mainFeatures,
-    passengerOnly,
+    ...(currentUser ? [passengerOnly] : []),
     ...(currentUser ? [] : [joinUs]),
   ];
 
