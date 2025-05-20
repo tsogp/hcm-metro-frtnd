@@ -121,6 +121,7 @@ export default function PaymentPage({
               email,
               tickets: guestCartItems.map((item) => ({
                 lineID: item.lineId,
+                lineName: item.lineName,
                 startStation: item.startStationId,
                 endStation: item.endStationId,
                 ticketType: item.ticketTypeName,

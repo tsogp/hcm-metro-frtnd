@@ -27,6 +27,7 @@ export interface RequestPurchaseTicketForPassengerTicketDTO {
   ticketType: string;
   amount: number;
   lineID: string;
+  lineName: string;
   startStation: string;
   endStation: string;
 }
