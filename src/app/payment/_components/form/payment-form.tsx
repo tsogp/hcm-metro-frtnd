@@ -39,9 +39,11 @@ import { toast } from "sonner";
 import { ROUTES } from "@/config/routes";
 
 const formSchema = z.object({
-  paymentMethod: z.enum(["ewallet", "stripe"], {
-    required_error: "Please select a payment method",
-  }),
+  paymentMethod: z
+    .enum(["ewallet", "stripe"], {
+      required_error: "Please select a payment method",
+    })
+    .optional(),
 });
 
 export default function PaymentPage({
@@ -59,6 +61,13 @@ export default function PaymentPage({
   const [totalPrice, setTotalPrice] = useState(0);
 
   const { refreshCart } = useServerCart();
+
+  // Add validation for Stripe payments
+  const canUseStripe = totalPrice >= 15000;
+  const stripeDisabledReason =
+    totalPrice < 15000
+      ? `Minimum amount for Stripe payment is ${formatCurrency(15000)}`
+      : null;
 
   useEffect(() => {
     const fetchTotalPrice = async () => {
@@ -84,7 +93,7 @@ export default function PaymentPage({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      paymentMethod: "stripe",
+      paymentMethod: undefined,
     },
   });
 
@@ -112,12 +121,16 @@ export default function PaymentPage({
           error: "Payment error. Please try again.",
         });
       } else if (values.paymentMethod === "stripe") {
-        const onStripeLinkReceived = currentUser
-          ? await payForCheckoutWithStripe({
-              successUrl: `${FRONTEND_URL}/invoice?payment=success`,
-              cancelUrl: `${FRONTEND_URL}/invoice?payment=failure`,
-            })
-          : await payForCheckoutWithStripeGuest({
+        if (currentUser) {
+          const onStripeLinkReceived = await payForCheckoutWithStripe({
+            successUrl: `${FRONTEND_URL}/invoice?payment=success`,
+            cancelUrl: `${FRONTEND_URL}/invoice?payment=failure`,
+          });
+          setIsLoading(false);
+          window.location.replace(onStripeLinkReceived.redirectUrl);
+        } else {
+          toast.promise(
+            payForCheckoutWithStripeGuest({
               email,
               tickets: guestCartItems.map((item) => ({
                 lineID: item.lineId,
@@ -129,10 +142,17 @@ export default function PaymentPage({
               })),
               successUrl: `${FRONTEND_URL}/dashboard?payment=success`,
               cancelUrl: `${FRONTEND_URL}/dashboard?payment=failure`,
-            });
-
-        setIsLoading(false);
-        window.location.replace(onStripeLinkReceived.redirectUrl);
+            }),
+            {
+              loading: "Processing the payment",
+              success: (res) => {
+                window.location.replace(res.redirectUrl);
+                return "Payment initiated successfully! Redirecting to dashboard...";
+              },
+              error: "Payment error. Please try again.",
+            }
+          );
+        }
       } else {
         toast.error("Invalid payment method");
       }
@@ -232,25 +252,28 @@ export default function PaymentPage({
                                       htmlFor="ewallet"
                                       className={cn(
                                         "relative flex items-center p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer",
-                                        field.value === "ewallet" 
-                                          ? "border-primary bg-primary/5" 
+                                        field.value === "ewallet"
+                                          ? "border-primary bg-primary/5"
                                           : "border-border hover:border-primary/50",
-                                        // isEWalletDisabled && "opacity-70 cursor-not-allowed"
+                                        insufficientBalance &&
+                                          "opacity-70 cursor-not-allowed"
                                       )}
                                     >
                                       <RadioGroupItem
                                         value="ewallet"
                                         id="ewallet"
-                                        // disabled={isEWalletDisabled}
+                                        disabled={insufficientBalance}
                                         className="absolute right-4 top-4"
                                       />
                                       <div className="flex flex-row gap-4 items-center w-full">
-                                        <div className={cn(
-                                          "p-3 rounded-lg",
-                                          field.value === "ewallet" 
-                                            ? "bg-primary/10" 
-                                            : "bg-muted"
-                                        )}>
+                                        <div
+                                          className={cn(
+                                            "p-3 rounded-lg",
+                                            field.value === "ewallet"
+                                              ? "bg-primary/10"
+                                              : "bg-muted"
+                                          )}
+                                        >
                                           <Wallet className="size-6 text-primary" />
                                         </div>
                                         <div className="flex flex-col gap-1">
@@ -258,7 +281,10 @@ export default function PaymentPage({
                                             E-Wallet Payment
                                           </span>
                                           <p className="text-sm text-muted-foreground">
-                                            Current Balance: {formatCurrency(currentUser.balance)}
+                                            Current Balance:{" "}
+                                            {formatCurrency(
+                                              currentUser.balance
+                                            )}
                                           </p>
                                         </div>
                                       </div>
@@ -274,39 +300,55 @@ export default function PaymentPage({
                               </TooltipProvider>
                             )}
 
-                            <label
-                              htmlFor="stripe"
-                              className={cn(
-                                "relative flex items-center p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer",
-                                field.value === "stripe" 
-                                  ? "border-primary bg-primary/5" 
-                                  : "border-border hover:border-primary/50"
-                              )}
-                            >
-                              <RadioGroupItem 
-                                value="stripe" 
-                                id="stripe"
-                                className="absolute right-4 top-4"
-                              />
-                              <div className="flex flex-row gap-4 items-center w-full">
-                                <div className={cn(
-                                  "p-3 rounded-lg",
-                                  field.value === "stripe" 
-                                    ? "bg-primary/10" 
-                                    : "bg-muted"
-                                )}>
-                                  <CreditCard className="size-6 text-primary" />
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                  <span className="text-lg font-semibold">
-                                    Credit Card Payment
-                                  </span>
-                                  <p className="text-sm text-muted-foreground">
-                                    Pay securely via Stripe
-                                  </p>
-                                </div>
-                              </div>
-                            </label>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <label
+                                    htmlFor="stripe"
+                                    className={cn(
+                                      "relative flex items-center p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer",
+                                      field.value === "stripe"
+                                        ? "border-primary bg-primary/5"
+                                        : "border-border hover:border-primary/50",
+                                      !canUseStripe &&
+                                        "opacity-70 cursor-not-allowed"
+                                    )}
+                                  >
+                                    <RadioGroupItem
+                                      value="stripe"
+                                      id="stripe"
+                                      disabled={!canUseStripe}
+                                      className="absolute right-4 top-4"
+                                    />
+                                    <div className="flex flex-row gap-4 items-center w-full">
+                                      <div
+                                        className={cn(
+                                          "p-3 rounded-lg",
+                                          field.value === "stripe"
+                                            ? "bg-primary/10"
+                                            : "bg-muted"
+                                        )}
+                                      >
+                                        <CreditCard className="size-6 text-primary" />
+                                      </div>
+                                      <div className="flex flex-col gap-1">
+                                        <span className="text-lg font-semibold">
+                                          Credit Card Payment
+                                        </span>
+                                        <p className="text-sm text-muted-foreground">
+                                          Pay securely via Stripe
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </label>
+                                </TooltipTrigger>
+                                {!canUseStripe && (
+                                  <TooltipContent>
+                                    {stripeDisabledReason}
+                                  </TooltipContent>
+                                )}
+                              </Tooltip>
+                            </TooltipProvider>
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />

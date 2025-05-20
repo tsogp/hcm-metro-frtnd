@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Info, User } from "lucide-react";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import { UserData, useUserStore } from "@/store/user-store";
 import { useCartStore } from "@/store/cart-store";
 import { useServerCart } from "@/components/provider/cart-provider";
@@ -48,6 +48,15 @@ export default function PassengerInfoForm({
   const fullName = `${currentUser?.passengerFirstName || "Guest"} ${
     currentUser?.passengerMiddleName || ""
   } ${currentUser?.passengerLastName || ""}`;
+
+  // Calculate total price for validation
+  const totalPrice = currentUser
+    ? cartItems.reduce((sum, item) => sum + item.price * item.amount, 0)
+    : items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const canProceedToPayment = currentUser ? true : totalPrice >= 15000;
+
+  console.log(totalPrice);
 
   return (
     <motion.div
@@ -192,18 +201,21 @@ export default function PassengerInfoForm({
           disabled={
             !acceptedPolicies ||
             !email ||
-            (currentUser ? cartItems.length === 0 : items.length === 0)
+            (currentUser ? cartItems.length === 0 : items.length === 0) ||
+            !canProceedToPayment
           }
         >
           <motion.span
             animate={
-              !acceptedPolicies || !email
+              !acceptedPolicies || !email || !canProceedToPayment
                 ? { opacity: [0.5, 1, 0.5] }
                 : { opacity: 1 }
             }
             transition={{ duration: 1.5, repeat: Infinity }}
           >
-            Proceed to Payment
+            {!currentUser && totalPrice < 15000
+              ? `Minimum amount for guest checkout is ${formatCurrency(15000)}`
+              : "Proceed to Payment"}
           </motion.span>
         </Button>
       </motion.div>

@@ -55,7 +55,6 @@ export default function CartTab() {
   const [mounted, setMounted] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  // Use server cart for authenticated users, guest cart for guests
   const cartItems = currentUser ? serverCartItems : guestCartItems;
 
   useEffect(() => {
@@ -67,7 +66,6 @@ export default function CartTab() {
           setTotalPrice(totalPrice);
         } catch (error) {
           console.error("Failed to get total price:", error);
-          // Calculate total from server cart items as fallback
           const total = serverCartItems.reduce(
             (sum, item) => sum + item.price * item.amount,
             0
@@ -75,7 +73,6 @@ export default function CartTab() {
           setTotalPrice(total);
         }
       } else {
-        // Calculate total price for guest cart
         const total = guestCartItems.reduce(
           (sum, item) => sum + item.price * item.quantity,
           0
@@ -86,7 +83,6 @@ export default function CartTab() {
     fetchTotalPrice();
   }, [getCartTotalPrice, currentUser, guestCartItems, serverCartItems]);
 
-  // Update total price when cart items change for guest users
   useEffect(() => {
     if (!currentUser) {
       const total = guestCartItems.reduce(
@@ -167,11 +163,43 @@ export default function CartTab() {
           transition={{ delay: 0.3 }}
           className="bg-muted/50 p-3 rounded-md text-sm hover:bg-muted/70 transition-colors duration-300"
         >
-          <h4 className="font-medium mb-1">Fare Information</h4>
+          <h4 className="font-medium mb-1 text-lgddunw">Fare Information</h4>
           <p className="text-muted-foreground text-xs">
-            One way tickets are valid for 24 hours from the time of purchase.
-            Other tickets are valid for th designated time after activation.
+            <span className="font-semibold text-foreground">
+              One-way tickets are activated at the time of purchase
+            </span>{" "}
+            and valid for 24 hours. Other ticket types have specific validity
+            periods after activation.
           </p>
+          {!currentUser && totalPrice < 15 && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-xs text-destructive mt-2 font-medium"
+            >
+              Note: For purchases under {formatCurrency(15)}, you need to create
+              an account and use E-Wallet payment.
+            </motion.p>
+          )}
+          {!currentUser && totalPrice >= 15 && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-xs text-destructive mt-2 font-medium"
+            >
+              Note: To use Stripe payment, you need to create an account.
+            </motion.p>
+          )}
+          {currentUser && totalPrice < 15 && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-xs text-destructive mt-2 font-medium"
+            >
+              Note: For purchases under {formatCurrency(15)}, please use
+              E-Wallet payment.
+            </motion.p>
+          )}
         </motion.div>
       </CardFooter>
     </Card>
