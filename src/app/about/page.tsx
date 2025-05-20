@@ -1,44 +1,44 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { MapPin, Users, Clock, Award } from 'lucide-react';
+import { motion } from "framer-motion";
+import { MapPin, Users, Clock, Award } from "lucide-react";
 
 export default function AboutPage() {
   const stats = [
     {
       id: 1,
-      title: 'Daily Passengers',
-      value: '500,000+',
+      title: "Daily Passengers",
+      value: "500,000+",
       icon: Users,
-      description: 'Serving commuters every day',
+      description: "Serving commuters every day",
     },
     {
       id: 2,
-      title: 'Metro Stations',
-      value: '100+',
+      title: "Metro Stations",
+      value: "100+",
       icon: MapPin,
-      description: 'Covering the entire city',
+      description: "Covering the entire city",
     },
     {
       id: 3,
-      title: 'Service Hours',
-      value: '24/7',
+      title: "Service Hours",
+      value: "24/7",
       icon: Clock,
-      description: 'Always available for you',
+      description: "Always available for you",
     },
     {
       id: 4,
-      title: 'Years of Service',
-      value: '15+',
+      title: "Years of Service",
+      value: "15+",
       icon: Award,
-      description: 'Trusted by the community',
+      description: "Trusted by the community",
     },
   ];
 
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5 }
+    transition: { duration: 0.5 },
   };
 
   return (
@@ -47,7 +47,7 @@ export default function AboutPage() {
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-gray-600 to-gray-800 opacity-90" />
         <div className="absolute inset-0 bg-[url('/images/about/hero_image.jpg')] bg-cover bg-center mix-blend-overlay" />
-        <motion.div 
+        <motion.div
           className="relative z-10 text-center text-white px-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -57,7 +57,8 @@ export default function AboutPage() {
             About Our Metro System
           </h1>
           <p className="text-xl md:text-2xl max-w-3xl mx-auto">
-            Connecting communities, powering progress, and serving our city with pride
+            Connecting communities, powering progress, and serving our city with
+            pride
           </p>
         </motion.div>
       </section>
@@ -108,10 +109,14 @@ export default function AboutPage() {
                 Our Mission
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-                We are committed to providing safe, reliable, and efficient public transportation that connects our community and supports sustainable urban development.
+                We are committed to providing safe, reliable, and efficient
+                public transportation that connects our community and supports
+                sustainable urban development.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-300">
-                Our metro system is more than just transportation – it's a vital part of our city's infrastructure, bringing people together and driving economic growth.
+                Our metro system is more than just transportation – it's a vital
+                part of our city's infrastructure, bringing people together and
+                driving economic growth.
               </p>
             </div>
             <div className="relative h-[400px] rounded-xl overflow-hidden">
@@ -146,16 +151,19 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: 'Safety First',
-                description: 'We prioritize the safety and security of our passengers and staff above all else.',
+                title: "Safety First",
+                description:
+                  "We prioritize the safety and security of our passengers and staff above all else.",
               },
               {
-                title: 'Customer Focus',
-                description: 'We are dedicated to providing exceptional service and a positive experience for every passenger.',
+                title: "Customer Focus",
+                description:
+                  "We are dedicated to providing exceptional service and a positive experience for every passenger.",
               },
               {
-                title: 'Innovation',
-                description: 'We continuously seek new ways to improve our services and embrace technological advancements.',
+                title: "Innovation",
+                description:
+                  "We continuously seek new ways to improve our services and embrace technological advancements.",
               },
             ].map((value, index) => (
               <motion.div
@@ -201,23 +209,23 @@ export default function AboutPage() {
               {
                 name: "Nguyen Son Tung",
                 role: "Team Leader, Frontend Developer, Backend Developer",
-                image: "/images/default-avatar.jpg"
+                image: "/images/about/trains/train1.jpg",
+              },
+              {
+                name: "Pavel Potemkin",
+                role: "Frontend Developer, Backend Developer",
+                image: "/images/about/trains/train3.jpg",
               },
               {
                 name: "Nguyen Tuan Dung",
                 role: "Frontend Developer",
-                image: "/images/default-avatar.jpg"
-              },
-              {
-                name: "Pavel Potemkin",
-                role: "Backend Developer",
-                image: "/images/default-avatar.jpg"
+                image: "/images/about/trains/train2.jpg",
               },
               {
                 name: "Phan Trong Nguyen",
-                role: "Backend Developer",
-                image: "/images/default-avatar.jpg"
-              }
+                role: "Frontend Developer, Backend Developer",
+                image: "/images/about/trains/train4.jpg",
+              },
             ].map((developer, index) => (
               <motion.div
                 key={index}
@@ -247,4 +255,4 @@ export default function AboutPage() {
       </section>
     </div>
   );
-} 
+}

@@ -123,8 +123,8 @@ export default function PaymentPage({
       } else if (values.paymentMethod === "stripe") {
         if (currentUser) {
           const onStripeLinkReceived = await payForCheckoutWithStripe({
-            successUrl: `${FRONTEND_URL}/invoice?payment=success`,
-            cancelUrl: `${FRONTEND_URL}/invoice?payment=failure`,
+            successUrl: `${FRONTEND_URL}/invoices?payment=success`,
+            cancelUrl: `${FRONTEND_URL}/invoices?payment=failure`,
           });
           setIsLoading(false);
           window.location.replace(onStripeLinkReceived.redirectUrl);

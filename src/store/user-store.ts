@@ -100,7 +100,7 @@ export const useUserStore = create<UserStore>()(
 
       loginGoogle: async (code: string, state?: string) => {
         try {
-          const response = await googleAuth(code, state);
+          const response = await googleAuth(code, state ?? "");
           if (response.status == 200) {
             const userData = await get().fetchUserProfile();
             const profileImg = await getProfileImage();
