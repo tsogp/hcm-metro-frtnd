@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/provider/theme-provider";
 import React from "react";
 import { CartProvider } from "@/components/provider/cart-provider";
 import { WebSocketProvider } from "@/components/provider/websocket-provider";
-import { SuspensionBanner } from "@/components/SuspensionBanner";
+import { SuspensionBanner } from "@/components/banner/SuspensionBanner";
 
 const inter = Inter({
   variable: "--font-inter",
